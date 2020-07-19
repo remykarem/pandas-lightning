@@ -2,6 +2,12 @@
 
 Aggregate your pipeline
 
+Install
+
+```bash
+pip install git+https://github.com/remykarem/pandas-pipeline#egg=pandas-pipeline
+```
+
 Firstl, import
 
 ```python
