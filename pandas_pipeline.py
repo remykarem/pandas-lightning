@@ -1,18 +1,10 @@
 import math
-from pandas import CategoricalDtype
-from contextlib import contextmanager
 from functools import reduce
-import pandas as pd
-import numpy as np
 from itertools import combinations
 
-
-""""
-- drop duplicate columns
-- drop duplicate rows
-- change type
-- transform
-"""
+import pandas as pd
+import colorful as cf
+from pandas import CategoricalDtype
 
 
 @pd.api.extensions.register_dataframe_accessor("pipeline")
@@ -26,8 +18,6 @@ class Pipeline:
 
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
-        self.history = []
-        self._params = {}
 
     def drop_duplicate_columns(self, inplace=False):
         to_drop = []
@@ -77,7 +67,6 @@ class Pipeline:
         else:
             df = self._obj.copy()
 
-        # Take in series
         for cols, f in d.items():
             if len(cols) == 1 or isinstance(cols, str):
                 col_old, col_new = cols, cols
@@ -89,7 +78,7 @@ class Pipeline:
 
         return df
 
-    def maps(self, d, inplace=False):
+    def map(self, d, inplace=False):
         pass
 
     def apply(self, d, inplace=False):
@@ -111,7 +100,7 @@ class Pipeline:
 
         return df
 
-    def fillnas(self, d, inplace=False):
+    def fillna(self, d, inplace=False):
         if inplace:
             df = self._obj
         else:
