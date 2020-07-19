@@ -15,3 +15,17 @@ df = df.pipeline.convert_types({
 })
 ```
 
+```python
+df = df.pipeline.applys({
+})
+```
+
+```python
+df = df.pipeline.sapplys({
+})
+```
+
+```python
+df = df.pipeline.maps({
+})
+```
