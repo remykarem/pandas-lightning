@@ -10,35 +10,36 @@ import pandas_pipeline
 
 such that the `.pipeline` will be available to your DataFrame objects. 
 
-* convert_types: convert the types of multiple columns
-* applys: perform apply on multiple series objects
-* sapplys: perform vectorised operations on multiple series
-* maps: perform map on multiple columns
+* convert_dtypes: convert the types of multiple columns
+* apply: perform apply on multiple series objects
+* sapply: perform vectorised operations on multiple series
+* map: perform map on multiple columns
 
 * ordinal encoding
 * membership binning
+* drop duplicate columns
 
 ```python
-df = df.pipeline.convert_types({
+df = df.pipeline.convert_dtypes({
 })
 ```
 
 ```python
-df = df.pipeline.applys({
+df = df.pipeline.apply({
 })
 ```
 
 ```python
-df = df.pipeline.sapplys({
+df = df.pipeline.sapply({
 })
 ```
 
 ```python
-df = df.pipeline.maps({
+df = df.pipeline.map({
 })
 ```
 
 ```python
-df = df.pipeline.fillnas({
+df = df.pipeline.fillna({
 })
 ```
