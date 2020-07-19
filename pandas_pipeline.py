@@ -1,5 +1,4 @@
 import math
-import colorful as cf
 from pandas import CategoricalDtype
 from contextlib import contextmanager
 from functools import reduce
@@ -23,6 +22,7 @@ class Pipeline:
         "Survived": {"astype": "category"}
     })
     """
+    __version__ = "0.0.1rc0"
 
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
@@ -47,19 +47,6 @@ class Pipeline:
 
         return self._obj.drop(columns=to_drop, inplace=inplace)
 
-    def use_pipeline(self, pipeline):
-        return
-
-    def add(self, d):
-        for col, params in d.items():
-            attr, arg = next(iter(params.items()))
-            fn = getattr(self._obj[col], attr)
-            print(fn(arg))
-        self.history.append(d)
-
-    def remove_last(self):
-        self.history.pop()
-
     def compose(self, inplace=False, *functions):
         """Functions must return something
 
@@ -82,7 +69,7 @@ class Pipeline:
     def xinfo(self):
         return self._obj.info()
 
-    def vectorized(self, d, inplace=False):
+    def sapply(self, d, inplace=False):
         if not isinstance(d, dict):
             raise ValueError("Must be dict")
         if inplace:
@@ -105,7 +92,7 @@ class Pipeline:
     def maps(self, d, inplace=False):
         pass
 
-    def applys(self, d, inplace=False):
+    def apply(self, d, inplace=False):
         if not isinstance(d, dict):
             raise ValueError("Must be dict")
         if inplace:
@@ -142,7 +129,7 @@ class Pipeline:
 
         return df
 
-    def convert_types(self, d, inplace=False):
+    def convert_dtypes(self, d, inplace=False):
         if inplace:
             df = self._obj
         else:
@@ -194,22 +181,6 @@ class Pipeline:
             return X.values, y.values
         else:
             return df.values
-
-    def to_numpy(self, inplace=False):
-        if inplace:
-            df = self._obj
-        else:
-            df = self._obj.copy()
-
-        for col in df:
-            pass
-
-    def transform_categorical(self):
-        pass
-
-    @contextmanager
-    def run_trial(self):
-        print("hey")
 
 
 @pd.api.extensions.register_dataframe_accessor("optimize")
