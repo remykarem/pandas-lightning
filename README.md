@@ -29,3 +29,8 @@ df = df.pipeline.sapplys({
 df = df.pipeline.maps({
 })
 ```
+
+```python
+df = df.pipeline.fillnas({
+})
+```
