@@ -1,6 +1,6 @@
 # pandas-pipeline (WIP)
 
-Aggregate your pipeline
+Organize your pipelines
 
 Install
 
