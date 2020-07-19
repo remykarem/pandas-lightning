@@ -6,6 +6,8 @@ import pandas as pd
 import colorful as cf
 from pandas import CategoricalDtype
 
+__version__ = "0.0.1rc0"
+
 
 @pd.api.extensions.register_dataframe_accessor("pipeline")
 class Pipeline:
@@ -14,7 +16,6 @@ class Pipeline:
         "Survived": {"astype": "category"}
     })
     """
-    __version__ = "0.0.1rc0"
 
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
@@ -24,7 +25,7 @@ class Pipeline:
         pairs = combinations(self._obj.columns, 2)
 
         num_combinations = math.comb(len(self._obj.columns), 2)
-        print(f"Checking {num_combinations}")
+        print(f"Checking {num_combinations} combinations")
 
         for pair in pairs:
             col_a, col_b = pair
@@ -33,7 +34,7 @@ class Pipeline:
             if self._obj[col_a].equals(self._obj[col_b]):
                 to_drop.append(col_b)
 
-        print(to_drop)
+        print(f"Duplicate columns: {to_drop}")
 
         return self._obj.drop(columns=to_drop, inplace=inplace)
 
@@ -67,14 +68,14 @@ class Pipeline:
         else:
             df = self._obj.copy()
 
-        for cols, f in d.items():
+        for cols, function in d.items():
             if len(cols) == 1 or isinstance(cols, str):
                 col_old, col_new = cols, cols
             elif len(cols) == 2:
                 col_old, col_new = cols
             else:
                 raise ValueError("Wrong key")
-            df[col_new] = f(df[col_old])
+            df[col_new] = function(df[col_old])
 
         return df
 
@@ -82,6 +83,7 @@ class Pipeline:
         pass
 
     def apply(self, d, inplace=False):
+
         if not isinstance(d, dict):
             raise ValueError("Must be dict")
         if inplace:
@@ -89,14 +91,14 @@ class Pipeline:
         else:
             df = self._obj.copy()
 
-        for cols, f in d.items():
+        for cols, function in d.items():
             if len(cols) == 1 or isinstance(cols, str):
                 col_old, col_new = cols, cols
             elif len(cols) == 2:
                 col_old, col_new = cols
             else:
                 raise ValueError("Wrong key")
-            df[col_new] = df[col_old].apply(f)
+            df[col_new] = df[col_old].apply(function)
 
         return df
 
@@ -106,7 +108,7 @@ class Pipeline:
         else:
             df = self._obj.copy()
 
-        for cols, f in d.items():
+        for cols, fill_value in d.items():
             if len(cols) == 1 or isinstance(cols, str):
                 col_old, col_new = cols, cols
             elif len(cols) == 2:
@@ -114,7 +116,7 @@ class Pipeline:
             else:
                 raise ValueError("Wrong key")
 
-            df[col_new] = df[col_old].fillna(f)
+            df[col_new] = df[col_old].fillna(fill_value)
 
         return df
 
