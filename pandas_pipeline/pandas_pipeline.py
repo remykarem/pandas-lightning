@@ -66,7 +66,7 @@ class Pipeline:
 
         return df
 
-    def compose(self, inplace=False, *functions):
+    def compose(self, *functions):
         """Functions must return something
 
         Returns
@@ -74,11 +74,7 @@ class Pipeline:
         pandas.DataFrame
             Mutated dataframe
         """
-        if inplace:
-            df = self._obj
-        else:
-            df = self._obj.copy()
-
+        df = self._obj.copy()
         run_steps = reduce(lambda f, g: lambda x: g(f(x)),
                            functions,
                            lambda x: x)
