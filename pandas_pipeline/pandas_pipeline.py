@@ -36,6 +36,34 @@ class Pipeline:
 
         return self._obj.drop(columns=to_drop, inplace=inplace)
 
+    def drop_columns_apply(self, *functions):
+        df = self._obj.copy()
+
+        cols_to_drop = []
+        for col_name in df.columns:
+            for f in functions:
+                if all(df[col_name].apply(f)):
+                    cols_to_drop.append(col_name)
+                    break
+
+        df = df.drop(columns=cols_to_drop)
+
+        return df
+
+    def drop_columns_sapply(self, *functions):
+        df = self._obj.copy()
+
+        cols_to_drop = []
+        for col_name in df.columns:
+            for f in functions:
+                if f(df[col_name]):
+                    cols_to_drop.append(col_name)
+                    break
+
+        df = df.drop(columns=cols_to_drop)
+
+        return df
+
     def compose(self, inplace=False, *functions):
         """Functions must return something
 
