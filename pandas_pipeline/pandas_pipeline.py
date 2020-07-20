@@ -15,6 +15,8 @@ class Pipeline:
     })
     """
 
+    stuff = "fff"
+
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
 
@@ -198,6 +200,24 @@ class Pipeline:
             return X.values, y.values
         else:
             return df.values
+
+
+@pd.api.extensions.register_series_accessor("pctg")
+class Percentage:
+    def __init__(self, pandas_obj):
+        self._obj = pandas_obj
+
+    @property
+    def zeros(self):
+        return (self._obj == 0).sum() / len(self._obj)
+
+    @property
+    def nans(self):
+        return self._obj.isna().sum() / len(self._obj)
+
+    @property
+    def uniques(self):
+        return self._obj.nunique() / len(self._obj)
 
 
 @pd.api.extensions.register_dataframe_accessor("optimize")
