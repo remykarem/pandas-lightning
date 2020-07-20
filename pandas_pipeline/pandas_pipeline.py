@@ -183,19 +183,21 @@ class Pipeline:
 
         df = df.select_dtypes(exclude=["object"])
 
+        nominal_categories = []
         for col in df:
-            if df[col].dtype.name == "category" and df[col].hasnans:
-                df[col] = df[col].cat.codes + 1
-            elif df[col].dtype.name == "category":
-                df[col] = df[col].cat.codes
+            if df[col].dtype.name == "category":
+                if not df[col].dtype.ordered:
+                    nominal_categories.append(col)
+                df[col] = df[col].cat.codes + int(df[col].hasnans)
             elif df[col].dtype.name == "bool":
                 df[col] = df[col].astype(int)
 
         if target:
             X, y = df.loc[:, df.columns != target], df[target]
-            return X.values, y.values
+            return X.values, y.values, categories
         else:
-            return df.values
+            categories = [df.columns.get_loc(col) for col in nominal_categories]
+            return df.values, categories
 
 
 @pd.api.extensions.register_series_accessor("pctg")
