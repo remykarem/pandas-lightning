@@ -1,3 +1,3 @@
 from .pandas_pipeline import Pipeline
 
-__version__ = "0.0.1rc0"
+__version__ = "0.0.2rc0"
