@@ -42,7 +42,7 @@ class Pipeline:
         df = self._obj.copy()
 
         cols_to_drop = []
-        for col_name in df.columns:
+        for col_name in df:
             for f in functions:
                 if all(df[col_name].apply(f)):
                     cols_to_drop.append(col_name)
@@ -56,7 +56,7 @@ class Pipeline:
         df = self._obj.copy()
 
         cols_to_drop = []
-        for col_name in df.columns:
+        for col_name in df:
             for f in functions:
                 if f(df[col_name]):
                     cols_to_drop.append(col_name)
