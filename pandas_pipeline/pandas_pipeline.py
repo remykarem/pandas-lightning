@@ -175,28 +175,49 @@ class Pipeline:
                 df[col] = df[col].astype(params)
         return df
 
-    def to_numerics(self, target=None, inplace=False):
-        if inplace:
-            df = self._obj
-        else:
-            df = self._obj.copy()
+    def to_numerics(self, target=None, inplace=False,
+                    remove_missing=True):
+        """Convert dataframe to numpy values
 
+        Parameters
+        ----------
+        target : [type], optional
+            [description], by default None
+        inplace : bool, optional
+            [description], by default False
+        remove_missing : bool, optional
+            [description], by default True
+
+        Returns
+        -------
+        [type]
+            [description]
+        """
+        df = self._obj if inplace else self._obj.copy()
         df = df.select_dtypes(exclude=["object"])
+
+        if remove_missing:
+            df = df.dropna(axis=0)
 
         nominal_categories = []
         for col in df:
-            if df[col].dtype.name == "category":
-                if not df[col].dtype.ordered:
+            series = df[col]
+            if series.dtype.name == "category":
+                if not series.dtype.ordered:
                     nominal_categories.append(col)
-                df[col] = df[col].cat.codes + int(df[col].hasnans)
-            elif df[col].dtype.name == "bool":
-                df[col] = df[col].astype(int)
+                series = series.cat.codes + int(series.hasnans)
+            elif series.dtype.name == "bool":
+                series = series.astype(int)
 
         if target:
             X, y = df.loc[:, df.columns != target], df[target]
-            return X.values, y.values, categories
+            X, y = X.values, y.values
+            categories = [X.columns.get_loc(col)
+                          for col in nominal_categories]
+            return X, y, categories
         else:
-            categories = [df.columns.get_loc(col) for col in nominal_categories]
+            categories = [df.columns.get_loc(col)
+                          for col in nominal_categories]
             return df.values, categories
 
 
