@@ -105,10 +105,40 @@ class Pipeline:
 
         return df
 
-    def map_categorical_binning(self, binnings, ordered=False, inplace=False):
+    def map_numerical_binning(self, bins, ordered=True, inplace=False):
+        """
+        Examples
+        --------
+
+        Ranged binning (list)
+        >>> df.pipeline.map_numerical_binning({
+                "age": [0,18,21,25,30,100]
+            })
+
+        Ranged binning (dictionary)
+        >>> GROUPS = {
+                "": 0,
+                "kids": 12,
+                "teens": 24,
+                "adults": 60
+            }
+        >>> df.pipeline.map_numerical_binning({
+                "age": GROUPS
+            })
+
+        Binning with equal size (int)
+        >>> df.pipeline.map_numerical_binning({
+                "age": 4
+            })
+
+        Binning by quantiles (tuple of str and int)
+        >>> df.pipeline.map_numerical_binning({
+                "age": ("quantiles", 4)
+            })
+        """
         df = self._obj if inplace else self._obj.copy()
 
-        for cols, binning in binnings.items():
+        for cols, binning in bins.items():
             if len(cols) == 1 or isinstance(cols, str):
                 col_old, col_new = cols, cols
             elif len(cols) == 2:
@@ -117,6 +147,25 @@ class Pipeline:
                 raise ValueError("Wrong key")
 
             mapping = {v: k for k, values in binning.items()
+                       for v in values}
+
+            df[col_new] = df[col_old].map(mapping).astype(
+                CategoricalDtype(mapping.keys(), ordered=ordered))
+
+        return df
+
+    def map_categorical_binning(self, bins, ordered=False, inplace=False):
+        df = self._obj if inplace else self._obj.copy()
+
+        for cols, bin_ in bins.items():
+            if len(cols) == 1 or isinstance(cols, str):
+                col_old, col_new = cols, cols
+            elif len(cols) == 2:
+                col_old, col_new = cols
+            else:
+                raise ValueError("Wrong key")
+
+            mapping = {v: k for k, values in bin_.items()
                        for v in values}
 
             df[col_new] = df[col_old].map(mapping).astype(
