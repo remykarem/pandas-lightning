@@ -31,7 +31,12 @@ New
 * map_categorical_binning
 
 ```python
-df = df.pipeline.convert_dtypes({
+df["age"] = df["age"].astype(int)
+```
+
+```python
+df = df.pipeline.astype({
+    "age": int
 })
 ```
 
