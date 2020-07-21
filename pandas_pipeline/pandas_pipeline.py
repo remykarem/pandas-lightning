@@ -13,6 +13,7 @@ class Pipeline:
     df.pipeline.transform({
         "Survived": {"astype": "category"}
     })
+
     """
 
     stuff = "fff"
@@ -163,32 +164,37 @@ class Pipeline:
 
         return df
 
-    def convert_dtypes(self, d, inplace=False):
+    def convert_dtypes(self, dtypes, inplace=False):
         df = self._obj if inplace else self._obj.copy()
 
-        for cols, params in d.items():
+        for cols, dtype in dtypes.items():
 
-            if isinstance(cols, str):
-                if cols == "*":
-                    cols = tuple(list(df))
-                else:
-                    cols = tuple([cols])
-
-            if params == "index":
-                df = df.set_index(cols[0])
-                continue
-
-            for col in cols:
-                if isinstance(params, type):
-                    if params.__name__ not in ["int", "float", "bool", "str"]:
-                        raise ValueError("Wrong type")
-                elif isinstance(params, str):
-                    if params not in ["category", "int", "float", "bool", "str"]:
-                        raise ValueError("Wrong type")
-                elif not isinstance(params, CategoricalDtype):
+            # Check the value
+            if isinstance(dtype, type):
+                if dtype.__name__ not in ["int", "float", "bool", "str"]:
                     raise ValueError("Wrong type")
+            elif isinstance(dtype, str):
+                if dtype not in ["datetime", "index", "category", "int", "float", "bool", "str"]:
+                    raise ValueError("Wrong type")
+            elif not isinstance(dtype, CategoricalDtype):
+                raise ValueError("Wrong type")
 
-                df[col] = df[col].astype(params)
+            # Check the key
+            if isinstance(cols, str) or len(cols) == 1:
+                col_old, col_new = cols, cols
+            elif len(cols) == 2:
+                col_old, col_new = cols
+            else:
+                raise ValueError("Wrong key")
+
+            # Set
+            if dtype == "index":
+                df = df.set_index(col_old)
+            elif dtype == "datetime":
+                df[col_new] = pd.to_datetime(df[col_old])
+            else:
+                df[col_new] = df[col_old].astype(dtype)
+
         return df
 
     def to_numerics(self, target=None, inplace=False,
@@ -234,6 +240,8 @@ class Pipeline:
             categories = [df.columns.get_loc(col)
                           for col in nominal_categories]
             return df.values, categories
+
+
 
 
 @pd.api.extensions.register_series_accessor("pctg")
