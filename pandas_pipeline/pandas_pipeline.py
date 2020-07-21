@@ -66,7 +66,7 @@ class Pipeline:
 
         return df
 
-    def compose(self, *functions):
+    def dapply(self, *functions):
         """Functions must return something
 
         Returns
@@ -103,17 +103,39 @@ class Pipeline:
 
         return df
 
-    def map(self, d, inplace=False):
-        pass
+    def map_categorical_binning(self, binnings, inplace=False):
+        df = self._obj if inplace else self._obj.copy()
+
+        for cols, binning in binnings.items():
+            if len(cols) == 1 or isinstance(cols, str):
+                col_old, col_new = cols, cols
+            elif len(cols) == 2:
+                col_old, col_new = cols
+            else:
+                raise ValueError("Wrong key")
+
+            mapping = {v: k for k, values in binning.items()
+                       for v in values}
+            df[col_new] = df[col_old].map(mapping)
+
+        return df
+
+    def map(self, mappings, inplace=False):
+        df = self._obj if inplace else self._obj.copy()
+
+        for cols, mapping in mappings.items():
+            if len(cols) == 1 or isinstance(cols, str):
+                col_old, col_new = cols, cols
+            elif len(cols) == 2:
+                col_old, col_new = cols
+            else:
+                raise ValueError("Wrong key")
+            df[col_new] = df[col_old].map(mapping)
+
+        return df if inplace else None
 
     def apply(self, d, inplace=False):
-
-        if not isinstance(d, dict):
-            raise ValueError("Must be dict")
-        if inplace:
-            df = self._obj
-        else:
-            df = self._obj.copy()
+        df = self._obj if inplace else self._obj.copy()
 
         for cols, function in d.items():
             if len(cols) == 1 or isinstance(cols, str):
@@ -127,10 +149,7 @@ class Pipeline:
         return df
 
     def fillna(self, d, inplace=False):
-        if inplace:
-            df = self._obj
-        else:
-            df = self._obj.copy()
+        df = self._obj if inplace else self._obj.copy()
 
         for cols, fill_value in d.items():
             if len(cols) == 1 or isinstance(cols, str):
@@ -145,10 +164,7 @@ class Pipeline:
         return df
 
     def convert_dtypes(self, d, inplace=False):
-        if inplace:
-            df = self._obj
-        else:
-            df = self._obj.copy()
+        df = self._obj if inplace else self._obj.copy()
 
         for cols, params in d.items():
 
@@ -201,13 +217,12 @@ class Pipeline:
 
         nominal_categories = []
         for col in df:
-            series = df[col]
-            if series.dtype.name == "category":
-                if not series.dtype.ordered:
+            if df[col].dtype.name == "category":
+                if not df[col].dtype.ordered:
                     nominal_categories.append(col)
-                series = series.cat.codes + int(series.hasnans)
-            elif series.dtype.name == "bool":
-                series = series.astype(int)
+                df[col] = df[col].cat.codes + int(df[col].hasnans)
+            elif df[col].dtype.name == "bool":
+                df[col] = df[col].astype(int)
 
         if target:
             X, y = df.loc[:, df.columns != target], df[target]
