@@ -16,17 +16,29 @@ import pandas_pipeline
 
 such that the `.pipeline` will be available to your DataFrame objects. 
 
-* convert_dtypes: convert the types of multiple columns
-* apply: perform apply on multiple series objects
-* sapply: perform vectorised operations on multiple series
-* map: perform map on multiple columns
+Familiar API
 
-* ordinal encoding
-* membership binning
-* drop duplicate columns
+* as_type: convert the types of multiple columns
+* apply: perform apply on multiple series objects
+* map: perform map on multiple columns
+* fillna
+
+New
+
+* sapply: perform vectorised operations on multiple series
+* dapply
+* drop_duplicate_columns
+* drop_columns_with_rules
+* map_categorical_binning
+* map_numerical_binning
 
 ```python
-df = df.pipeline.convert_dtypes({
+df["age"] = df["age"].astype(int)
+```
+
+```python
+df = df.pipeline.astype({
+    "age": int
 })
 ```
 
