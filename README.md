@@ -21,6 +21,7 @@ Familiar API
 * as_type: convert the types of multiple columns
 * apply: perform apply on multiple series objects
 * map: perform map on multiple columns
+* fillna
 
 New
 
@@ -29,6 +30,7 @@ New
 * drop_duplicate_columns
 * drop_columns_with_rules
 * map_categorical_binning
+* map_numerical_binning
 
 ```python
 df["age"] = df["age"].astype(int)
