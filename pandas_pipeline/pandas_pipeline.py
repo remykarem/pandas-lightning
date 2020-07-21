@@ -1,3 +1,4 @@
+import inspect
 import math
 from functools import reduce
 from itertools import combinations
@@ -16,7 +17,7 @@ class Pipeline:
 
     """
 
-    stuff = "fff"
+    _pipeline = []
 
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
@@ -104,7 +105,7 @@ class Pipeline:
 
         return df
 
-    def map_categorical_binning(self, binnings, inplace=False):
+    def map_categorical_binning(self, binnings, ordered=False, inplace=False):
         df = self._obj if inplace else self._obj.copy()
 
         for cols, binning in binnings.items():
@@ -117,7 +118,9 @@ class Pipeline:
 
             mapping = {v: k for k, values in binning.items()
                        for v in values}
-            df[col_new] = df[col_old].map(mapping)
+
+            df[col_new] = df[col_old].map(mapping).astype(
+                CategoricalDtype(mapping.keys(), ordered=ordered))
 
         return df
 
@@ -164,7 +167,7 @@ class Pipeline:
 
         return df
 
-    def convert_dtypes(self, dtypes, inplace=False):
+    def as_type(self, dtypes, inplace=False):
         df = self._obj if inplace else self._obj.copy()
 
         for cols, dtype in dtypes.items():
@@ -242,6 +245,32 @@ class Pipeline:
             return df.values, categories
 
 
+@pd.api.extensions.register_series_accessor("scaler")
+class Scaler:
+    """Uses sklearn vocabulary
+    """
+
+    def __init__(self, pandas_obj):
+        self._obj = pandas_obj
+
+    def standardize(self, ddof=1):
+        return (self._obj - self._obj.mean()) / self._obj.std(ddof=ddof)
+
+    def minmax(self, feature_range=(0, 1)):
+        feature_min, feature_max = feature_range
+
+        max_val = max(self._obj)
+        min_val = min(self._obj)
+
+        std = (self._obj - min_val) / (max_val - min_val)
+        scaled = std * (feature_max - feature_min) + feature_min
+
+        return scaled
+
+    def normalize(self):
+        """Scale features to have a unit norm
+        """
+        raise NotImplementedError
 
 
 @pd.api.extensions.register_series_accessor("pctg")
@@ -275,6 +304,12 @@ class Optimize:
         self._obj = pandas_obj
         self.history = None
         self._params = {}
+
+    def profile(self):
+        df = self._obj
+        for col in df:
+            print(col, df[col].pctg.nans,
+                  df[col].pctg.zeros, df[col].pctg.uniques)
 
     def drop_with_rules(self, *functions):
         pass
