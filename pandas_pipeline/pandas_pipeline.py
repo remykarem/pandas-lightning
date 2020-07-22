@@ -2,6 +2,7 @@ import inspect
 import math
 from functools import reduce
 from itertools import combinations
+import numpy as np
 
 import pandas as pd
 import colorful as cf
@@ -216,7 +217,7 @@ class Pipeline:
 
         return df
 
-    def as_type(self, dtypes, inplace=False):
+    def astype(self, dtypes, inplace=False):
         df = self._obj if inplace else self._obj.copy()
 
         for cols, dtype in dtypes.items():
@@ -320,6 +321,12 @@ class Scaler:
         """Scale features to have a unit norm
         """
         raise NotImplementedError
+
+    def log1p(self):
+        return np.log1p(self._obj)
+
+    def expm1(self):
+        return np.expm1(self._obj)
 
 
 @pd.api.extensions.register_series_accessor("pctg")
