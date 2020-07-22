@@ -32,13 +32,21 @@ New
 * map_categorical_binning
 * map_numerical_binning
 
+## `.pipeline.astype`
+
+Instead of
+
 ```python
 df["age"] = df["age"].astype(int)
+df["weight_new"] = df["weight"].astype("category")
 ```
+
+do
 
 ```python
 df = df.pipeline.astype({
-    "age": int
+    "age": int,
+    ("weight_new", "weight"): "category"
 })
 ```
 
