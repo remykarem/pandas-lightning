@@ -38,6 +38,7 @@ Instead of
 
 ```python
 df["age"] = df["age"].astype(int)
+df["shoe_size"] = df["shoe_size"].astype(str)
 df["weight_new"] = df["weight"].astype("category")
 ```
 
@@ -46,7 +47,8 @@ do
 ```python
 df = df.pipeline.astype({
     "age": int,
-    ("weight_new", "weight"): "category"
+    "shoe_size": str,
+    ("weight_new", "weight"): "category"  # tuple of (new_column_name, old_column_name)
 })
 ```
 
