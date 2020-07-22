@@ -48,7 +48,7 @@ do
 df = df.pipeline.astype({
     "age": int,
     "shoe_size": str,
-    ("weight_new", "weight"): "category"  # tuple of (new_column_name, old_column_name)
+    ("weight_new", "weight"): "category"
 })
 ```
 
@@ -73,6 +73,7 @@ df = df.pipeline.apply({
 Instead of
 
 ```python
+df["Height"] = df["Height"] + 100
 df["Cabin"] = df["Cabin"].str[0]
 df["HasLetters"] = df["Ticket"].str.startswith("a")
 df["HasCabinCode"] = ~df["CabinType"].isna()
@@ -81,9 +82,27 @@ do
 
 ```python
 df = df.pipeline.sapply({
+    "Height": lambda s: s+100,
     "Cabin": lambda s: s.str[0],
     ("HasLetters", "Ticket"): lambda s: s.str.startswith("a"),
     ("HasCabinCode", "CabinType"): lambda s: ~s.isna()
+})
+```
+
+## `.pipeline.dapply`
+
+Instead of
+
+```python
+df = df.drop(columns=["col_a", "col_b", "col_c"])
+df = df.replace("?", np.nan)
+```
+do
+
+```python
+df = df.pipeline.dapply({
+    lambda df: df.drop(columns=["col_a", "col_b", "col_c"]),
+    lambda df: df.replace("?", np.nan),
 })
 ```
 
