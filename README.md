@@ -14,23 +14,23 @@ Firstl, import
 import pandas_pipeline
 ```
 
-such that the `.pipeline` will be available to your DataFrame objects. 
+such that the `.pipeline` will be available to your DataFrame objects.
 
 Familiar API
 
-* as_type: convert the types of multiple columns
-* apply: perform apply on multiple series objects
-* map: perform map on multiple columns
-* fillna
+* `astype`: convert the types of multiple columns
+* `apply`: perform apply on multiple series objects
+* `map`: perform map on multiple columns
+* `fillna`
 
 New
 
-* sapply: perform vectorised operations on multiple series
-* dapply
-* drop_duplicate_columns
-* drop_columns_with_rules
-* map_categorical_binning
-* map_numerical_binning
+* `sapply`: perform vectorised operations on multiple series
+* `dapply`
+* `drop_duplicate_columns`
+* `drop_columns_with_rules`
+* `map_categorical_binning`
+* `map_numerical_binning`
 
 ## `.pipeline.astype`
 
@@ -73,15 +73,17 @@ df = df.pipeline.apply({
 Instead of
 
 ```python
-df["income"] = df["income"] - 10
-df["log_height"] = np.log1p(df["height"])
+df["Cabin"] = df["Cabin"].str[0]
+df["HasLetters"] = df["Ticket"].str.startswith("a")
+df["HasCabinCode"] = ~df["CabinType"].isna()
 ```
 do
 
 ```python
 df = df.pipeline.sapply({
-    "income": lambda s: s-10,
-    ("height", "log_height"): lambda s: np.log1p(s)  # or s.scaler.log1p()
+    "Cabin": lambda s: s.str[0],
+    ("HasLetters", "Ticket"): lambda s: s.str.startswith("a"),
+    ("HasCabinCode", "CabinType"): lambda s: ~s.isna()
 })
 ```
 
@@ -89,6 +91,7 @@ do
 
 ```python
 df = df.pipeline.map({
+
 })
 ```
 
