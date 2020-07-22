@@ -50,15 +50,40 @@ df = df.pipeline.astype({
 })
 ```
 
+## `.pipeline.apply`
+
+Instead of
+
+```python
+df["name"] = df["name"].apply(lambda x: x.lower())
+```
+
+do
+
 ```python
 df = df.pipeline.apply({
+    "name": lambda x: x.lower()
 })
 ```
 
+## `.pipeline.sapply`
+
+Instead of
+
+```python
+df["income"] = df["income"] - 10
+df["log_height"] = np.log1p(df["height"])
+```
+do
+
 ```python
 df = df.pipeline.sapply({
+    "income": lambda s: s-10,
+    ("height", "log_height"): lambda s: np.log1p(s)  # or s.scaler.log1p()
 })
 ```
+
+do
 
 ```python
 df = df.pipeline.map({
