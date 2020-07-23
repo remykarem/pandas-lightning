@@ -10,7 +10,10 @@ Welcome to pandas-addons's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   pandas_addons
+   tutorial
+   dataframe
+   series
+   api
 
 
 
