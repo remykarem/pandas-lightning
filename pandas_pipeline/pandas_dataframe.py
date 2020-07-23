@@ -1,9 +1,6 @@
-import inspect
 import math
-from math import floor, ceil
 from functools import reduce
 from itertools import combinations
-import numpy as np
 
 import pandas as pd
 import colorful as cf
@@ -12,15 +9,6 @@ from pandas import CategoricalDtype
 
 @pd.api.extensions.register_dataframe_accessor("pipeline")
 class Pipeline:
-    """
-    df.pipeline.transform({
-        "Survived": {"astype": "category"}
-    })
-
-    """
-
-    _pipeline = []
-
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
 
@@ -100,11 +88,13 @@ class Pipeline:
             else:
                 raise ValueError("Wrong key")
 
-            if len(cols_old) == 1:
+            if isinstance(cols_old, str):
                 df[col_new] = function(df[cols_old])
-            else:
+            elif isinstance(cols_old, (tuple, list)):
                 series = [getattr(df, col_old) for col_old in cols_old]
                 df[col_new] = function(*series)
+            else:
+                raise ValueError("Wrong type specified")
 
         return df
 
@@ -149,11 +139,13 @@ class Pipeline:
             else:
                 raise ValueError("Wrong key")
 
-            mapping = {v: k for k, values in binning.items()
-                       for v in values}
-
-            df[col_new] = df[col_old].map(mapping).astype(
-                CategoricalDtype(mapping.keys(), ordered=ordered))
+            if isinstance(binning, tuple):
+                _, quantiles = binning
+                df[col_new] = pd.qcut(df[col_old], quantiles)
+            elif isinstance(binning, (list, range, int)):
+                df[col_new] = pd.cut(df[col_old], binning)
+            else:
+                raise NotImplementedError
 
         return df
 
@@ -295,86 +287,6 @@ class Pipeline:
             categories = [df.columns.get_loc(col)
                           for col in nominal_categories]
             return df.values, categories
-
-
-@pd.api.extensions.register_series_accessor("scaler")
-class Scaler:
-    """Uses sklearn vocabulary
-    """
-
-    def __init__(self, pandas_obj):
-        self._obj = pandas_obj
-
-    def standardize(self, ddof=1):
-        return (self._obj - self._obj.mean()) / self._obj.std(ddof=ddof)
-
-    def minmax(self, feature_range=(0, 1)):
-        feature_min, feature_max = feature_range
-
-        max_val = max(self._obj)
-        min_val = min(self._obj)
-
-        std = (self._obj - min_val) / (max_val - min_val)
-        scaled = std * (feature_max - feature_min) + feature_min
-
-        return scaled
-
-    def normalize(self):
-        """Scale features to have a unit norm
-        """
-        raise NotImplementedError
-
-    def log1p(self):
-        return np.log1p(self._obj)
-
-    def expm1(self):
-        return np.expm1(self._obj)
-
-
-@pd.api.extensions.register_series_accessor("ascii")
-class Ascii:
-    def __init__(self, pandas_obj):
-        self._obj = pandas_obj
-
-    def hist(self, size=10, hashes=30):
-
-        sort = True
-
-        if self._obj.dtype.name.startswith("float"):
-            min_val = (floor(min(self._obj)/10))*10
-            max_val = (ceil(max(self._obj)/10))*10
-            sr = pd.cut(self._obj, range(min_val, max_val, size))
-            sort = False
-        elif self._obj.dtype.name.startswith("int"):
-            sort = False
-            sr = self._obj
-        else:
-            sr = self._obj
-
-        freqs = sr.value_counts(sort=sort)
-        max_val = max(freqs)
-        sr = freqs/max_val * hashes
-
-        for value, count in sr.to_dict().items():
-            print(f"{str(value):>10}", int(count)*"#")
-
-
-@pd.api.extensions.register_series_accessor("pctg")
-class Percentage:
-    def __init__(self, pandas_obj):
-        self._obj = pandas_obj
-
-    @property
-    def zeros(self):
-        return (self._obj == 0).sum() / len(self._obj)
-
-    @property
-    def nans(self):
-        return self._obj.isna().sum() / len(self._obj)
-
-    @property
-    def uniques(self):
-        return self._obj.nunique() / len(self._obj)
 
 
 @pd.api.extensions.register_dataframe_accessor("optimize")
