@@ -89,32 +89,49 @@ df = df.pipeline.sapply({
 })
 ```
 
-## `.pipeline.dapply`
+## `.pipeline.map_numerical_binning`
 
 Instead of
 
 ```python
-df = df.drop(columns=["col_a", "col_b", "col_c"])
-df = df.replace("?", np.nan)
-```
-do
-
-```python
-df = df.pipeline.dapply({
-    lambda df: df.drop(columns=["col_a", "col_b", "col_c"]),
-    lambda df: df.replace("?", np.nan),
-})
+df["Age"] = pd.cut(df["Age"], [0, 12, 24, 60])
+df["SibSp"] = pd.cut(df["SibSp"], 4)
 ```
 
 do
 
 ```python
-df = df.pipeline.map({
-
+df = df.map_numerical_binning({
+    "Age": [0, 12, 24, 60],
+    "SibSp": 4
 })
-```
+
+## `.pipeline.map_categorical_binning`
+
+Instead of
 
 ```python
-df = df.pipeline.fillna({
+WORKING_CLASS = {
+    'Never-worked': 'No income',
+    'Without-pay': 'No income',
+    'Self-emp-not-inc': 'No income',
+    'Private': 'Private',
+    'Local-gov': 'Govt',
+    'State-gov': 'Govt',
+    'Federal-gov': 'Govt'
+}
+df["workclass"] = df["workclass"].map(WORKING_CLASS).astype("category")
+```
+
+do
+
+```python
+WORKING_CLASS = {
+    "No income": ['Never-worked', 'Without-pay', 'Self-emp-not-inc'],
+    "Private": ["Private"],
+    "Govt": ['Local-gov', 'State-gov', 'Federal-gov']
+}
+df = df.pipeline.map_categorical_binning(ordered=True, binnings={
+    "workclass": WORKING_CLASS
 })
 ```
