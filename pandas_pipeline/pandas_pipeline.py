@@ -97,9 +97,9 @@ class Pipeline:
 
         for cols, function in d.items():
             if len(cols) == 1 or isinstance(cols, str):
-                col_old, col_new = cols, cols
+                col_new, col_old = cols, cols
             elif len(cols) == 2:
-                col_old, col_new = cols
+                col_new, col_old = cols
             else:
                 raise ValueError("Wrong key")
             df[col_new] = function(df[col_old])
@@ -141,9 +141,9 @@ class Pipeline:
 
         for cols, binning in bins.items():
             if len(cols) == 1 or isinstance(cols, str):
-                col_old, col_new = cols, cols
+                col_new, col_old = cols, cols
             elif len(cols) == 2:
-                col_old, col_new = cols
+                col_new, col_old = cols
             else:
                 raise ValueError("Wrong key")
 
@@ -160,9 +160,9 @@ class Pipeline:
 
         for cols, bin_ in bins.items():
             if len(cols) == 1 or isinstance(cols, str):
-                col_old, col_new = cols, cols
+                col_new, col_old = cols, cols
             elif len(cols) == 2:
-                col_old, col_new = cols
+                col_new, col_old = cols
             else:
                 raise ValueError("Wrong key")
 
@@ -179,9 +179,9 @@ class Pipeline:
 
         for cols, mapping in mappings.items():
             if len(cols) == 1 or isinstance(cols, str):
-                col_old, col_new = cols, cols
+                col_new, col_old = cols, cols
             elif len(cols) == 2:
-                col_old, col_new = cols
+                col_new, col_old = cols
             else:
                 raise ValueError("Wrong key")
             df[col_new] = df[col_old].map(mapping)
@@ -193,9 +193,9 @@ class Pipeline:
 
         for cols, function in d.items():
             if len(cols) == 1 or isinstance(cols, str):
-                col_old, col_new = cols, cols
+                col_new, col_old = cols, cols
             elif len(cols) == 2:
-                col_old, col_new = cols
+                col_new, col_old = cols
             else:
                 raise ValueError("Wrong key")
             df[col_new] = df[col_old].apply(function)
@@ -207,9 +207,9 @@ class Pipeline:
 
         for cols, fill_value in d.items():
             if len(cols) == 1 or isinstance(cols, str):
-                col_old, col_new = cols, cols
+                col_new, col_old = cols, cols
             elif len(cols) == 2:
-                col_old, col_new = cols
+                col_new, col_old = cols
             else:
                 raise ValueError("Wrong key")
 
@@ -234,9 +234,9 @@ class Pipeline:
 
             # Check the key
             if isinstance(cols, str) or len(cols) == 1:
-                col_old, col_new = cols, cols
+                col_new, col_old = cols, cols
             elif len(cols) == 2:
-                col_old, col_new = cols
+                col_new, col_old = cols
             else:
                 raise ValueError("Wrong key")
 

@@ -13,8 +13,8 @@ df = df.pipeline.astype({
     "Embarked": "category"
 })
 df = df.pipeline.sapply({
-    ("Cabin", "CabinType"): lambda s: s.str[0],
-    ("Ticket", "HasLetters"):
+    ("CabinType", "Cabin"): lambda s: s.str[0],
+    ("HasLetters", "Ticket"):
     lambda s: s.str.startswith(tuple(string.ascii_letters)),
-    ("CabinType", "HasCabinCode"): lambda s: ~s.isna()
+    ("HasCabinCode", "CabinType"): lambda s: ~s.isna()
 })
