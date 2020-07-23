@@ -150,6 +150,16 @@ class Pipeline:
         return df
 
     def map_categorical_binning(self, bins, ordered=False, inplace=False):
+        """Categorical binning
+
+        Args:
+            bins (dict): mappings
+            ordered (bool, optional): [description]. Defaults to False.
+            inplace (bool, optional): [description]. Defaults to False.
+
+        Returns:
+            pandas.Series: dfvdsv
+        """
         df = self._obj if inplace else self._obj.copy()
 
         for cols, bin_ in bins.items():
