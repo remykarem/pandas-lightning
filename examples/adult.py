@@ -28,13 +28,13 @@ EDUCATION = [
 ]
 
 df = pd.read_csv("/Users/raimibinkarim/Downloads/adult.csv")
-df.optimize.convert_categories()
-df.rename(columns={col: col.replace(".", "_") for col in df})
+df = df.optimize.convert_categories()
+df = df.rename(columns={col: col.replace(".", "_") for col in df})
 df = df.replace("?", np.nan)
 df = df.pipeline.map_categorical_binning(ordered=True, binnings={
     "workclass": WORKING_CLASS
 })
-df = df.pipeline.as_type({
+df = df.pipeline.astype({
     "education_num": "category"
 })
 df = df.pipeline.sapply({
