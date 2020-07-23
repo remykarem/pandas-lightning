@@ -2,3 +2,4 @@
 .vscode
 .ipnyb_checkpoints
 __pycache__
+docs/build
