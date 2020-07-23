@@ -1,5 +1,6 @@
 import inspect
 import math
+from math import floor, ceil
 from functools import reduce
 from itertools import combinations
 import numpy as np
@@ -83,10 +84,6 @@ class Pipeline:
                            lambda x: x)
         return run_steps(df)
 
-    @property
-    def xinfo(self):
-        return self._obj.info()
-
     def sapply(self, d, inplace=False):
         if not isinstance(d, dict):
             raise ValueError("Must be dict")
@@ -97,12 +94,17 @@ class Pipeline:
 
         for cols, function in d.items():
             if len(cols) == 1 or isinstance(cols, str):
-                col_new, col_old = cols, cols
+                col_new, cols_old = cols, cols
             elif len(cols) == 2:
-                col_new, col_old = cols
+                col_new, cols_old = cols
             else:
                 raise ValueError("Wrong key")
-            df[col_new] = function(df[col_old])
+
+            if len(cols_old) == 1:
+                df[col_new] = function(df[cols_old])
+            else:
+                series = [getattr(df, col_old) for col_old in cols_old]
+                df[col_new] = function(*series)
 
         return df
 
@@ -111,7 +113,7 @@ class Pipeline:
         Examples
         --------
 
-        Ranged binning (list)
+        Ranged binning (list or range)
         >>> df.pipeline.map_numerical_binning({
                 "age": [0,18,21,25,30,100]
             })
