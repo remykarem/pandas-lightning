@@ -331,6 +331,34 @@ class Scaler:
         return np.expm1(self._obj)
 
 
+@pd.api.extensions.register_series_accessor("ascii")
+class Ascii:
+    def __init__(self, pandas_obj):
+        self._obj = pandas_obj
+
+    def hist(self, size=10, hashes=30):
+
+        sort = True
+
+        if self._obj.dtype.name.startswith("float"):
+            min_val = (floor(min(self._obj)/10))*10
+            max_val = (ceil(max(self._obj)/10))*10
+            sr = pd.cut(self._obj, range(min_val, max_val, size))
+            sort = False
+        elif self._obj.dtype.name.startswith("int"):
+            sort = False
+            sr = self._obj
+        else:
+            sr = self._obj
+
+        freqs = sr.value_counts(sort=sort)
+        max_val = max(freqs)
+        sr = freqs/max_val * hashes
+
+        for value, count in sr.to_dict().items():
+            print(f"{str(value):>10}", int(count)*"#")
+
+
 @pd.api.extensions.register_series_accessor("pctg")
 class Percentage:
     def __init__(self, pandas_obj):
