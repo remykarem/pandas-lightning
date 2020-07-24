@@ -3,7 +3,6 @@ from functools import reduce
 from itertools import combinations
 
 import pandas as pd
-import colorful as cf
 from pandas import CategoricalDtype
 
 
@@ -336,7 +335,7 @@ class Optimize:
 
             if num_uniques == 1:
                 # Drop this column!
-                print(cf.red(f"{col} has only 1 value."))
+                print(f"{col} has only 1 value.")
             elif num_uniques <= max_cardinality:
                 df[col] = df[col].astype("category")
 
@@ -357,11 +356,10 @@ class Optimize:
             befores += before
 
             if num_uniques == 1:
-                print(
-                    cf.red(f"{col} has only 1 value. Drop to save {before}."))
+                print(f"{col} has only 1 value. Drop to save {before}.")
             elif num_uniques == 2:
                 if self._obj[col].dtype.name in ["category", "bool"]:
-                    print(cf.green(f"{col} looks good"))
+                    print(f"{col} looks good")
                     continue
                 after = self._obj[col].astype(
                     "category").memory_usage(index=False)
@@ -370,12 +368,12 @@ class Optimize:
 
                 # if containts yes-no or true-false or t-f or 1-0
 
-                print(cf.red(f"{col} can be optimised. "
+                print(f"{col} can be optimised. "
                              "Consider bool or cat. "
-                             f"Consider category. Save {savings:.0f}%"))
+                             f"Consider category. Save {savings:.0f}%")
             elif num_uniques == 3:
                 if self._obj[col].dtype.name in ["category", "bool"]:
-                    print(cf.green(f"{col} looks good"))
+                    print(f"{col} looks good")
                     continue
                 after = self._obj[col].astype(
                     "category").memory_usage(index=False)
@@ -385,24 +383,24 @@ class Optimize:
             elif num_uniques <= max_cardinality:
                 # print(self._obj[col].memory_usage(index=False))
                 if self._obj[col].dtype == "object":
-                    print(cf.red(f"{col} can be optimised. "
+                    print(f"{col} can be optimised. "
                                  f"{num_uniques} uniques found. "
-                                 f"Consider category."))
+                                 f"Consider category.")
                 elif self._obj[col].dtype.name.startswith("int"):
                     after = self._obj[col].astype(
                         "category").memory_usage(index=False)
                     afters += after
                     savings = (before-after)/before * 100
-                    print(cf.red(f"{col} can be optimised. "
+                    print(f"{col} can be optimised. "
                                  f"{num_uniques} uniques found. "
-                                 f"Consider category. Save {savings:.0f}%"))
+                                 f"Consider category. Save {savings:.0f}%")
                 elif self._obj[col].dtype.name in ["category", "bool"]:
-                    print(cf.green(f"{col} looks good"))
+                    print(f"{col} looks good")
                     continue
                 else:
                     print(f"{col} not evaluated")
             else:
-                print(cf.green(f"{col} looks good"))
+                print(f"{col} looks good")
 
         # print(f"Before: {befores/1e6:.1f}MB")
         # print(f"Total savings: {(befores-afters)/1e6:.1f}MB")
