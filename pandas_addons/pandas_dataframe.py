@@ -6,8 +6,8 @@ import pandas as pd
 from pandas import CategoricalDtype
 
 
-@pd.api.extensions.register_dataframe_accessor("pipeline")
-class Pipeline:
+@pd.api.extensions.register_dataframe_accessor("lambdas")
+class lambdas:
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
 
@@ -71,15 +71,38 @@ class Pipeline:
                            lambda x: x)
         return run_steps(df)
 
-    def sapply(self, d, inplace=False):
-        if not isinstance(d, dict):
+    def sapply(self, lambdas: dict, inplace: bool = False):
+        """Perform multiple lambda operations on series
+
+        Parameters
+        ----------
+        lambdas : dict
+            A dictionary of column name to lambda mapping
+        inplace : bool, optional
+            Whether to modify the series inplace, by default False
+
+        Returns
+        -------
+        pandas.DataFrame
+            vfvfv
+
+        Raises
+        ------
+        ValueError
+            If lambdas is not a dict
+        ValueError
+            [description]
+        ValueError
+            [description]
+        """
+        if not isinstance(lambdas, dict):
             raise ValueError("Must be dict")
         if inplace:
             df = self._obj
         else:
             df = self._obj.copy()
 
-        for cols, function in d.items():
+        for cols, function in lambdas.items():
             if len(cols) == 1 or isinstance(cols, str):
                 col_new, cols_old = cols, cols
             elif len(cols) == 2:
@@ -195,10 +218,29 @@ class Pipeline:
 
         return df if inplace else None
 
-    def apply(self, d, inplace=False):
+    def apply(self, lambdas: dict, inplace: bool = False):
+        """Specify what functions to apply to every element
+        in specified columns
+
+        Parameters
+        ----------
+        lambdas : dict
+            Mapping of column name to function
+        inplace : bool, optional
+            Whether to modify the series inplace, by default False
+
+        Notes
+        -----
+        The underlying API is the :code:`pandas.Series.apply`.
+
+        Returns
+        -------
+        pandas.DataFrame
+            A dataframe whose columns have been converted accordingly
+        """
         df = self._obj if inplace else self._obj.copy()
 
-        for cols, function in d.items():
+        for cols, function in lambdas.items():
             if len(cols) == 1 or isinstance(cols, str):
                 col_new, col_old = cols, cols
             elif len(cols) == 2:
@@ -224,8 +266,68 @@ class Pipeline:
 
         return df
 
-    def astype(self, dtypes, inplace=False):
-        df = self._obj if inplace else self._obj.copy()
+    def astype(self, dtypes: dict):
+        """Convert dtypes of multiple columns using a dictionary
+
+        Parameters
+        ----------
+        dtypes : dict
+            Column name to data type mapping
+
+        Notes
+        -----
+        The underlying API is :code:`pandas.Series.astype`.
+
+        Example
+        -------
+        Suppose we have a dataframe
+
+        >>> import pandas as pd
+        >>> from pandas import CategoricalDtype
+        >>> import pandas_addons
+        >>> df = pd.DataFrame({"X": list("ABACBB"),
+        ...                    "Y": list("121092"),
+        ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
+        ... })
+        >>> df
+           X  Y     Z
+        0  A  1   hot
+        1  B  2  warm
+        2  A  1   hot
+        3  C  0  cold
+        4  B  9  cold
+        5  B  2   hot
+
+        You can perform the following
+
+        >>> df["X"] = df["X"].astype("category")
+        >>> df["Y"] = df["Y"].astype(int)
+        >>> df["Z"] = df["Z"].astype(CategoricalDtype(
+        ...                 ["cold", "warm", "hot"], ordered=True))
+
+        with
+
+        >>> df = df.lambdas.astype({
+        ...     "X": "category",
+        ...     "Y": int,
+        ...     "Z": ["cold", "warm", "hot"]  # this will be ordinal
+        ... })
+
+        which is the same as
+
+        >>> df = df.lambdas.astype({
+        ...     "X": "category",
+        ...     "Y": int,
+        ...     "Z": CategoricalDtype(["cold", "warm", "hot"], ordered=True)
+        ... })
+
+        Returns
+        -------
+        pandas.DataFrame
+            A dataframe whose columns have been converted accordingly
+        """
+
+        df = self._obj
 
         for cols, dtype in dtypes.items():
 
@@ -236,6 +338,8 @@ class Pipeline:
             elif isinstance(dtype, str):
                 if dtype not in ["datetime", "index", "category", "int", "float", "bool", "str"]:
                     raise ValueError("Wrong type")
+            elif isinstance(dtype, list):
+                dtype = CategoricalDtype(dtype, ordered=True)
             elif not isinstance(dtype, CategoricalDtype):
                 raise ValueError("Wrong type")
 
@@ -303,28 +407,29 @@ class Pipeline:
 
 
 @pd.api.extensions.register_dataframe_accessor("optimize")
-class Optimize:
-    """
-    df.pipeline.transform({
-        "Survived": {"astype": "category"}
-    })
-    """
-
+class optimize:
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
         self.history = None
         self._params = {}
 
-    def profile(self):
-        df = self._obj
-        for col in df:
-            print(col, df[col].pctg.nans,
-                  df[col].pctg.zeros, df[col].pctg.uniques)
+    def convert_categories(self, max_cardinality: int = 20,
+                           inplace: bool = False):
+        """Convert columns to category whenever possible
 
-    def drop_with_rules(self, *functions):
-        pass
+        Parameters
+        ----------
+        max_cardinality : int, optional
+            The maximum no. of uniques before a column can be converted
+            to a category type, by default 20
+        inplace : bool, optional
+            [description], by default False
 
-    def convert_categories(self, max_cardinality=20, inplace=False):
+        Returns
+        -------
+        pandas.DataFrame
+            A transformed dataframe
+        """
         if inplace:
             df = self._obj
         else:
@@ -347,7 +452,7 @@ class Optimize:
         else:
             return df
 
-    def __call__(self, dry_run=True, max_cardinality=20):
+    def profile(self, dry_run=True, max_cardinality=20):
 
         befores = 0
         afters = 0
