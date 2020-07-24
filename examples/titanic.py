@@ -6,17 +6,17 @@ import pandas_pipeline
 
 df = pd.read_csv(
     "/Users/raimibinkarim/Library/Mobile Documents/com~apple~CloudDocs/Datasets Tabular/titanic.csv")
-df = df.pipeline.astype({
+df = df.lambdas.astype({
     "PassengerId": "index",
-    "Pclass": CategoricalDtype([3, 2, 1], ordered=True),
+    "Pclass": [3, 2, 1],
     "Sex": "category",
     "Embarked": "category"
 })
-df = df.pipeline.map_numerical_binning({
+df = df.lambdas.map_numerical_binning({
     "Age": range(0, 100, 10),
     "Fare": ("quartile", 4)
 }, ordered=True)
-df = df.pipeline.sapply({
+df = df.lambdas.sapply({
     ("HasDep", ("SibSp", "Parch")): lambda s, t: (s+t) > 0,
     ("HasLetters", "Ticket"):
     lambda s: s.str.startswith(tuple(string.ascii_letters)),
