@@ -6,42 +6,74 @@
 Series
 ======
 
+
+
 Series.scaler
 -------------
 
-.. automodule:: pandas_addons.pandas_series.Scaler
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Series.scaler.minmax
+********************
+
+.. automethod:: pandas_addons.pandas_series.scaler.minmax
+
+Series.scaler.standardize
+*************************
+
+.. automethod:: pandas_addons.pandas_series.scaler.standardize
+
+Series.scaler.log1p
+*******************
+
+.. automethod:: pandas_addons.pandas_series.scaler.log1p
+
+Series.scaler.expm1
+*******************
+
+.. automethod:: pandas_addons.pandas_series.scaler.expm1
+
+
 
 Series.pctg
 -----------
 
-.. automodule:: pandas_addons.pandas_series.Percentage
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Provides convenience functions for common calculations of
+missing values.
 
-pandas\_addons.pandas\_series module
-------------------------------------
+Series.pctg.zeros
+*****************
 
-.. automodule:: pandas_addons.pandas_series
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. automethod:: pandas_addons.pandas_series.pctg.zeros
 
-pandas\_addons.pandas\_series module
-------------------------------------
+Series.pctg.nans
+****************
 
-.. automodule:: pandas_addons.pandas_series
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. automethod:: pandas_addons.pandas_series.pctg.nans
 
-pandas\_addons.pandas\_series module
-------------------------------------
+Series.pctg.uniques
+*******************
 
-.. automodule:: pandas_addons.pandas_series
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. automethod:: pandas_addons.pandas_series.pctg.uniques
+
+
+
+Series.ascii
+------------
+
+Series.ascii.hist
+*****************
+
+.. automethod:: pandas_addons.pandas_series.ascii.hist
+
+
+
+Series.map_numerical_binning
+----------------------------
+
+.. automethod:: pandas_addons.pandas_series.map_numerical_binning.__call__
+
+
+
+Series.map_categorical_binning
+------------------------------
+
+.. automethod:: pandas_addons.pandas_series.map_categorical_binning.__call__
