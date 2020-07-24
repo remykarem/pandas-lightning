@@ -1,3 +1,4 @@
 pandas
 sphinx
 sphinx-rtd-theme
+colorful
