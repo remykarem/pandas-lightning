@@ -82,10 +82,10 @@ class Ascii:
         sr = freqs/max_val * hashes
 
         for label, count in sr.to_dict().items():
+            label = str(label)
             if len(label) > num_characters:
-                label = str(label)[:(num_characters-3)] + "..."
+                label = label[:(num_characters-3)] + "..."
             else:
-                label = str(label)
                 str_format = ">" + str(num_characters)
                 label = format(label, str_format)
             print(label, int(count)*"#")
