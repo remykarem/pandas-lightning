@@ -4,12 +4,19 @@ from typing import OrderedDict, Union
 import pandas as pd
 import numpy as np
 from pandas import CategoricalDtype
+from pandas.api.types import is_numeric_dtype
+from pandas.errors import EmptyDataError
 
 
 @pd.api.extensions.register_series_accessor("pctg")
 class pctg:
     def __init__(self, pandas_obj):
+        self._validate_obj(pandas_obj)
         self._obj = pandas_obj
+
+    def _validate_obj(self, _obj):
+        if len(_obj) == 0:
+            raise EmptyDataError("Series is empty")
 
     @property
     def zeros(self):
@@ -81,7 +88,14 @@ class pctg:
 @pd.api.extensions.register_series_accessor("scaler")
 class scaler:
     def __init__(self, pandas_obj):
+        self._validate_obj(pandas_obj)
         self._obj = pandas_obj
+
+    def _validate_obj(self, _obj):
+        if len(_obj) == 0:
+            raise EmptyDataError("Series is empty")
+        elif not is_numeric_dtype(_obj):
+            raise ValueError("Series must be numeric")
 
     def standardize(self, ddof=1):
         """Standardize features by removing the mean and
@@ -210,7 +224,12 @@ class scaler:
 @pd.api.extensions.register_series_accessor("ascii")
 class ascii:
     def __init__(self, pandas_obj):
+        self._validate_obj(pandas_obj)
         self._obj = pandas_obj
+
+    def _validate_obj(self, _obj):
+        if len(_obj) == 0:
+            raise EmptyDataError("Series is empty")
 
     def hist(self,
              size: int = 10,
@@ -280,7 +299,12 @@ class ascii:
 @pd.api.extensions.register_series_accessor("map_numerical_binning")
 class map_numerical_binning:
     def __init__(self, pandas_obj):
+        self._validate_obj(pandas_obj)
         self._obj = pandas_obj
+
+    def _validate_obj(self, _obj):
+        if len(_obj) == 0:
+            raise EmptyDataError("Series is empty")
 
     def __call__(self,
                  binning: Union[list, range, dict, int],
@@ -398,7 +422,12 @@ class map_numerical_binning:
 @pd.api.extensions.register_series_accessor("map_categorical_binning")
 class map_categorical_binning:
     def __init__(self, pandas_obj):
+        self._validate_obj(pandas_obj)
         self._obj = pandas_obj
+
+    def _validate_obj(self, _obj):
+        if len(_obj) == 0:
+            raise EmptyDataError("Series is empty")
 
     def __call__(self, binning: dict, ordered: bool = False):
         """Group categories into another set of categories.
