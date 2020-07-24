@@ -81,14 +81,14 @@ class Ascii:
         max_val = max(freqs)
         sr = freqs/max_val * hashes
 
-        for value, count in sr.to_dict().items():
-            if len(title) > num_characters:
-                title = str(title)[:(num_characters-3)] + "..."
+        for label, count in sr.to_dict().items():
+            if len(label) > num_characters:
+                label = str(label)[:(num_characters-3)] + "..."
             else:
-                title = str(title)
+                label = str(label)
                 str_format = ">" + str(num_characters)
-                title = format(title, str_format)
-            print(title, int(count)*"#")
+                label = format(label, str_format)
+            print(label, int(count)*"#")
 
 
 @pd.api.extensions.register_series_accessor("map_numerical_binning")
