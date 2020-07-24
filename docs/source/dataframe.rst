@@ -33,7 +33,6 @@ drop_duplicate_columns
 drop_columns_with_rules
 ***********************
 
-.. automethod:: pandas_addons.pandas_dataframe.Pipeline.drop_columns_with_rules
 
 
 DataFrame.optimize
