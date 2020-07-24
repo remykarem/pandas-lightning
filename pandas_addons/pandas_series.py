@@ -61,7 +61,7 @@ class Ascii:
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
 
-    def hist(self, size=10, hashes=30):
+    def hist(self, size=10, hashes=30, num_characters=10):
 
         sort = True
 
@@ -82,7 +82,13 @@ class Ascii:
         sr = freqs/max_val * hashes
 
         for value, count in sr.to_dict().items():
-            print(f"{str(value):>10}", int(count)*"#")
+            if len(title) > num_characters:
+                title = str(title)[:(num_characters-3)] + "..."
+            else:
+                title = str(title)
+                str_format = ">" + str(num_characters)
+                title = format(title, str_format)
+            print(title, int(count)*"#")
 
 
 @pd.api.extensions.register_series_accessor("map_numerical_binning")
