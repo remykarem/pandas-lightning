@@ -102,31 +102,35 @@ class Pipeline:
         Examples
         --------
 
-        Ranged binning (list or range)
-        >>> df.pipeline.map_numerical_binning({
-                "age": [0,18,21,25,30,100]
-            })
+            Ranged binning (list or range)
 
-        Ranged binning (dictionary)
-        >>> GROUPS = {
-                "": 0,
-                "kids": 12,
-                "teens": 24,
-                "adults": 60
-            }
-        >>> df.pipeline.map_numerical_binning({
-                "age": GROUPS
-            })
+            >>> df.pipeline.map_numerical_binning({
+                    "age": [0,18,21,25,30,100]
+                })
 
-        Binning with equal size (int)
-        >>> df.pipeline.map_numerical_binning({
-                "age": 4
-            })
+            Ranged binning (dictionary)
 
-        Binning by quantiles (tuple of str and int)
-        >>> df.pipeline.map_numerical_binning({
-                "age": ("quantiles", 4)
-            })
+            >>> GROUPS = {
+                    "": 0,
+                    "kids": 12,
+                    "teens": 24,
+                    "adults": 60
+                }
+            >>> df.pipeline.map_numerical_binning({
+                    "age": GROUPS
+                })
+
+            Binning with equal size (int)
+
+            >>> df.pipeline.map_numerical_binning({
+                    "age": 4
+                })
+
+            Binning by quantiles (tuple of str and int)
+
+            >>> df.pipeline.map_numerical_binning({
+                    "age": ("quantiles", 4)
+                })
         """
         df = self._obj if inplace else self._obj.copy()
 
@@ -369,8 +373,8 @@ class Optimize:
                 # if containts yes-no or true-false or t-f or 1-0
 
                 print(f"{col} can be optimised. "
-                             "Consider bool or cat. "
-                             f"Consider category. Save {savings:.0f}%")
+                      "Consider bool or cat. "
+                      f"Consider category. Save {savings:.0f}%")
             elif num_uniques == 3:
                 if self._obj[col].dtype.name in ["category", "bool"]:
                     print(f"{col} looks good")
@@ -384,16 +388,16 @@ class Optimize:
                 # print(self._obj[col].memory_usage(index=False))
                 if self._obj[col].dtype == "object":
                     print(f"{col} can be optimised. "
-                                 f"{num_uniques} uniques found. "
-                                 f"Consider category.")
+                          f"{num_uniques} uniques found. "
+                          f"Consider category.")
                 elif self._obj[col].dtype.name.startswith("int"):
                     after = self._obj[col].astype(
                         "category").memory_usage(index=False)
                     afters += after
                     savings = (before-after)/before * 100
                     print(f"{col} can be optimised. "
-                                 f"{num_uniques} uniques found. "
-                                 f"Consider category. Save {savings:.0f}%")
+                          f"{num_uniques} uniques found. "
+                          f"Consider category. Save {savings:.0f}%")
                 elif self._obj[col].dtype.name in ["category", "bool"]:
                     print(f"{col} looks good")
                     continue
