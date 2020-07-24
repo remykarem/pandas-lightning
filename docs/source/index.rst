@@ -10,11 +10,10 @@ Welcome to pandas-addons's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   tutorial
+   getting_started
+   examples
    dataframe
    series
-   api
-
 
 
 Indices and tables
