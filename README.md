@@ -5,13 +5,13 @@ Organize your pipelines
 Install
 
 ```bash
-pip install git+https://github.com/remykarem/pandas-pipeline#egg=pandas-pipeline
+pip install git+https://github.com/remykarem/pandas-addons#egg=pandas-addons
 ```
 
 Firstl, import
 
 ```python
-import pandas_pipeline
+import pandas_addons
 ```
 
 such that the `.pipeline` will be available to your DataFrame objects.
