@@ -1,4 +1,4 @@
-# pandas-pipeline (WIP)
+# pandas-addons (WIP)
 
 Organize your pipelines
 
