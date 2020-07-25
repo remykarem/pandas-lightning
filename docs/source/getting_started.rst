@@ -5,3 +5,11 @@
 
 Getting started
 ===============
+
+1. Install
+
+2. Load dataset
+
+3. Use dataset APIs
+
+4. Use series APIs
