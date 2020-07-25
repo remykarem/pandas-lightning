@@ -44,11 +44,6 @@ drop_duplicate_columns
 
 .. automethod:: pandas_addons.pandas_dataframe.lambdas.drop_duplicate_columns
 
-drop_columns_with_rules
-***********************
-
-.. automethod:: pandas_addons.pandas_dataframe.lambdas.drop_columns_with_rules
-
 to_numerics
 ***********
 
