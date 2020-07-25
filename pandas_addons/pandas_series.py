@@ -235,7 +235,7 @@ class ascii:
              size: int = 10,
              hashes: int = 30,
              len_label: int = 10,
-             max_categories: int = 50):
+             max_categories: int = 20):
         """Plots a horizontal histogram using :code:`#`
 
         Parameters
@@ -282,7 +282,7 @@ class ascii:
         else:
             sr = self._obj
 
-        freqs = sr.value_counts(sort=sort)
+        freqs = sr.value_counts(sort=sort).iloc[:max_categories]
         max_val = max(freqs)
         sr = freqs/max_val * hashes
 
