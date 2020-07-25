@@ -4,6 +4,8 @@ from itertools import combinations
 
 import pandas as pd
 from pandas import CategoricalDtype
+from pandas.api.types import is_datetime64_any_dtype, is_bool_dtype
+from pandas.api.types import is_categorical_dtype
 
 
 @pd.api.extensions.register_dataframe_accessor("lambdas")
@@ -104,17 +106,30 @@ class lambdas:
 
         for cols, function in lambdas.items():
             if len(cols) == 1 or isinstance(cols, str):
-                col_new, cols_old = cols, cols
+                # `("col"): ...`
+                # `"col": ...`
+                cols_new, cols_old = cols, cols
             elif len(cols) == 2:
-                col_new, cols_old = cols
+                # `("col_b", ("col_a1","col_a2")): ...`
+                # `("col_b", ["col_a1","col_a2"]): ...`
+                # `("col_b", "col_a"): ...`
+                cols_new, cols_old = cols
             else:
                 raise ValueError("Wrong key")
 
-            if isinstance(cols_old, str):
-                df[col_new] = function(df[cols_old])
-            elif isinstance(cols_old, (tuple, list)):
+            # breakpoint()
+
+            if isinstance(cols_old, str) and isinstance(cols_new, str):
+                # 1-to-1
+                df[cols_new] = function(df[cols_old])
+            elif isinstance(cols_old, (tuple, list)) and isinstance(cols_new, str):
+                # many-to-1
                 series = [getattr(df, col_old) for col_old in cols_old]
-                df[col_new] = function(*series)
+                df[cols_new] = function(*series)
+            elif isinstance(cols_old, str) and isinstance(cols_new, (tuple, list)):
+                multiple_series = function(df[cols_old])
+                for col_new, series in zip(cols_new, multiple_series):
+                    df[col_new] = series
             else:
                 raise ValueError("Wrong type specified")
 
@@ -361,49 +376,57 @@ class lambdas:
 
         return df
 
-    def to_numerics(self, target=None, inplace=False,
-                    remove_missing=True):
-        """Convert dataframe to numpy values
-
-        Parameters
-        ----------
-        target : [type], optional
-            [description], by default None
-        inplace : bool, optional
-            [description], by default False
-        remove_missing : bool, optional
-            [description], by default True
-
-        Returns
-        -------
-        [type]
-            [description]
-        """
+    def to_numerics(self,
+                    target: str = None,
+                    one_hot: bool = True,
+                    to_numpy: bool = True,
+                    inplace: bool = False,
+                    remove_missing: bool = True):
         df = self._obj if inplace else self._obj.copy()
-        df = df.select_dtypes(exclude=["object"])
 
+        # 1. Remove non-numerics
+        # User is responsible to change to category
+        df = df.select_dtypes(exclude=["object", "datetime"])
+
+        # 2. Remove Nans
         if remove_missing:
             df = df.dropna(axis=0)
 
+        # 3. Deal with ordinal categories and boolean categories
+        # Keep track of nominals
+        ordinal_mappings = {}
         nominal_categories = []
         for col in df:
-            if df[col].dtype.name == "category":
-                if not df[col].dtype.ordered:
-                    nominal_categories.append(col)
-                df[col] = df[col].cat.codes + int(df[col].hasnans)
-            elif df[col].dtype.name == "bool":
+            if is_categorical_dtype(df[col]) and df[col].dtype.ordered:
+                ordinal_mappings[col] = dict(enumerate(df[col].cat.categories))
+                df[col] = df[col].cat.codes
+            elif is_categorical_dtype(df[col]) and not df[col].dtype.ordered:
+                nominal_categories.append(col)
+            elif is_bool_dtype(df[col]):
                 df[col] = df[col].astype(int)
 
-        if target:
-            X, y = df.loc[:, df.columns != target], df[target]
-            X, y = X.values, y.values
-            categories = [X.columns.get_loc(col)
-                          for col in nominal_categories]
-            return X, y, categories
+        # 4. Deal with nominal categories
+        if one_hot:
+            df = pd.get_dummies(df, columns=nominal_categories)
         else:
-            categories = [df.columns.get_loc(col)
-                          for col in nominal_categories]
-            return df.values, categories
+            df = df.drop(columns=nominal_categories)
+
+        df_X = df.loc[:, set(df.columns) - set([target])]
+        if target:
+            df_y = df[target]
+
+        # 5. Whether to convert to numpy
+        if to_numpy:
+            if target:
+                return df_X.values, df_y.values, \
+                    df_X.columns, [target], ordinal_mappings
+            else:
+                return df.values, df.columns, ordinal_mappings
+        else:
+            if target:
+                return df_X, df_y, ordinal_mappings
+            else:
+                return df, ordinal_mappings
 
 
 @pd.api.extensions.register_dataframe_accessor("optimize")
