@@ -504,6 +504,14 @@ class lambdas:
 
         return df
 
+
+@pd.api.extensions.register_dataframe_accessor("dataset")
+class dataset:
+    def __init__(self, pandas_obj):
+        self._obj = pandas_obj
+        self.history = None
+        self._params = {}
+
     def to_numerics(self,
                     target: str = None,
                     one_hot: bool = True,
