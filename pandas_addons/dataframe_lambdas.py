@@ -414,7 +414,7 @@ class lambdas:
 
         Notes
         -----
-        The underlying API is :code:`pandas.Series.astype`.
+        You can also specify `"index"` and `"datetime"` on a column.
 
         Example
         -------
