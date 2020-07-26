@@ -14,7 +14,7 @@ Titanic
    import string
    import pandas as pd
    from pandas import CategoricalDtype
-   import pandas_pipeline
+   import pandas_addons
 
 Once you have imported, :code:`DataFrame.lambdas` will be available to you.
 

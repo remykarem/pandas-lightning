@@ -9,8 +9,6 @@ patterns and idioms in pandas. You can expect the following:
 - Prototype features more quickly
 - Access methods intuitively using convenience functions
 
-Organize your pipelines
-
 ## Install
 
 ```bash
@@ -32,7 +30,6 @@ Familiar API
 * `astype`: convert the types of multiple columns
 * `apply`: perform apply on multiple series objects
 * `map`: perform map on multiple columns
-* `fillna`
 
 New
 
