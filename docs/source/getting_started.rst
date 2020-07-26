@@ -25,39 +25,53 @@ will be available to your DataFrame and Series objects.
 .. note::
    Accessors are like :code:`str`
 
-Use dataframe accessors
------------------------
+Use df.lambdas
+--------------
+
+**df.lambdas.sapply**
 
 >>> df = pd.util.testing.makeMissingDataframe()
-
-The :ref:`sapply <DataFrame:sapply>` API
+>>> def squared(x):
+...     return x*x
 
 What used to be
 
 >>> df["A"] = abs(df["A"])
 >>> df["B"] = df["B"] * 10
->>> df["C_abs"] = abs(df["C"])
+>>> df["C_squared"] = squared(df["C"])
+>>> df["C_squared"] = df["C_squared"].scaler.standardize()
+>>> df["AB"] = df["A"] + df["B"]
 
 can be rewritten as
 
 >>> df = df.lambdas.sapply({
 ...     "A": abs,
-...     "B": lambda s: s * 10,
-...     ("C_abs", "C"): abs})
+...     "B": lambda b: b * 10,
+...     ("C_squared", "C"): squared,
+...     "C_squared": lambda s: s.scaler.standardize(),
+...     ("AB", ["A", "B"]): lambda a, b: a+b })
 
-The :code:`.lambdas.astype` API. What used to be
+**df.lambdas.astype**
+
+What used to be
+
+>>> df["A"] = df["A"].astype("category")
+>>> df["B"] = df["B"].astype(int)
+>>> df["C_abs"] = df["C_abs"].astype(str)
+>>> df["D"] = pd.to_datetime(df["D"])
+
+can be rewritten as
 
 >>> df = df.lambdas.astype({
+...      "A": "category",
 ...      "B": int,
-...      "C_abs": str})
+...      "C_abs": str,
+...      "D": "datetime"})
 
+See the full set of dataframe accessors :ref:`here <dataframe:DataFrame accessors>`.
 
-Read more :ref:`here <dataframe:dataframe-accessors>`.
-
-Use series accessors
---------------------
-
-Scaling using :code:`.scaler`
+Use df[col].scaler
+------------------
 
 >>> sr = pd.Series([1, 2, 3, 4, 5])
 >>> sr.scaler.standardize()
@@ -75,13 +89,17 @@ dtype: float64
 4    1.00
 dtype: float64
 
-Percentage using :code:`.pctg`
+Use df[col].pctg
+----------------
 
 >>> sr = pd.Series([1, None, 0, 8.3, None])
 >>> sr.pctg.nans
 0.4
 >>> sr.pctg.zeros
 0.2
+
+Use df[col].ascii
+-----------------
 
 Plotting using :code:`.ascii.hist()`
 
@@ -91,7 +109,8 @@ Plotting using :code:`.ascii.hist()`
       blue ####################
     orange ##########
 
-Binning numerical values
+Use df[col].map_numerical_binning
+---------------------------------
 
 >>> sr = pd.Series([23, 94, 44, 95, 29, 8, 17, 42, 29, 48,
 ...                 96, 95, 17, 97, 9, 85, 62, 71, 37, 10,
@@ -106,7 +125,8 @@ Binning numerical values
   (25, 30] ###
  (30, 100] ##############################
 
-**Binning categorical values**
+Use df[col].map_categorical_binning
+-----------------------------------
 
 >>> sr = pd.Series(["apple", "spinach", "cashew", "pear", "kailan",
 ...                 "macadamia", "orange"])
@@ -126,7 +146,7 @@ Specify a mapping with the new category as the key and the old categories as a l
 ...     "vegetables": ["kailan", "spinach"],
 ...     "nuts": ["cashew", "macadamia"]}
 
-Then call the :ref:`<series:series-map-categorical-binning>` API.
+Then call the :ref:`<series:Series.map_numerical_binning>` API.
 
 >>> sr.map_categorical_binning(GROUPS)
 0        fruits
@@ -139,4 +159,4 @@ Then call the :ref:`<series:series-map-categorical-binning>` API.
 dtype: category
 Categories (3, object): [fruits, vegetables, nuts]
 
-Read more :ref:`here <series:series>`.
+Read more :ref:`here <series:Series accessors>`.

@@ -7,7 +7,7 @@ Welcome to pandas-addons's documentation!
 =========================================
 
 pandas-addons is an API designed for data preprocessing based on common
-patterns and idioms while writing code in pandas. You can expect the following:
+patterns and idioms in pandas. You can expect the following:
 
 - Reduce repeated code
 - Make code more readable

@@ -19,10 +19,10 @@ sapply
 
 .. automethod:: pandas_addons.pandas_dataframe.lambdas.sapply
 
-dapply
-******
+pipeline
+********
 
-.. automethod:: pandas_addons.pandas_dataframe.lambdas.dapply
+.. automethod:: pandas_addons.pandas_dataframe.lambdas.pipeline
 
 .. map
 .. ***
