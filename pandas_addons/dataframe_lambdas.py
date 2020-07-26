@@ -255,7 +255,7 @@ class lambdas:
 
         Ranged binning (list or range)
 
-        >>> df.pipeline.map_numerical_binning({
+        >>> df.lambdas.map_numerical_binning({
         ...     "age": [0,18,21,25,30,100]
         ... })
 
@@ -267,19 +267,19 @@ class lambdas:
                 "teens": 24,
                 "adults": 60
             }
-        >>> df.pipeline.map_numerical_binning({
+        >>> df.lambdas.map_numerical_binning({
                 "age": GROUPS
             })
 
         Binning with equal size (int)
 
-        >>> df.pipeline.map_numerical_binning({
+        >>> df.lambdas.map_numerical_binning({
                 "age": 4
             })
 
         Binning by quantiles (tuple of str and int)
 
-        >>> df.pipeline.map_numerical_binning({
+        >>> df.lambdas.map_numerical_binning({
                 "age": ("quantiles", 4)
             })
         """
