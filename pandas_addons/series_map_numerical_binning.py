@@ -42,7 +42,6 @@ class map_numerical_binning:
         Examples
         --------
         >>> import pandas as pd
-        >>> import numpy as np
         >>> import pandas_addons
         >>> sr = pd.Series([23, 94, 44, 95, 29, 8, 17, 42, 29, 48,
         ...                 96, 95, 17, 97, 9, 85, 62, 71, 37, 10,
@@ -50,7 +49,23 @@ class map_numerical_binning:
         ...                 37, 10, 85, 11, 73, 96, 56, 0, 18, 3,
         ...                 54, 50, 91, 38, 46, 13, 78, 22, 6, 61])
 
-        Ranged binning using :code:`list` or :code:`range`
+        Ranged binning using :code:`range`. Below is grouping in 10's.
+
+        >>> sr_cat = sr.map_numerical_binning(range(0,110,10))
+        >>> sr_cat.ascii.hist()
+           (0, 10] ######################
+          (10, 20] ##########################
+          (20, 30] ######################
+          (30, 40] ###########
+          (40, 50] ######################
+          (50, 60] ###########
+          (60, 70] ###########
+          (70, 80] ###########
+          (80, 90] ###############
+         (90, 100] ##############################
+
+        Ranged binning using :code:`list`. Below is grouping using the elements
+        in the array as the bounds.
 
         >>> sr_cat = sr.map_numerical_binning([0, 18, 21, 25, 30, 100])
         >>> sr_cat.ascii.hist()
