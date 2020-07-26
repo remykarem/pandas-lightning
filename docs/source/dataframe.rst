@@ -39,25 +39,30 @@ map_numerical_binning
 
 .. automethod:: pandas_addons.pandas_dataframe.lambdas.map_numerical_binning
 
-drop_duplicate_columns
-**********************
-
-.. automethod:: pandas_addons.pandas_dataframe.lambdas.drop_duplicate_columns
-
 drop_columns_with_rules
 ***********************
 
 .. automethod:: pandas_addons.pandas_dataframe.lambdas.drop_columns_with_rules
 
+
+
+DataFrame.dataset
+------------------
+
 to_numerics
 ***********
 
-.. automethod:: pandas_addons.pandas_dataframe.lambdas.to_numerics
+.. automethod:: pandas_addons.pandas_dataframe.dataset.to_numerics
 
 
 
 DataFrame.optimize
 ------------------
+
+drop_duplicate_columns
+**********************
+
+.. automethod:: pandas_addons.pandas_dataframe.optimize.drop_duplicate_columns
 
 convert_categories
 ******************

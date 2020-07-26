@@ -16,39 +16,43 @@ class lambdas:
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
 
-    def drop_duplicate_columns(self, inplace=False):
-        to_drop = []
-        pairs = combinations(self._obj.columns, 2)
+    def drop_columns_with_rules(self, *functions):
+        """Drop a column if any of the conditions defined in the
+        functions or lambdas are met
 
-        num_combinations = math.comb(len(self._obj.columns), 2)
-        print(f"Checking {num_combinations} combinations")
+        Parameters
+        ----------
+        functions : functions or lambdas
+            Functions or lambdas that take in a series as a parameter
+            and returns a :code:`bool`
 
-        for pair in pairs:
-            col_a, col_b = pair
-            if col_a in to_drop or col_b in to_drop:
-                continue
-            if self._obj[col_a].equals(self._obj[col_b]):
-                to_drop.append(col_b)
+        Examples
+        --------
+        >>> import pandas as pd
+        >>> import pandas_addons
+        >>> import numpy as np
+        >>> df = pd.DataFrame({"X": [np.nan, np.nan, np.nan, np.nan, "hey"],
+        ...                    "Y": [0, np.nan, 0, 0, 1],
+        ...                    "Z": [1, 9, 5, 4, 2]})
 
-        print(f"Duplicate columns: {to_drop}")
+        One of the more common patterns is dropping a column that
+        has more than a certain threshold.
 
-        return self._obj.drop(columns=to_drop, inplace=inplace)
+        >>> df.lambdas.drop_columns_with_rules(
+        ...     lambda s: s.pctg.nans > 0.75,
+        ...     lambda s: s.pctg.zeros > 0.5)
+           Z
+        0  1
+        1  9
+        2  5
+        3  4
+        4  2
 
-    def drop_columns_apply(self, *functions):
-        df = self._obj.copy()
-
-        cols_to_drop = []
-        for col_name in df:
-            for f in functions:
-                if all(df[col_name].apply(f)):
-                    cols_to_drop.append(col_name)
-                    break
-
-        df = df.drop(columns=cols_to_drop)
-
-        return df
-
-    def drop_columns_sapply(self, *functions):
+        Returns
+        -------
+        pandas.DataFrame
+            Dataframe with dropped columns
+        """
         df = self._obj.copy()
 
         cols_to_drop = []
@@ -63,7 +67,47 @@ class lambdas:
         return df
 
     def dapply(self, *functions):
-        """Functions must return something
+        """Apply a sequence of functions on this dataframe.
+
+        Parameters
+        ----------
+        functions : lambdas or functions
+            Each function must return a dataframe object
+
+        Example
+        -------
+        >>> import pandas as pd
+        >>> import pandas_addons
+        >>> df = pd.DataFrame({"X": list("ABACBB"),
+        ...                    "Y": list("121092"),
+        ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
+        ... })
+
+        Define some functions
+
+        >>> def drop_some_columns(data):
+        ...     ...
+        ...     return data
+        >>> def reindex(data):
+        ...     ...
+        ...     return data
+        >>> def rename_columns(data):
+        ...     ...
+        ...     return data
+
+        Then
+
+        >>> df = df.lambdas.dapply({
+        ...     drop_some_columns,
+        ...     rename_columns,
+        ...     reindex
+        ... })
+
+        which is the same as
+
+        >>> df = drop_some_columns(df)
+        >>> df = rename_columns(df)
+        >>> df = reindex(df)
 
         Returns
         -------
@@ -86,10 +130,84 @@ class lambdas:
         inplace : bool, optional
             Whether to modify the series inplace, by default False
 
+        Examples
+        --------
+        >>> import pandas as pd
+        >>> import pandas_addons
+        >>> df = pd.DataFrame({"X": list("ABACBB"),
+        ...                    "Y": list("121092"),
+        ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
+        ... })
+        >>> df = df.lambdas.astype({
+        ...     "Y": int,
+        ...     "Z": ["cold", "warm", "hot"]})
+
+        **Example 1**
+
+            Rewriting to the same column
+
+            >>> df = df.lambdas.sapply({
+            ...     "X": lambda s: s + "rea",
+            ...     "Y": lambda s: s+100,
+            ...     "Z": lambda s: s.str.upper()
+            ... })
+
+            which is the same as
+
+            >>> df["X"] = df["X"] + "rea"
+            >>> df["Y"] = df["Y"] + 100
+            >>> df["Z"] = df["Z"].str.upper()
+
+        **Example 2**
+
+            Rewriting to the another column
+
+            >>> df = df.lambdas.sapply({
+            ...     ("X_new", "X"): lambda s: s + "rea",
+            ...     ("Y_new", "Y"): lambda s: s+100,
+            ...     ("Z_new", "Z"): lambda s: s.str.upper()
+            ... })
+
+            which is the same as
+
+            >>> df["X_new"] = df["X"] + "rea"
+            >>> df["Y_new"] = df["Y"] + 100
+            >>> df["Z_new"] = df["Z"].str.upper()
+
+        **Example 3**
+
+            Rewriting to the multiple columns
+
+            >>> df = df.lambdas.sapply({
+            ...     (("Z_upper", "Z_lower"), "Z"): lambda z: (z.str.upper(), z.str.lower())
+            ... })
+
+            which is the same as
+
+            >>> df["Z_upper"] = df["Z"].str.upper()
+            >>> df["Z_lower"] = df["Z"].str.lower()
+
+        **Example 4**
+
+            Work with 2 columns at a time
+
+            >>> df.lambdas.sapply({
+            ...     ("XY", ("X", "Y")):
+            ...     lambda x, y: x + (y+10).astype(str),
+            ...     ("YZ", ("Y", "Z")):
+            ...     lambda y, z: z.astype(str) + "-" + y.astype(str),
+            ... })
+
+            which is the same as
+
+            >>> df["XY"] = df["X"] + df["Y"].astype(str)
+            >>> df["YZ"] = df["Y"].astype(str) + "-" + df["Z"].astype(str)
+
+
         Returns
         -------
         pandas.DataFrame
-            vfvfv
+            A transformed copy of the dataframe
 
         Raises
         ------
@@ -143,35 +261,35 @@ class lambdas:
         Examples
         --------
 
-            Ranged binning (list or range)
+        Ranged binning (list or range)
 
-            >>> df.pipeline.map_numerical_binning({
-                    "age": [0,18,21,25,30,100]
-                })
+        >>> df.pipeline.map_numerical_binning({
+        ...     "age": [0,18,21,25,30,100]
+        ... })
 
-            Ranged binning (dictionary)
+        Ranged binning (dictionary)
 
-            >>> GROUPS = {
-                    "": 0,
-                    "kids": 12,
-                    "teens": 24,
-                    "adults": 60
-                }
-            >>> df.pipeline.map_numerical_binning({
-                    "age": GROUPS
-                })
+        >>> GROUPS = {
+                "": 0,
+                "kids": 12,
+                "teens": 24,
+                "adults": 60
+            }
+        >>> df.pipeline.map_numerical_binning({
+                "age": GROUPS
+            })
 
-            Binning with equal size (int)
+        Binning with equal size (int)
 
-            >>> df.pipeline.map_numerical_binning({
-                    "age": 4
-                })
+        >>> df.pipeline.map_numerical_binning({
+                "age": 4
+            })
 
-            Binning by quantiles (tuple of str and int)
+        Binning by quantiles (tuple of str and int)
 
-            >>> df.pipeline.map_numerical_binning({
-                    "age": ("quantiles", 4)
-                })
+        >>> df.pipeline.map_numerical_binning({
+                "age": ("quantiles", 4)
+            })
         """
         df = self._obj if inplace else self._obj.copy()
 
@@ -250,6 +368,16 @@ class lambdas:
         Notes
         -----
         The underlying API is the :code:`pandas.Series.apply`.
+
+        Example
+        -------
+        >>> import pandas as pd
+        >>> import pandas_addons
+        >>> df = pd.DataFrame({"X": list("ABACBB"),
+        ...                    "Y": list("121092"),
+        ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
+        ... })
+        >>> df
 
         Returns
         -------
@@ -379,6 +507,14 @@ class lambdas:
 
         return df
 
+
+@pd.api.extensions.register_dataframe_accessor("dataset")
+class dataset:
+    def __init__(self, pandas_obj):
+        self._obj = pandas_obj
+        self.history = None
+        self._params = {}
+
     def to_numerics(self,
                     target: str = None,
                     one_hot: bool = True,
@@ -415,19 +551,17 @@ class lambdas:
             df = df.drop(columns=nominal_categories)
 
         df_X = df.loc[:, set(df.columns) - set([target])]
-        if target:
-            df_y = df[target]
 
         # 5. Whether to convert to numpy
         if to_numpy:
             if target:
-                return df_X.values, df_y.values, \
+                return df_X.values, df[target].values, \
                     df_X.columns, [target], ordinal_mappings
             else:
                 return df.values, df.columns, ordinal_mappings
         else:
             if target:
-                return df_X, df_y, ordinal_mappings
+                return df_X, df[target], ordinal_mappings
             else:
                 return df, ordinal_mappings
 
@@ -438,6 +572,37 @@ class optimize:
         self._obj = pandas_obj
         self.history = None
         self._params = {}
+
+    def drop_duplicate_columns(self, inplace: bool = False):
+        """Drop duplicate columns that have exactly the same
+        values and datatype
+
+        Parameters
+        ----------
+        inplace : bool, optional
+            Whether to perform inplace operation, by default False
+
+        Returns
+        -------
+        pandas.DataFrame
+            Dataframe with no duplicate columns
+        """
+        to_drop = []
+        pairs = combinations(self._obj.columns, 2)
+
+        num_combinations = math.comb(len(self._obj.columns), 2)
+        print(f"Checking {num_combinations} combinations")
+
+        for pair in pairs:
+            col_a, col_b = pair
+            if col_a in to_drop or col_b in to_drop:
+                continue
+            if self._obj[col_a].equals(self._obj[col_b]):
+                to_drop.append(col_b)
+
+        print(f"Duplicate columns: {to_drop}")
+
+        return self._obj.drop(columns=to_drop, inplace=inplace)
 
     def convert_categories(self, max_cardinality: int = 20,
                            inplace: bool = False):
