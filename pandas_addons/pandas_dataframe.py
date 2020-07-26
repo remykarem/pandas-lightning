@@ -66,7 +66,7 @@ class lambdas:
 
         return df
 
-    def dapply(self, *functions):
+    def pipeline(self, *functions):
         """Apply a sequence of functions on this dataframe.
 
         Parameters
@@ -97,7 +97,7 @@ class lambdas:
 
         Then
 
-        >>> df = df.lambdas.dapply({
+        >>> df = df.lambdas.pipeline({
         ...     drop_some_columns,
         ...     rename_columns,
         ...     reindex
