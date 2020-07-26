@@ -7,22 +7,22 @@ DataFrame.lambdas
 astype
 ******
 
-.. automethod:: pandas_addons.pandas_dataframe.lambdas.astype
+.. automethod:: pandas_addons.dataframe_lambdas.lambdas.astype
 
 apply
 *****
 
-.. automethod:: pandas_addons.pandas_dataframe.lambdas.apply
+.. automethod:: pandas_addons.dataframe_lambdas.lambdas.apply
 
 sapply
 ******
 
-.. automethod:: pandas_addons.pandas_dataframe.lambdas.sapply
+.. automethod:: pandas_addons.dataframe_lambdas.lambdas.sapply
 
 pipeline
 ********
 
-.. automethod:: pandas_addons.pandas_dataframe.lambdas.pipeline
+.. automethod:: pandas_addons.dataframe_lambdas.lambdas.pipeline
 
 .. map
 .. ***
@@ -42,7 +42,7 @@ pipeline
 drop_columns_with_rules
 ***********************
 
-.. automethod:: pandas_addons.pandas_dataframe.lambdas.drop_columns_with_rules
+.. automethod:: pandas_addons.dataframe_lambdas.lambdas.drop_columns_with_rules
 
 
 
@@ -52,7 +52,7 @@ DataFrame.dataset
 to_numerics
 ***********
 
-.. automethod:: pandas_addons.pandas_dataframe.dataset.to_numerics
+.. automethod:: pandas_addons.dataframe_dataset.dataset.to_numerics
 
 
 
@@ -62,14 +62,14 @@ DataFrame.optimize
 drop_duplicate_columns
 **********************
 
-.. automethod:: pandas_addons.pandas_dataframe.optimize.drop_duplicate_columns
+.. automethod:: pandas_addons.dataframe_optimize.optimize.drop_duplicate_columns
 
 convert_categories
 ******************
 
-.. automethod:: pandas_addons.pandas_dataframe.optimize.convert_categories
+.. automethod:: pandas_addons.dataframe_optimize.optimize.convert_categories
 
 profile
 *******
 
-.. automethod:: pandas_addons.pandas_dataframe.optimize.profile
+.. automethod:: pandas_addons.dataframe_optimize.optimize.profile

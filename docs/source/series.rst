@@ -1,8 +1,3 @@
-.. pandas-addons documentation master file, created by
-   sphinx-quickstart on Thu Jul 23 23:45:28 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Series accessors
 ================
 
@@ -14,22 +9,22 @@ Series.scaler
 Series.scaler.minmax
 ********************
 
-.. automethod:: pandas_addons.pandas_series.scaler.minmax
+.. automethod:: pandas_addons.series_scaler.scaler.minmax
 
 Series.scaler.standardize
 *************************
 
-.. automethod:: pandas_addons.pandas_series.scaler.standardize
+.. automethod:: pandas_addons.series_scaler.scaler.standardize
 
 Series.scaler.log1p
 *******************
 
-.. automethod:: pandas_addons.pandas_series.scaler.log1p
+.. automethod:: pandas_addons.series_scaler.scaler.log1p
 
 Series.scaler.expm1
 *******************
 
-.. automethod:: pandas_addons.pandas_series.scaler.expm1
+.. automethod:: pandas_addons.series_scaler.scaler.expm1
 
 
 
@@ -42,17 +37,17 @@ missing values.
 Series.pctg.zeros
 *****************
 
-.. autoattribute:: pandas_addons.pandas_series.pctg.zeros
+.. autoattribute:: pandas_addons.series_pctg.pctg.zeros
 
 Series.pctg.nans
 ****************
 
-.. autoattribute:: pandas_addons.pandas_series.pctg.nans
+.. autoattribute:: pandas_addons.series_pctg.pctg.nans
 
 Series.pctg.uniques
 *******************
 
-.. autoattribute:: pandas_addons.pandas_series.pctg.uniques
+.. autoattribute:: pandas_addons.series_pctg.pctg.uniques
 
 
 
@@ -62,18 +57,18 @@ Series.ascii
 Series.ascii.hist
 *****************
 
-.. automethod:: pandas_addons.pandas_series.ascii.hist
+.. automethod:: pandas_addons.series_ascii.ascii.hist
 
 
 
 Series.map_numerical_binning
 ----------------------------
 
-.. automethod:: pandas_addons.pandas_series.map_numerical_binning.__call__
+.. automethod:: pandas_addons.series_map_numerical_binning.map_numerical_binning.__call__
 
 
 
 Series.map_categorical_binning
 ------------------------------
 
-.. automethod:: pandas_addons.pandas_series.map_categorical_binning.__call__
+.. automethod:: pandas_addons.series_map_categorical_binning.map_categorical_binning.__call__
