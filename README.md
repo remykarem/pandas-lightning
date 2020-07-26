@@ -14,7 +14,7 @@ Firstl, import
 import pandas_addons
 ```
 
-such that the `.pipeline` will be available to your DataFrame objects.
+such that the `.lambdas` will be available to your DataFrame objects.
 
 Familiar API
 

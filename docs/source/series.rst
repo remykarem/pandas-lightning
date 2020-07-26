@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Series
-======
+Series accessors
+================
 
 
 
@@ -42,17 +42,17 @@ missing values.
 Series.pctg.zeros
 *****************
 
-.. automethod:: pandas_addons.pandas_series.pctg.zeros
+.. autoattribute:: pandas_addons.pandas_series.pctg.zeros
 
 Series.pctg.nans
 ****************
 
-.. automethod:: pandas_addons.pandas_series.pctg.nans
+.. autoattribute:: pandas_addons.pandas_series.pctg.nans
 
 Series.pctg.uniques
 *******************
 
-.. automethod:: pandas_addons.pandas_series.pctg.uniques
+.. autoattribute:: pandas_addons.pandas_series.pctg.uniques
 
 
 

@@ -1,5 +1,5 @@
-DataFrame
-=========
+DataFrame accessors
+===================
 
 DataFrame.lambdas
 ------------------
@@ -24,20 +24,20 @@ dapply
 
 .. automethod:: pandas_addons.pandas_dataframe.lambdas.dapply
 
-map
-***
+.. map
+.. ***
 
-.. automethod:: pandas_addons.pandas_dataframe.lambdas.map
+.. .. automethod:: pandas_addons.pandas_dataframe.lambdas.map
 
-map_categorical_binning
-***********************
+.. map_categorical_binning
+.. ***********************
 
-.. automethod:: pandas_addons.pandas_dataframe.lambdas.map_categorical_binning
+.. .. automethod:: pandas_addons.pandas_dataframe.lambdas.map_categorical_binning
 
-map_numerical_binning
-*********************
+.. map_numerical_binning
+.. *********************
 
-.. automethod:: pandas_addons.pandas_dataframe.lambdas.map_numerical_binning
+.. .. automethod:: pandas_addons.pandas_dataframe.lambdas.map_numerical_binning
 
 drop_columns_with_rules
 ***********************

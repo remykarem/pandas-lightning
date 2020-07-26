@@ -6,11 +6,21 @@
 Welcome to pandas-addons's documentation!
 =========================================
 
+pandas-addons is an API designed for data preprocessing based on common
+patterns and idioms while writing code in pandas. You can expect the following:
+
+- Reduce repeated code
+- Make code more readable
+- Manage sequences of operations
+- Prototype features more quickly
+- Access methods intuitively using convenience functions
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    getting_started
+   design
    examples
    dataframe
    series
