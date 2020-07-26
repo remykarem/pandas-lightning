@@ -25,17 +25,4 @@ pip install git+https://github.com/remykarem/pandas-addons#egg=pandas-addons
 Dataframe accessors like :code:`.lambdas` and series accessors like :code:`scaler`
 will be available to your DataFrame and Series objects.
 
-Familiar API
-
-* `astype`: convert the types of multiple columns
-* `apply`: perform apply on multiple series objects
-* `map`: perform map on multiple columns
-
-New
-
-* `sapply`: perform vectorised operations on multiple series
-* `dapply`
-* `drop_duplicate_columns`
-* `drop_columns_with_rules`
-* `map_categorical_binning`
-* `map_numerical_binning`
+Read more here: https://pandas-addons.readthedocs.io/
