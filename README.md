@@ -1,6 +1,6 @@
 # pandas-addons (WIP)
 
-pandas-addons is an API designed for data preprocessing based on common
+pandas-addons is an API designed to abstract common
 patterns and idioms in pandas. You can expect the following:
 
 - Reduce repeated code
