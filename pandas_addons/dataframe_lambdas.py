@@ -469,6 +469,14 @@ class lambdas:
 
         for cols, dtype in dtypes.items():
 
+            # Check the key
+            if isinstance(cols, str) or len(cols) == 1:
+                col_new, col_old = cols, cols
+            elif len(cols) == 2:
+                col_new, col_old = cols
+            else:
+                raise ValueError("Wrong key")
+
             # Check the value
             if isinstance(dtype, type):
                 if dtype.__name__ not in ["int", "float", "bool", "str"]:
@@ -478,16 +486,13 @@ class lambdas:
                     raise ValueError("Wrong type")
             elif isinstance(dtype, list):
                 dtype = CategoricalDtype(dtype, ordered=True)
+            elif callable(dtype):
+                sort_fn = dtype
+                uniques = df[col_old].unique()
+                uniques.sort(key=sort_fn)
+                dtype = CategoricalDtype(uniques, ordered=True)
             elif not isinstance(dtype, CategoricalDtype):
                 raise ValueError("Wrong type")
-
-            # Check the key
-            if isinstance(cols, str) or len(cols) == 1:
-                col_new, col_old = cols, cols
-            elif len(cols) == 2:
-                col_new, col_old = cols
-            else:
-                raise ValueError("Wrong key")
 
             # Set
             if dtype == "index":
