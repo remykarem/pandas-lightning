@@ -1,10 +1,7 @@
-from math import ceil, floor
 from typing import OrderedDict, Union
 
 import pandas as pd
 import numpy as np
-from pandas import CategoricalDtype
-from pandas.api.types import is_numeric_dtype
 from pandas.errors import EmptyDataError
 
 
@@ -19,7 +16,7 @@ class map_numerical_binning:
             raise EmptyDataError("Series is empty")
 
     def __call__(self,
-                 binning: Union[list, range, dict, int],
+                 binning: Union[list, range, dict, int, tuple],
                  by_quantiles: bool = False,
                  ordered: bool = True):
         """Bin a numerical feature into groups. This is useful to transform
@@ -51,7 +48,7 @@ class map_numerical_binning:
 
         Ranged binning using :code:`range`. Below is grouping in 10's.
 
-        >>> sr_cat = sr.map_numerical_binning(range(0,110,10))
+        >>> sr_cat = sr.map_numerical_binning(range(0,110,10))  # or (0,110,10)
         >>> sr_cat.ascii.hist()
            (0, 10] ######################
           (10, 20] ##########################
@@ -127,8 +124,8 @@ class map_numerical_binning:
 
     def _map_numerical_binning(self, binning, by_quantiles, ordered):
         if isinstance(binning, tuple):
-            _, quantiles = binning
-            sr = pd.qcut(self._obj, quantiles)
+            binning = np.arange(*binning)
+            sr = pd.cut(self._obj, binning)
         elif isinstance(binning, (list, range)):
             sr = pd.cut(self._obj, binning)
         elif isinstance(binning, int):
