@@ -29,16 +29,16 @@ class scaler:
         Examples
         --------
 
-            >>> import pandas as pd
-            >>> import pandas_addons
-            >>> sr = pd.Series([1,2,3,4,5])
-            >>> sr.scaler.standardize()
-            0   -1.264911
-            1   -0.632456
-            2    0.000000
-            3    0.632456
-            4    1.264911
-            dtype: float64
+        >>> import pandas as pd
+        >>> import pandas_addons
+        >>> sr = pd.Series([1,2,3,4,5])
+        >>> sr.scaler.standardize()
+        0   -1.264911
+        1   -0.632456
+        2    0.000000
+        3    0.632456
+        4    1.264911
+        dtype: float64
 
         Returns
         -------
@@ -138,3 +138,7 @@ class scaler:
             A transformed copy of the series
         """
         return np.expm1(self._obj)
+
+
+def standardize(series, ddof=1):
+    return (series - series.mean()) / series.std(ddof=ddof)
