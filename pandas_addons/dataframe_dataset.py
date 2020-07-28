@@ -51,9 +51,9 @@ class dataset:
         if to_numpy:
             if target:
                 return df_X.values, df[target].values, \
-                    df_X.columns, [target], ordinal_mappings
+                    df_X.columns.tolist(), [target], ordinal_mappings
             else:
-                return df.values, df.columns, ordinal_mappings
+                return df.values, df.columns.tolist(), ordinal_mappings
         else:
             if target:
                 return df_X, df[target], ordinal_mappings
