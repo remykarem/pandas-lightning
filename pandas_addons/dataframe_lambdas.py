@@ -488,7 +488,7 @@ class lambdas:
                 dtype = CategoricalDtype(dtype, ordered=True)
             elif callable(dtype):
                 sort_fn = dtype
-                uniques = df[col_old].unique()
+                uniques = df[col_old].unique().tolist()
                 uniques.sort(key=sort_fn)
                 dtype = CategoricalDtype(uniques, ordered=True)
             elif not isinstance(dtype, CategoricalDtype):
