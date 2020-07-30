@@ -115,6 +115,8 @@ class quickplot:
             sns.distplot(self._obj[self.numerical_[0]].dropna())
         elif self.config == (1, 1, 0):
             categorical = self._obj[self.categorical_[0]]
+            if is_bool_dtype(categorical):
+                categorical = categorical.astype("category")
             categories = categorical.cat.categories.tolist()
 
             if len(categories) > 3:
@@ -128,8 +130,11 @@ class quickplot:
 
     def countplot(self):
         if self.config == (0, 1, 0):
+            categorical = self._obj[self.categorical_[0]]
+            if is_bool_dtype(categorical):
+                categorical = categorical.astype("category")
             sns.countplot(y=self._obj[self.categorical_[
-                          0]], order=self._obj[self.categorical_[0]].cat.categories.tolist())
+                          0]], order=categorical.cat.categories.tolist())
         if self.config == (0, 1, 1):
             sns.countplot(x=self.categorical_[
                           0], hue=self.categorical_[1], data=self._obj)
@@ -149,9 +154,11 @@ class quickplot:
             sns.relplot(x=self.numerical_[1], y=self.numerical_[
                         0], ci=None, kind="line", data=self._obj)
         elif self.config == (2, 1, 0):
+            categorical = self._obj[self.categorical_[0]]
+            if is_bool_dtype(categorical):
+                categorical = categorical.astype("category")
             sns.relplot(x=self.numerical_[1], y=self.numerical_[0], hue=self.categorical_[0],
-                        hue_order=self._obj[self.categorical_[
-                            0]].cat.categories.tolist(),
+                        hue_order=categorical.cat.categories.tolist(),
                         ci=None, kind="line", data=self._obj)
 
     def hexbinplot(self):
