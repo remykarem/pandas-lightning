@@ -110,7 +110,7 @@ class quickplot:
 
     def distplot(self):
         if self.config == (1, 0, 0):
-            sns.distplot(self._obj[self.numerical_[0]])
+            sns.distplot(self._obj[self.numerical_[0]].dropna())
         elif self.config == (1, 1, 0):
             categorical = self._obj[self.categorical_[0]]
             categories = categorical.cat.categories.tolist()
@@ -121,7 +121,7 @@ class quickplot:
 
             for category in categories:
                 sns.distplot(
-                    self._obj.loc[categorical == category, self.numerical_[0]])
+                    self._obj.loc[categorical == category, self.numerical_[0]].dropna())
             plt.legend(categories)
 
     def countplot(self):
