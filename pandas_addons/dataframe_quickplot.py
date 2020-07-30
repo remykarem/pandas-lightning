@@ -72,30 +72,32 @@ class quickplot:
         else:
             raise ValueError("Max 3 categories only")
 
-        if config == (1, 0, 0):
-            print("distplot, boxplot, violinplot, stripplot, qqplot")
-        elif config == (0, 1, 0):
-            print("countplot")
-        elif config == (0, 1, 1):
-            print("countplot, heatmap")
-        elif config == (1, 1, 0):
-            print("distplot, barplot, boxplot, violinplot, stripplot, ridgeplot")
-        elif config == (2, 0, 0):
-            print("lineplot, scatterplot, hexbinplot, kdeplot")
-        elif config == (2, 1, 0):
-            print("lineplot")
-        elif config == (1, 1, 1):
-            print("boxplot, violinplot, stripplot")
-        elif config == (0, 1, 2):
-            print("catplot")
-        else:
-            raise ValueError
-
         self.config = config
         self.numerical_ = numerical.copy()
         self.categorical_ = categorical.copy()
 
         return self
+
+    @property
+    def options(self):
+        if self.config == (1, 0, 0):
+            print("distplot, boxplot, violinplot, stripplot, qqplot")
+        elif self.config == (0, 1, 0):
+            print("countplot")
+        elif self.config == (0, 1, 1):
+            print("countplot, heatmap")
+        elif self.config == (1, 1, 0):
+            print("distplot, barplot, boxplot, violinplot, stripplot, ridgeplot")
+        elif self.config == (2, 0, 0):
+            print("lineplot, scatterplot, hexbinplot, kdeplot")
+        elif self.config == (2, 1, 0):
+            print("lineplot")
+        elif self.config == (1, 1, 1):
+            print("boxplot, violinplot, stripplot")
+        elif self.config == (0, 1, 2):
+            print("catplot")
+        else:
+            raise ValueError
 
     def barplot(self):
         if self.config == (1, 1, 0):
