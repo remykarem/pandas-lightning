@@ -6,6 +6,8 @@ import seaborn as sns
 from scipy import stats
 import matplotlib.pyplot as plt
 import pandas as pd
+from seaborn.distributions import distplot
+import warnings
 
 
 @pd.api.extensions.register_dataframe_accessor("quickplot")
@@ -56,7 +58,8 @@ class quickplot:
                 categorical = [categorical]
             for col in categorical:
                 if not (is_categorical_dtype(self._obj[col]) or is_bool_dtype(self._obj[col])):
-                    raise ValueError
+                    raise ValueError(
+                        f"{col} must be a category type or bool type!")
 
         if len(categorical) == 0:
             config = (len(numerical), 0, 0)
@@ -70,13 +73,13 @@ class quickplot:
             raise ValueError("Max 3 categories only")
 
         if config == (1, 0, 0):
-            print("histogram, boxplot, violinplot, stripplot, qqplot")
+            print("distplot, boxplot, violinplot, stripplot, qqplot")
         elif config == (0, 1, 0):
             print("countplot")
         elif config == (0, 1, 1):
-            print("countplot")
+            print("countplot, heatmap")
         elif config == (1, 1, 0):
-            print("barplot, boxplot, violinplot, stripplot, ridgeplot")
+            print("distplot, barplot, boxplot, violinplot, stripplot, ridgeplot")
         elif config == (2, 0, 0):
             print("lineplot, scatterplot, hexbinplot, kdeplot")
         elif config == (2, 1, 0):
@@ -96,17 +99,38 @@ class quickplot:
 
     def barplot(self):
         if self.config == (1, 1, 0):
-            sns.barplot(x=self.categorical_[0], y=self.numerical_[0], data=df2)
+            sns.barplot(x=self.categorical_[
+                        0], y=self.numerical_[0], data=self._obj)
 
-    def histogram(self):
+    def heatmap(self):
+        if self.config == (0, 1, 1):
+            sns.heatmap(pd.crosstab(self._obj[self.categorical_[0]],
+                                    self._obj[self.categorical_[1]]),
+                                    cmap="Blues")
+
+    def distplot(self):
         if self.config == (1, 0, 0):
             sns.distplot(self._obj[self.numerical_[0]])
+        elif self.config == (1, 1, 0):
+            categorical = self._obj[self.categorical_[0]]
+            categories = categorical.cat.categories.tolist()
+
+            if len(categories) > 3:
+                warnings.warn("The cardinality of the categorical variable "
+                              "is more than 3. This might cause visual clutter.")
+
+            for category in categories:
+                sns.distplot(
+                    self._obj.loc[categorical == category, self.numerical_[0]])
+            plt.legend(categories)
 
     def countplot(self):
         if self.config == (0, 1, 0):
-            sns.countplot(y=self._obj[self.categorical_[0]], order=self._obj[self.categorical_[0]].cat.categories.tolist())
+            sns.countplot(y=self._obj[self.categorical_[
+                          0]], order=self._obj[self.categorical_[0]].cat.categories.tolist())
         if self.config == (0, 1, 1):
-            sns.countplot(x=self.categorical_[0], hue=self.categorical_[1], data=self._obj)
+            sns.countplot(x=self.categorical_[
+                          0], hue=self.categorical_[1], data=self._obj)
 
     def scatterplot(self):
         if self.config == (2, 0, 0):
