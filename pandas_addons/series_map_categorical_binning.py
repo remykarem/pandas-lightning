@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 import pandas as pd
-from pandas.api.dtypes import CategoricalDtype
+from pandas.api.types import CategoricalDtype
 from pandas.errors import EmptyDataError
 
 
