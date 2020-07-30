@@ -1,6 +1,6 @@
 from functools import reduce
 import pandas as pd
-from pandas import CategoricalDtype
+from pandas.api.dtypes import CategoricalDtype
 
 
 @pd.api.extensions.register_dataframe_accessor("lambdas")
@@ -421,7 +421,7 @@ class lambdas:
         Suppose we have a dataframe
 
         >>> import pandas as pd
-        >>> from pandas import CategoricalDtype
+        >>> from pandas.api.dtypes import CategoricalDtype
         >>> import pandas_addons
         >>> df = pd.DataFrame({"X": list("ABACBB"),
         ...                    "Y": list("121092"),
