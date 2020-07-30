@@ -1,4 +1,4 @@
-from typing import OrderedDict, Union
+from typing import Union
 
 import pandas as pd
 import numpy as np
@@ -130,7 +130,7 @@ class map_numerical_binning:
             sr = pd.cut(self._obj, binning)
         elif isinstance(binning, int):
             if by_quantiles:
-                sr = pd.qcut(self._obj, binning)
+                sr = pd.qcut(self._obj, binning, duplicates="drop")
             else:
                 sr = pd.cut(self._obj, binning)
         elif isinstance(binning, dict):
