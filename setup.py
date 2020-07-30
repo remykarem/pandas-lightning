@@ -21,8 +21,6 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=["pandas>=0.21.0",
-                    #   "sphinx",
-                    #   "sphinx-rtd-theme",
                       "scipy",
                       ]
 )
