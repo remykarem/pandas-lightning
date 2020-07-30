@@ -1,4 +1,3 @@
-import math
 from itertools import combinations
 import pandas as pd
 
@@ -25,9 +24,9 @@ class optimize:
             Dataframe with no duplicate columns
         """
         to_drop = []
-        pairs = combinations(self._obj.columns, 2)
+        pairs = list(combinations(self._obj.columns, 2))
 
-        num_combinations = math.comb(len(self._obj.columns), 2)
+        num_combinations = len(pairs)
         print(f"Checking {num_combinations} combinations")
 
         for pair in pairs:
