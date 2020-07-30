@@ -24,7 +24,7 @@ class quickplot:
     def __repr__(self):
         return "hi"
 
-    def __call__(self, / ,
+    def __call__(self,
                  numerical: Union[str, list] = None,
                  categorical: Union[str, list] = None):
         """
