@@ -20,9 +20,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    install_requires=["pandas",
-                      "sphinx",
-                      "sphinx-rtd-theme",
+    install_requires=["pandas>=0.21.0",
+                    #   "sphinx",
+                    #   "sphinx-rtd-theme",
                       "scipy",
                       ]
 )
