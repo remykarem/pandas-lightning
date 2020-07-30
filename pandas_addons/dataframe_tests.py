@@ -75,6 +75,6 @@ class tests:
         cramers = pd.DataFrame(
             cramers, columns=["col1", "col2", "coefficient"])
         cramers.sort_values(by="coefficient", ascending=False,
-                            ignore_index=True, inplace=True)
+                            inplace=True)
 
         return cramers
