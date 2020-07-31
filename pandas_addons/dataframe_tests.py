@@ -23,22 +23,18 @@ class tests:
 
     def numerical(self, top=5):
         corr = self._obj.corr()
-        col_names = corr.columns
-        corr = np.triu(corr.values)
-        np.fill_diagonal(corr, 0)
 
-        mat = scipy.sparse.coo_matrix(corr)
-        sortind = np.argsort(-mat.data)
-        it = zip(mat.row[sortind], mat.col[sortind], mat.data[sortind])
+        corr_tidy = corr.abs().unstack().reset_index()
+        corr_tidy = corr_tidy.rename(columns={
+            "level_0": "feature_1",
+            "level_1": "feature_2",
+            0: "absolute_corr_coeff"})
+        corr_tidy = corr_tidy.query("feature_1 != feature_2")
+        corr_tidy = corr_tidy.sort_values(
+            by="absolute_corr_coeff", ascending=False)
 
-        df = pd.DataFrame(it)
-        df.columns = ["col1", "col2", "corr"]
-        df["col1"] = df["col1"].map(dict(enumerate(col_names)))
-        df["col2"] = df["col2"].map(dict(enumerate(col_names)))
+        return corr_tidy
 
-        df = df.iloc[:top]
-
-        return df
 
     def get_cramersv(self):
 
