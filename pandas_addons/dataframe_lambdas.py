@@ -390,17 +390,25 @@ class lambdas:
         return df
 
     def fillna(self, d, inplace=False):
+        """
+        Example
+        -------
+        df.lambdas.fillna({
+            "Sex": lambda sex: sex.median(),
+            ("Age", ("Sex", "Pclass")): lambda group: group.median()
+        })
+        """
         df = self._obj if inplace else self._obj.copy()
 
         for cols, fill_value in d.items():
-            if len(cols) == 1 or isinstance(cols, str):
-                col_new, col_old = cols, cols
-            elif len(cols) == 2:
-                col_new, col_old = cols
+            if isinstance(cols, str):
+                df[cols] = df[cols].fillna(fill_value)
+            elif isinstance(cols, tuple) and len(cols) == 2:
+                col, group = cols
+                df[col] = df.groupby(list(group))[col].apply(
+                    lambda x: x.fillna(fill_value))
             else:
                 raise ValueError("Wrong key")
-
-            df[col_new] = df[col_old].fillna(fill_value)
 
         return df
 
