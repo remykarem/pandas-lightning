@@ -1,12 +1,9 @@
 from typing import Union
-from collections import defaultdict
-from functools import partial
-from pandas.api.types import is_numeric_dtype, is_categorical_dtype, is_bool_dtype
+from pandas.api.types import is_numeric_dtype, is_categorical_dtype, is_bool_dtype, is_float_dtype
 import seaborn as sns
 from scipy import stats
 import matplotlib.pyplot as plt
 import pandas as pd
-from seaborn.distributions import distplot
 import warnings
 
 
@@ -81,7 +78,7 @@ class quickplot:
     @property
     def options(self):
         if self.config == (1, 0, 0):
-            print("distplot, boxplot, violinplot, stripplot, qqplot")
+            print("countplot, distplot, boxplot, violinplot, stripplot, qqplot")
         elif self.config == (0, 1, 0):
             print("countplot")
         elif self.config == (0, 1, 1):
@@ -108,7 +105,7 @@ class quickplot:
         if self.config == (0, 1, 1):
             sns.heatmap(pd.crosstab(self._obj[self.categorical_[0]],
                                     self._obj[self.categorical_[1]]),
-                                    cmap="Blues")
+                        cmap="Blues")
 
     def distplot(self):
         if self.config == (1, 0, 0):
@@ -129,13 +126,20 @@ class quickplot:
             plt.legend(categories)
 
     def countplot(self):
-        if self.config == (0, 1, 0):
+        if self.config == (1, 0, 0):
+            if is_float_dtype(self._obj[self.numerical_[0]]):
+                warnings.warn("Count plots are suited for discrete types.")
+            if self._obj[self.numerical_[0]].nunique() > 20:
+                warnings.warn("There more than 20 uniques. "
+                              "This might cause visual clutter.")
+            sns.countplot(x=self.numerical_[0], data=self._obj)
+        elif self.config == (0, 1, 0):
             categorical = self._obj[self.categorical_[0]]
             if is_bool_dtype(categorical):
                 categorical = categorical.astype("category")
             sns.countplot(y=self._obj[self.categorical_[
                           0]], order=categorical.cat.categories.tolist())
-        if self.config == (0, 1, 1):
+        elif self.config == (0, 1, 1):
             sns.countplot(x=self.categorical_[
                           0], hue=self.categorical_[1], data=self._obj)
 
