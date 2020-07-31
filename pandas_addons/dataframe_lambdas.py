@@ -1,6 +1,7 @@
 from functools import reduce
 import pandas as pd
 from pandas.api.types import CategoricalDtype
+import seaborn as sns
 
 
 @pd.api.extensions.register_dataframe_accessor("lambdas")
@@ -406,7 +407,7 @@ class lambdas:
             elif isinstance(cols, tuple) and len(cols) == 2:
                 col, group = cols
                 df[col] = df.groupby(list(group))[col].apply(
-                    lambda x: x.fillna(fill_value))
+                    lambda x: x.fillna(fill_value(x)))
             else:
                 raise ValueError("Wrong key")
 
@@ -512,7 +513,7 @@ class lambdas:
 
         return df
 
-    def info(self):
+    def info(self, mode="df"):
         """
         TODO
         put this method elsewhere
@@ -528,4 +529,9 @@ class lambdas:
             "uniques": uniques
         }, index=df.columns)
 
-        return info
+        if mode == "df":
+            return info
+        elif mode == "heatmap":
+            sns.heatmap(info)
+        else:
+            raise ValueError("mode must be df or heatmap")
