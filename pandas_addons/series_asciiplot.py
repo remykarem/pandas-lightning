@@ -3,8 +3,8 @@ import pandas as pd
 from pandas.errors import EmptyDataError
 
 
-@pd.api.extensions.register_series_accessor("ascii")
-class ascii:
+@pd.api.extensions.register_series_accessor("asciiplot")
+class asciiplot:
     def __init__(self, pandas_obj):
         self._validate_obj(pandas_obj)
         self._obj = pandas_obj
@@ -76,3 +76,4 @@ class ascii:
                 str_format = ">" + str(len_label)
                 label = format(label, str_format)
             print(label, int(count)*"#")
+
