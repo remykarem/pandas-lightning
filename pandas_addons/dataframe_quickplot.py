@@ -78,13 +78,13 @@ class quickplot:
     @property
     def options(self):
         if self.config == (1, 0, 0):
-            print("countplot, distplot, boxplot, violinplot, stripplot, qqplot")
+            print("countplot, distplot, kdeplot, boxplot, violinplot, stripplot, qqplot")
         elif self.config == (0, 1, 0):
             print("countplot")
         elif self.config == (0, 1, 1):
             print("countplot, heatmap")
         elif self.config == (1, 1, 0):
-            print("distplot, barplot, boxplot, violinplot, stripplot, ridgeplot")
+            print("distplot, kdeplot, barplot, boxplot, violinplot, stripplot, ridgeplot")
         elif self.config == (2, 0, 0):
             print("lineplot, scatterplot, hexbinplot, kdeplot")
         elif self.config == (2, 1, 0):
@@ -106,6 +106,27 @@ class quickplot:
             sns.heatmap(pd.crosstab(self._obj[self.categorical_[0]],
                                     self._obj[self.categorical_[1]]),
                         cmap="Blues")
+
+    def kdeplot(self):
+        if self.config == (1, 0, 0):
+            sns.kdeplot(self._obj[self.numerical_[0]].dropna())
+        elif self.config == (1, 1, 0):
+            categorical = self._obj[self.categorical_[0]]
+            if is_bool_dtype(categorical):
+                categorical = categorical.astype("category")
+            categories = categorical.cat.categories.tolist()
+
+            if len(categories) > 3:
+                warnings.warn("The cardinality of the categorical variable "
+                              "is more than 3. This might cause visual clutter.")
+
+            for category in categories:
+                sns.kdeplot(
+                    self._obj.loc[categorical == category, self.numerical_[0]].dropna(), shade=True)
+            plt.legend(categories)
+        elif self.config == (2, 0, 0):
+            sns.jointplot(x=self.numerical_[1], y=self.numerical_[0], data=self._obj,
+                          kind="kde")
 
     def distplot(self):
         if self.config == (1, 0, 0):
@@ -147,11 +168,6 @@ class quickplot:
         if self.config == (2, 0, 0):
             sns.jointplot(x=self.numerical_[0], y=self.numerical_[
                           1], data=self._obj)
-
-    def kdeplot(self):
-        if self.config == (2, 0, 0):
-            sns.jointplot(x=self.numerical_[1], y=self.numerical_[0], data=self._obj,
-                          kind="kde")
 
     def lineplot(self):
         if self.config == (2, 0, 0):
