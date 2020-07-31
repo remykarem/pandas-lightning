@@ -21,17 +21,21 @@ class tests:
             if p < alpha:
                 print(f"{col1} and {col2} may be correlated")
 
-    def numerical(self, top=5):
+    def numerical(self):
         corr = self._obj.corr()
+        mask = np.zeros_like(corr, dtype=bool)
+        mask[np.triu_indices_from(mask)] = True
+        corr.where(mask, inplace=True)
 
-        corr_tidy = corr.abs().unstack().reset_index()
-        corr_tidy = corr_tidy.rename(columns={
+        corr_tidy = corr.abs().unstack().dropna().reset_index()
+        corr_tidy.rename(columns={
             "level_0": "feature_1",
             "level_1": "feature_2",
-            0: "absolute_corr_coeff"})
-        corr_tidy = corr_tidy.query("feature_1 != feature_2")
-        corr_tidy = corr_tidy.sort_values(
-            by="absolute_corr_coeff", ascending=False)
+            0: "absolute_corr_coeff"}, inplace=True)
+        corr_tidy.query("feature_1 != feature_2", inplace=True)
+        corr_tidy.sort_values(
+            by="absolute_corr_coeff", ascending=False, inplace=True)
+        corr_tidy.reset_index(drop=True, inplace=True)
 
         return corr_tidy
 
