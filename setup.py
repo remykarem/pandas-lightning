@@ -21,7 +21,8 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=[
-        "pandas==0.24.0",
-        "scipy==1.4.0",
-                      ]
+        "pandas==1.0.3",
+        "scipy==1.4.1",
+        "seaborn==0.10.0"
+    ]
 )
