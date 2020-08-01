@@ -347,6 +347,31 @@ class lambdas:
 
         return df if inplace else None
 
+    def map_conditional(self, mappings, inplace=False):
+        """
+        Example
+        -------
+        >>> df.lambdas.map_conditional({
+        ...     ("colour", ("A", "B")): {
+        ...         "green": lambda a, b: a + b > 1,
+        ...         "orange": lambda a, b: a == "Z",
+        ...     }
+        ... }, default="black")
+        """
+        df = self._obj if inplace else self._obj.copy()
+
+        for cols, mapping in mappings.items():
+            if len(cols) == 1 or isinstance(cols, str):
+                col_new, col_old = cols, cols
+            elif len(cols) == 2:
+                col_new, col_old = cols
+            else:
+                raise ValueError("Wrong key")
+
+            df[col_new] = df[col_old].map(mapping)
+
+        return df if inplace else None
+
     def apply(self, lambdas: dict, inplace: bool = False):
         """Specify what functions to apply to every element
         in specified columns
