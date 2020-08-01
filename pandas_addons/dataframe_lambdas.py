@@ -249,61 +249,6 @@ class lambdas:
 
         return df
 
-    def map_numerical_binning(self, bins, ordered=True, inplace=False):
-        """
-        Examples
-        --------
-
-        Ranged binning (list or range)
-
-        >>> df.lambdas.map_numerical_binning({
-        ...     "age": [0,18,21,25,30,100]
-        ... })
-
-        Ranged binning (dictionary)
-
-        >>> GROUPS = {
-                "": 0,
-                "kids": 12,
-                "teens": 24,
-                "adults": 60
-            }
-        >>> df.lambdas.map_numerical_binning({
-                "age": GROUPS
-            })
-
-        Binning with equal size (int)
-
-        >>> df.lambdas.map_numerical_binning({
-                "age": 4
-            })
-
-        Binning by quantiles (tuple of str and int)
-
-        >>> df.lambdas.map_numerical_binning({
-                "age": ("quantiles", 4)
-            })
-        """
-        df = self._obj if inplace else self._obj.copy()
-
-        for cols, binning in bins.items():
-            if len(cols) == 1 or isinstance(cols, str):
-                col_new, col_old = cols, cols
-            elif len(cols) == 2:
-                col_new, col_old = cols
-            else:
-                raise ValueError("Wrong key")
-
-            if isinstance(binning, tuple):
-                _, quantiles = binning
-                df[col_new] = pd.qcut(df[col_old], quantiles)
-            elif isinstance(binning, (list, range, int)):
-                df[col_new] = pd.cut(df[col_old], binning)
-            else:
-                raise NotImplementedError
-
-        return df
-
     def map_conditional(self, mappings, inplace=False):
         """
         Example
