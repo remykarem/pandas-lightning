@@ -304,36 +304,6 @@ class lambdas:
 
         return df
 
-    def map_categorical_binning(self, bins, ordered=False, inplace=False):
-        """Categorical binning
-
-        Args:
-            bins (dict): mappings
-            ordered (bool, optional): [description]. Defaults to False.
-            inplace (bool, optional): [description]. Defaults to False.
-
-        Returns:
-            pandas.Series: dfvdsv
-        """
-        df = self._obj if inplace else self._obj.copy()
-
-        for cols, bin_ in bins.items():
-            if len(cols) == 1 or isinstance(cols, str):
-                col_new, col_old = cols, cols
-            elif len(cols) == 2:
-                col_new, col_old = cols
-            else:
-                raise ValueError("Wrong key")
-
-            mapping = {v: k for k, values in bin_.items()
-                       for v in values}
-
-            df[col_new] = df[col_old].map(mapping).astype(
-                CategoricalDtype(mapping.keys(), ordered=ordered))
-
-        return df
-
-
     def map_conditional(self, mappings, inplace=False):
         """
         Example
