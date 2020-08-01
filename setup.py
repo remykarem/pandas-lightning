@@ -20,7 +20,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    install_requires=["pandas==0.23.4",
+    install_requires=["pandas==0.24.0",
                       "scipy==1.1.0",
                       ]
 )
