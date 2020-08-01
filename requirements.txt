@@ -1,2 +1,6 @@
 pandas>=0.21.0
+numpy
 scipy
+seaborn
+sphinx
+sphinx-rtd-theme
