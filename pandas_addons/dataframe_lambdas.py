@@ -333,19 +333,6 @@ class lambdas:
 
         return df
 
-    def map(self, mappings, inplace=False):
-        df = self._obj if inplace else self._obj.copy()
-
-        for cols, mapping in mappings.items():
-            if len(cols) == 1 or isinstance(cols, str):
-                col_new, col_old = cols, cols
-            elif len(cols) == 2:
-                col_new, col_old = cols
-            else:
-                raise ValueError("Wrong key")
-            df[col_new] = df[col_old].map(mapping)
-
-        return df if inplace else None
 
     def map_conditional(self, mappings, inplace=False):
         """
