@@ -9,6 +9,12 @@ import numpy as np
 class lambdas:
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
+        self._pipeline = None
+
+    def __call__(self, pipeline=None):
+        # Warning: `self._pipeline` is meant to be mutable by design
+        self._pipeline = pipeline
+        return self
 
     def drop_columns_with_rules(self, *functions):
         """Drop a column if any of the conditions defined in the
@@ -57,6 +63,9 @@ class lambdas:
                     break
 
         df = df.drop(columns=cols_to_drop)
+
+        if self._pipeline is not None:
+            self._pipeline.add({"drop_columns_with_rules": functions})
 
         return df
 
@@ -248,6 +257,9 @@ class lambdas:
             else:
                 raise ValueError("Wrong type specified")
 
+        if self._pipeline is not None:
+            self._pipeline.add({"sapply": lambdas})
+
         return df
 
     def map_conditional(self, mappings, inplace=False):
@@ -309,6 +321,9 @@ class lambdas:
             conditions = [cond(*series) for cond in conditions_]
             df[col_new] = np.select(conditions, choices, default=default)
 
+        if self._pipeline is not None:
+            self._pipeline.add({"map_conditional": mappings})
+
         return df
 
     def apply(self, lambdas: dict, inplace: bool = False):
@@ -352,6 +367,9 @@ class lambdas:
                 raise ValueError("Wrong key")
             df[col_new] = df[col_old].apply(function)
 
+        if self._pipeline is not None:
+            self._pipeline.add({"apply": lambdas})
+
         return df
 
     def setna(self, d, inplace=False):
@@ -362,6 +380,9 @@ class lambdas:
                 df.loc[condition(df[col]), col] = np.nan
             else:
                 raise ValueError("Wrong key")
+
+        if self._pipeline is not None:
+            self._pipeline.add({"setna": d})
 
         return df
 
@@ -386,11 +407,12 @@ class lambdas:
             else:
                 raise ValueError("Wrong key")
 
-
+        if self._pipeline is not None:
+            self._pipeline.add({"fillna": d})
 
         return df
 
-    def astype(self, dtypes: dict):
+    def astype(self, dtypes: dict, inplace: bool = False):
         """Convert dtypes of multiple columns using a dictionary
 
         Parameters
@@ -455,7 +477,7 @@ class lambdas:
             A dataframe whose columns have been converted accordingly
         """
 
-        df = self._obj
+        df = self._obj if inplace else self._obj.copy()
 
         for cols, dtype in dtypes.items():
 
@@ -495,6 +517,9 @@ class lambdas:
                 df[col_new] = pd.to_datetime(df[col_old])
             else:
                 df[col_new] = df[col_old].astype(dtype)
+
+        if self._pipeline is not None:
+            self._pipeline.add({"astype": dtypes})
 
         return df
 
