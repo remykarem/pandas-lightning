@@ -523,6 +523,16 @@ class lambdas:
 
         return df
 
+    def drop(self, columns: list, inplace=False):
+        df = self._obj if inplace else self._obj.copy()
+
+        df = df.drop(columns=columns, inplace=inplace)
+
+        if self._pipeline is not None:
+            self._pipeline.add({"drop": columns})
+
+        return df
+
     def info(self, mode="df"):
         """
         TODO
