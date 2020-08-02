@@ -2,6 +2,7 @@ from functools import reduce
 import pandas as pd
 from pandas.api.types import CategoricalDtype
 import seaborn as sns
+import numpy as np
 
 
 @pd.api.extensions.register_dataframe_accessor("lambdas")
@@ -250,29 +251,65 @@ class lambdas:
         return df
 
     def map_conditional(self, mappings, inplace=False):
-        """
+        """Map values from multiple columns based on conditional
+        statements expressed as lambdas. Similar to `numpy.select`
+        and `numpy.where`.
+
+        Parameters
+        ----------
+        lambdas : dict
+            A nested dictionary where the key is the column names
+            and the value is a dictionary of (newvalue: conditional statement)
+            where the conditional statement is expressed as a lambda
+            statement
+        inplace : bool, optional
+            Whether to modify the series inplace, by default False
+
         Example
         -------
+        >>> df = pd.DataFrame({"X": [0, 5, 3, 3, 4, 1],
+        ...                    "Y": [1, 2, 1, 0, 9, 2],
+        ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
+        ... })
         >>> df.lambdas.map_conditional({
-        ...     ("colour", ("A", "B")): {
-        ...         "green": lambda a, b: a + b > 1,
-        ...         "orange": lambda a, b: a == "Z",
+        ...     ("Z", ("X", "Y")): {
+        ...         "green": lambda x, y: x + y > 1,
+        ...         "orange": lambda x, y: x == 5,
+        ...         "black": None  # default
         ...     }
-        ... }, default="black")
+        ... })
+
+        Returns
+        -------
+        pandas.DataFrame
+            A transformed copy of the dataframe
         """
         df = self._obj if inplace else self._obj.copy()
 
         for cols, mapping in mappings.items():
             if len(cols) == 1 or isinstance(cols, str):
-                col_new, col_old = cols, cols
+                col_new, cols_old = cols, cols
             elif len(cols) == 2:
-                col_new, col_old = cols
+                col_new, cols_old = cols
             else:
                 raise ValueError("Wrong key")
 
-            df[col_new] = df[col_old].map(mapping)
+            if not isinstance(mapping, dict):
+                raise ValueError("Must be dictionary")
 
-        return df if inplace else None
+            choices, conditions_ = list(mapping.keys()), list(mapping.values())
+            if conditions_[-1] is None:
+                conditions_.pop()
+                default = choices.pop()
+            else:
+                default = None
+
+            # breakpoint()
+            series = [getattr(df, col_old) for col_old in cols_old]
+            conditions = [cond(*series) for cond in conditions_]
+            df[col_new] = np.select(conditions, choices, default=default)
+
+        return df
 
     def apply(self, lambdas: dict, inplace: bool = False):
         """Specify what functions to apply to every element
@@ -317,6 +354,17 @@ class lambdas:
 
         return df
 
+    def setna(self, d, inplace=False):
+        df = self._obj if inplace else self._obj.copy()
+
+        for col, condition in d.items():
+            if isinstance(col, str):
+                df.loc[condition(df[col]), col] = np.nan
+            else:
+                raise ValueError("Wrong key")
+
+        return df
+
     def fillna(self, d, inplace=False):
         """
         Example
@@ -338,6 +386,8 @@ class lambdas:
             else:
                 raise ValueError("Wrong key")
 
+
+
         return df
 
     def astype(self, dtypes: dict):
@@ -351,6 +401,10 @@ class lambdas:
         Notes
         -----
         You can also specify `"index"` and `"datetime"` on a column.
+        Note that pandas does not have support for converting columns with NaNs
+        to integer type. We will convert it to float automatically and indicate
+        the user with a warning.
+        https://pandas.pydata.org/pandas-docs/stable/user_guide/gotchas.html
 
         Example
         -------
@@ -418,7 +472,7 @@ class lambdas:
                 if dtype.__name__ not in ["int", "float", "bool", "str"]:
                     raise ValueError("Wrong type")
             elif isinstance(dtype, str):
-                if dtype not in ["datetime", "index", "category", "int", "float", "bool", "str"]:
+                if dtype not in ["datetime", "index", "category", "int", "float", "bool", "str", "object"]:
                     raise ValueError("Wrong type")
             elif isinstance(dtype, list):
                 dtype = CategoricalDtype(dtype, ordered=True)
@@ -429,6 +483,10 @@ class lambdas:
                 dtype = CategoricalDtype(uniques, ordered=True)
             elif not isinstance(dtype, CategoricalDtype):
                 raise ValueError("Wrong type")
+
+            # Handle pandas gotcha
+            if (dtype == int or dtype == "int") and df[col_old].hasnans:
+                raise TypeError(f"Cast {col_old} to `float` instead.")
 
             # Set
             if dtype == "index":
