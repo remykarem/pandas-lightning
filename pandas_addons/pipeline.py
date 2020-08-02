@@ -16,8 +16,8 @@ class Pipeline:
         self._pipeline.append(obj)
 
     def run(self, pandas_obj):
-        l = lambdas(pandas_obj)
         for pipe_item in self._pipeline:
+            l = lambdas(pandas_obj)
             callable_str = list(pipe_item.keys())[0]
             fn = getattr(l, callable_str)
             mapping = list(pipe_item.values())[0]
