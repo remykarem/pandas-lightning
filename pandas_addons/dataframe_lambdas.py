@@ -534,7 +534,7 @@ class lambdas:
         df = df.drop(columns=columns_, inplace=inplace)
 
         if self._pipeline is not None:
-            self._pipeline.add({"drop": columns})
+            self._pipeline.add({"drop_if_exist": columns})
 
         return df
 
