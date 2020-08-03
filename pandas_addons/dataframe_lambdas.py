@@ -129,7 +129,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("lambdas","dapply"): lambdas})
+                pipeline.add({("lambdas","dapply"): functions})
 
         return df
 
@@ -273,7 +273,7 @@ class lambdas:
 
         return df
 
-    def map_conditional(self, mappings, inplace=False):
+    def map_conditional(self, mappings: dict, inplace=False):
         """Map values from multiple columns based on conditional
         statements expressed as lambdas. Similar to `numpy.select`
         and `numpy.where`.
@@ -385,7 +385,7 @@ class lambdas:
 
         return df
 
-    def setna(self, d, inplace=False):
+    def setna(self, d: dict, inplace=False):
         df = self._obj if inplace else self._obj.copy()
 
         for col, condition in d.items():
@@ -400,7 +400,7 @@ class lambdas:
 
         return df
 
-    def fillna(self, d, inplace=False):
+    def fillna(self, d: dict, inplace=False):
         """
         Example
         -------
