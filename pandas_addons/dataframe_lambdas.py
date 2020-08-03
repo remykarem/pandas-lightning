@@ -328,7 +328,6 @@ class lambdas:
             else:
                 default = None
 
-            # breakpoint()
             series = [getattr(df, col_old) for col_old in cols_old]
             conditions = [cond(*series) for cond in conditions_]
             df[col_new] = np.select(conditions, choices, default=default)
