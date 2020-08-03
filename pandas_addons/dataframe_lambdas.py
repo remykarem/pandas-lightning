@@ -72,7 +72,7 @@ class lambdas:
 
         return df
 
-    def pipeline(self, *functions):
+    def dapply(self, *functions):
         """Apply a sequence of functions on this dataframe.
 
         Parameters
@@ -103,7 +103,7 @@ class lambdas:
 
         Then
 
-        >>> df = df.lambdas.pipeline({
+        >>> df = df.lambdas.dapply({
         ...     drop_some_columns,
         ...     rename_columns,
         ...     reindex
@@ -124,7 +124,14 @@ class lambdas:
         run_steps = reduce(lambda f, g: lambda x: g(f(x)),
                            functions,
                            lambda x: x)
-        return run_steps(df)
+
+        df = run_steps(df)
+
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add({"apply": lambdas})
+
+        return df
 
     def sapply(self, lambdas: dict, inplace: bool = False):
         """Perform multiple lambda operations on series
