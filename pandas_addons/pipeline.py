@@ -1,3 +1,4 @@
+import copy
 from .dataframe_lambdas import lambdas
 from .dataframe_dataset import dataset
 
@@ -41,3 +42,10 @@ class Pipeline:
 
     def reset(self):
         self._pipeline.clear()
+
+    def copy(self):
+        """Returns a copy of the current Pipeline object
+        """
+        pipeline = Pipeline()
+        pipeline._pipeline = copy.deepcopy(self._pipeline)
+        return pipeline
