@@ -69,9 +69,9 @@ class dataset:
     def to_numerics(self,
                     target: str = None,
                     nominal: str = "one-hot",
-                    to_numpy: bool = True,
-                    inplace: bool = False,
-                    remove_missing: bool = True):
+                    to_numpy: bool = False,
+                    remove_missing: bool = True,
+                    inplace: bool = False):
         df = self._obj if inplace else self._obj.copy()
 
         if target and target not in df:
@@ -118,9 +118,11 @@ class dataset:
                 df[col] = df[col].astype(CategoricalDtype(df[col].unique()))
                 nominal_mappings[col] = dictionarize(df[col].cat.categories)
                 df[col] = df[col].cat.codes
+        elif nominal == "keep" and to_numpy is False:
+            pass
         else:
             raise ValueError("`nominal` must be one of 'one-hot', 'drop' or "
-                             "'label-encode'")
+                             "'label'")
 
         metadata = {}
         metadata["nominal_category"] = nominal_categories
