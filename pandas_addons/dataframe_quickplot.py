@@ -75,6 +75,8 @@ class quickplot:
 
         return self
 
+        # TODO add green-red to bool types
+
     @property
     def options(self):
         if self.config == (1, 0, 0):
