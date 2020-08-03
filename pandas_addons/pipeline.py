@@ -28,7 +28,10 @@ class Pipeline:
             fn = getattr(accessor, fn_str)
             mapping = list(pipe_item.values())[0]
             if accessor_str == "lambdas":
-                pandas_obj = fn(mapping)
+                if fn_str in ["drop_columns_with_rules", "dapply"]:
+                    pandas_obj = fn(*mapping)
+                else:
+                    pandas_obj = fn(mapping)
             elif accessor_str == "dataset":
                 pandas_obj = fn(**mapping)
             else:
