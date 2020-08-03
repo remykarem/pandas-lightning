@@ -1,7 +1,6 @@
 from functools import reduce
 import pandas as pd
 from pandas.api.types import CategoricalDtype
-import seaborn as sns
 import numpy as np
 
 
@@ -9,11 +8,14 @@ import numpy as np
 class lambdas:
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
-        self._pipeline = None
+        self._pipelines = None
 
-    def __call__(self, pipeline=None):
-        # Warning: `self._pipeline` is meant to be mutable by design
-        self._pipeline = pipeline
+    def __call__(self, pipelines: list = None):
+        # Warning: `self._pipelines` is mutable by design
+        if not isinstance(pipelines, list):
+            pipelines = [pipelines]
+
+        self._pipelines = pipelines
         return self
 
     def drop_columns_with_rules(self, *functions):
@@ -64,8 +66,9 @@ class lambdas:
 
         df = df.drop(columns=cols_to_drop)
 
-        if self._pipeline is not None:
-            self._pipeline.add({"drop_columns_with_rules": functions})
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add({"drop_columns_with_rules": functions})
 
         return df
 
@@ -257,8 +260,9 @@ class lambdas:
             else:
                 raise ValueError("Wrong type specified")
 
-        if self._pipeline is not None:
-            self._pipeline.add({"sapply": lambdas})
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add({"sapply": lambdas})
 
         return df
 
@@ -291,6 +295,7 @@ class lambdas:
         ...     }
         ... })
 
+
         Returns
         -------
         pandas.DataFrame
@@ -321,8 +326,9 @@ class lambdas:
             conditions = [cond(*series) for cond in conditions_]
             df[col_new] = np.select(conditions, choices, default=default)
 
-        if self._pipeline is not None:
-            self._pipeline.add({"map_conditional": mappings})
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add({"map_conditional": mappings})
 
         return df
 
@@ -367,8 +373,9 @@ class lambdas:
                 raise ValueError("Wrong key")
             df[col_new] = df[col_old].apply(function)
 
-        if self._pipeline is not None:
-            self._pipeline.add({"apply": lambdas})
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add({"apply": lambdas})
 
         return df
 
@@ -381,8 +388,9 @@ class lambdas:
             else:
                 raise ValueError("Wrong key")
 
-        if self._pipeline is not None:
-            self._pipeline.add({"setna": d})
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add({"setna": d})
 
         return df
 
@@ -407,8 +415,9 @@ class lambdas:
             else:
                 raise ValueError("Wrong key")
 
-        if self._pipeline is not None:
-            self._pipeline.add({"fillna": d})
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add({"fillna": d})
 
         return df
 
@@ -518,8 +527,9 @@ class lambdas:
             else:
                 df[col_new] = df[col_old].astype(dtype)
 
-        if self._pipeline is not None:
-            self._pipeline.add({"astype": dtypes})
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add({"astype": dtypes})
 
         return df
 
@@ -533,7 +543,8 @@ class lambdas:
 
         df = df.drop(columns=columns_, inplace=inplace)
 
-        if self._pipeline is not None:
-            self._pipeline.add({"drop_if_exist": columns})
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add({"drop_if_exist": columns})
 
         return df
