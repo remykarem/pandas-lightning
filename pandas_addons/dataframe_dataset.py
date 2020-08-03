@@ -66,7 +66,7 @@ class dataset:
 
         return df_new
 
-    def to_numerics(self,
+    def to_X_y(self,
                     target: str = None,
                     nominal: str = "one-hot",
                     to_numpy: bool = False,
@@ -139,7 +139,7 @@ class dataset:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("dataset","to_numerics"): {
+                pipeline.add({("dataset","to_X_y"): {
                     "target": target,
                     "nominal": nominal,
                     "to_numpy": to_numpy,
