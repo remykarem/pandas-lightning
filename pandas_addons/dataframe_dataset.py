@@ -9,6 +9,35 @@ class dataset:
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
 
+    def undersample(self, col, replace=False, random_state=None):
+        df = self._obj.copy()
+
+        min_size = df[col].value_counts().min()
+
+        dataframes = []
+        for _, group in df.groupby(col):
+            dataframes.append(group.sample(
+                min_size, replace=replace, random_state=random_state))
+        df_new = pd.concat(dataframes)
+
+        return df_new
+
+    def oversample(self, col, random_state=None):
+        """
+        https://stackoverflow.com/questions/48373088/duplicating-training-examples-to-handle-class-imbalance-in-a-pandas-data-frame
+        """
+        df = self._obj.copy()
+
+        max_size = df[col].value_counts().max()
+
+        dataframes = [df]
+        for _, group in df.groupby(col):
+            dataframes.append(group.sample(
+                max_size-len(group), replace=True, random_state=random_state))
+        df_new = pd.concat(dataframes)
+
+        return df_new
+
     def to_numerics(self,
                     target: str = None,
                     nominal: str = "one-hot",
