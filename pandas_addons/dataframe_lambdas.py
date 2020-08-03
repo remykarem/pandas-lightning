@@ -523,10 +523,15 @@ class lambdas:
 
         return df
 
-    def drop(self, columns: list, inplace=False):
+    def drop_if_exist(self, columns: list, inplace=False):
         df = self._obj if inplace else self._obj.copy()
 
-        df = df.drop(columns=columns, inplace=inplace)
+        columns_ = columns.copy()
+        for i, col in enumerate(columns):
+            if col not in df:
+                columns_.pop(i)
+
+        df = df.drop(columns=columns_, inplace=inplace)
 
         if self._pipeline is not None:
             self._pipeline.add({"drop": columns})
