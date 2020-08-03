@@ -68,7 +68,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({"drop_columns_with_rules": functions})
+                pipeline.add({("lambdas","drop_columns_with_rules"): functions})
 
         return df
 
@@ -129,7 +129,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({"apply": lambdas})
+                pipeline.add({("lambdas","apply"): lambdas})
 
         return df
 
@@ -269,7 +269,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({"sapply": lambdas})
+                pipeline.add({("lambdas","sapply"): lambdas})
 
         return df
 
@@ -334,7 +334,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({"map_conditional": mappings})
+                pipeline.add({("lambdas","map_conditional"): mappings})
 
         return df
 
@@ -381,7 +381,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({"apply": lambdas})
+                pipeline.add({("lambdas","apply"): lambdas})
 
         return df
 
@@ -396,7 +396,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({"setna": d})
+                pipeline.add({("lambdas","setna"): d})
 
         return df
 
@@ -423,7 +423,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({"fillna": d})
+                pipeline.add({("lambdas","fillna"): d})
 
         return df
 
@@ -535,7 +535,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({"astype": dtypes})
+                pipeline.add({("lambdas","astype"): dtypes})
 
         return df
 
@@ -551,6 +551,6 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({"drop_if_exist": columns})
+                pipeline.add({("lambdas","drop_if_exist"): columns})
 
         return df
