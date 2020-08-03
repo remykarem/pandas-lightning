@@ -6,7 +6,8 @@ from .dataframe_dataset import dataset
 class Pipeline:
     API = 1
 
-    def __init__(self):
+    def __init__(self, name=None):
+        self.name = name
         self._pipeline = []
 
     def __call__(self, pandas_obj):
