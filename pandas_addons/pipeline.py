@@ -1,4 +1,5 @@
 from .dataframe_lambdas import lambdas
+from .dataframe_dataset import dataset
 
 
 class Pipeline:
@@ -19,12 +20,20 @@ class Pipeline:
 
     def run(self, pandas_obj):
         for pipe_item in self._pipeline:
-            l = lambdas(pandas_obj)
-            callable_str = list(pipe_item.keys())[0]
-            fn = getattr(l, callable_str)
-            mapping = list(pipe_item.values())[0]
 
-            pandas_obj = fn(mapping)
+            accessor_str, fn_str = list(pipe_item.keys())[0]
+            accessor_obj = eval(accessor_str)
+            accessor = accessor_obj(pandas_obj)
+
+            fn = getattr(accessor, fn_str)
+            mapping = list(pipe_item.values())[0]
+            if accessor_str == "lambdas":
+                pandas_obj = fn(mapping)
+            elif accessor_str == "dataset":
+                pandas_obj = fn(**mapping)
+            else:
+                raise RuntimeError
+
         return pandas_obj
 
     def reset(self):
