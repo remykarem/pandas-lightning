@@ -2,6 +2,8 @@ from .dataframe_lambdas import lambdas
 
 
 class Pipeline:
+    API = 1
+
     def __init__(self):
         self._pipeline = []
 
