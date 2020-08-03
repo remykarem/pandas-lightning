@@ -9,31 +9,33 @@ class dataset:
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
 
-    def undersample(self, col, replace=False, random_state=None):
+    def undersample(self, col, replace=False, min_count=None, random_state=None):
         df = self._obj.copy()
 
-        min_size = df[col].value_counts().min()
+        if min_count is None:
+            min_count = df[col].value_counts().min()
 
         dataframes = []
         for _, group in df.groupby(col):
             dataframes.append(group.sample(
-                min_size, replace=replace, random_state=random_state))
+                min_count, replace=replace, random_state=random_state))
         df_new = pd.concat(dataframes)
 
         return df_new
 
-    def oversample(self, col, random_state=None):
+    def oversample(self, col, max_count=None, random_state=None):
         """
         https://stackoverflow.com/questions/48373088/duplicating-training-examples-to-handle-class-imbalance-in-a-pandas-data-frame
         """
         df = self._obj.copy()
 
-        max_size = df[col].value_counts().max()
+        if max_count is None:
+            max_count = df[col].value_counts().max()
 
         dataframes = [df]
         for _, group in df.groupby(col):
             dataframes.append(group.sample(
-                max_size-len(group), replace=True, random_state=random_state))
+                max_count-len(group), replace=True, random_state=random_state))
         df_new = pd.concat(dataframes)
 
         return df_new
