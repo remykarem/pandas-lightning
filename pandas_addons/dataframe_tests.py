@@ -11,6 +11,29 @@ class tests:
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
 
+    def info(self, mode="df"):
+        """
+        TODO
+        put this method elsewhere
+        """
+        df = self._obj
+        missing = [df[col].pctg.nans for col in df]
+        zeros = [df[col].pctg.zeros for col in df]
+        uniques = [df[col].pctg.uniques for col in df]
+
+        info = pd.DataFrame({
+            "missing": missing,
+            "zeros": zeros,
+            "uniques": uniques
+        }, index=df.columns)
+
+        if mode == "df":
+            return info
+        elif mode == "heatmap":
+            sns.heatmap(info)
+        else:
+            raise ValueError("mode must be df or heatmap")
+
     def categorical(self, alpha=0.05):
         df = self._obj.select_dtypes(include=["category"])
         pairs = combinations(df.columns, 2)
@@ -39,7 +62,6 @@ class tests:
 
         return corr_tidy
 
-
     def get_cramersv(self):
 
         def cramers_corrected_stat(confusion_matrix):
@@ -57,7 +79,8 @@ class tests:
             kcorr = k - ((k-1)**2)/(n-1)
             return np.sqrt(phi2corr / min((kcorr-1), (rcorr-1)))
 
-        cols = self._obj.select_dtypes(include=["category", "bool"]).columns.tolist()
+        cols = self._obj.select_dtypes(
+            include=["category", "bool"]).columns.tolist()
         if len(cols) != len(set(cols)):
             raise ValueError("Col names must be unique!")
         print(f"Testing {str(cols)}")
