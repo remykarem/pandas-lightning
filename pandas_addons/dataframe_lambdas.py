@@ -129,7 +129,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("lambdas","apply"): lambdas})
+                pipeline.add({("lambdas","dapply"): lambdas})
 
         return df
 
