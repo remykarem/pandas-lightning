@@ -8,6 +8,15 @@ from pandas import IntervalIndex
 class dataset:
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
+        self._pipelines = None
+
+    def __call__(self, pipelines: list = None):
+        # Warning: `self._pipelines` is mutable by design
+        if not isinstance(pipelines, list):
+            pipelines = [pipelines]
+
+        self._pipelines = pipelines
+        return self
 
     def undersample(self, col, replace=False, min_count=None, random_state=None):
         df = self._obj.copy()
@@ -20,6 +29,15 @@ class dataset:
             dataframes.append(group.sample(
                 min_count, replace=replace, random_state=random_state))
         df_new = pd.concat(dataframes)
+
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add({("dataset","undersample"): {
+                    "col": col,
+                    "replace": replace,
+                    "min_count": min_count,
+                    "random_state": random_state
+                }})
 
         return df_new
 
@@ -37,6 +55,14 @@ class dataset:
             dataframes.append(group.sample(
                 max_count-len(group), replace=True, random_state=random_state))
         df_new = pd.concat(dataframes)
+
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add({("dataset","oversample"): {
+                    "col": col,
+                    "max_count": max_count,
+                    "random_state": random_state
+                }})
 
         return df_new
 
@@ -108,6 +134,16 @@ class dataset:
                     bool_categories + nominal_categories]
             metadata["nominal_cat_in_last_x_columns"] = len(nominal_categories) if target is None else \
                 len(nominal_categories) - (target in nominal_categories)
+
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add({("dataset","to_numerics"): {
+                    "target": target,
+                    "nominal": nominal,
+                    "to_numpy": to_numpy,
+                    "inplace": inplace,
+                    "remove_missing": remove_missing
+                }})
 
         # 5. Whether to convert to numpy
         if to_numpy:
