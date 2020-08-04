@@ -18,61 +18,6 @@ class lambdas:
         self._pipelines = pipelines
         return self
 
-    def drop_columns_with_rules(self, *functions):
-        """Drop a column if any of the conditions defined in the
-        functions or lambdas are met
-
-        Parameters
-        ----------
-        functions : functions or lambdas
-            Functions or lambdas that take in a series as a parameter
-            and returns a :code:`bool`
-
-        Examples
-        --------
-        >>> import pandas as pd
-        >>> import pandas_addons
-        >>> import numpy as np
-        >>> df = pd.DataFrame({"X": [np.nan, np.nan, np.nan, np.nan, "hey"],
-        ...                    "Y": [0, np.nan, 0, 0, 1],
-        ...                    "Z": [1, 9, 5, 4, 2]})
-
-        One of the more common patterns is dropping a column that
-        has more than a certain threshold.
-
-        >>> df.lambdas.drop_columns_with_rules(
-        ...     lambda s: s.pctg.nans > 0.75,
-        ...     lambda s: s.pctg.zeros > 0.5)
-           Z
-        0  1
-        1  9
-        2  5
-        3  4
-        4  2
-
-        Returns
-        -------
-        pandas.DataFrame
-            Dataframe with dropped columns
-        """
-        df = self._obj.copy()
-
-        cols_to_drop = []
-        for col_name in df:
-            for f in functions:
-                if f(df[col_name]):
-                    cols_to_drop.append(col_name)
-                    break
-
-        df = df.drop(columns=cols_to_drop)
-
-        if self._pipelines is not None:
-            for pipeline in self._pipelines:
-                pipeline.add(
-                    {("lambdas", "drop_columns_with_rules"): functions})
-
-        return df
-
     def dapply(self, *functions):
         """Apply a sequence of functions on this dataframe.
 
@@ -528,5 +473,60 @@ class lambdas:
         if self._pipelines is not None:
             for pipeline in self._pipelines:
                 pipeline.add({("lambdas", "drop_if_exist"): columns})
+
+        return df
+
+    def drop_columns_with_rules(self, *functions):
+        """Drop a column if any of the conditions defined in the
+        functions or lambdas are met
+
+        Parameters
+        ----------
+        functions : functions or lambdas
+            Functions or lambdas that take in a series as a parameter
+            and returns a :code:`bool`
+
+        Examples
+        --------
+        >>> import pandas as pd
+        >>> import pandas_addons
+        >>> import numpy as np
+        >>> df = pd.DataFrame({"X": [np.nan, np.nan, np.nan, np.nan, "hey"],
+        ...                    "Y": [0, np.nan, 0, 0, 1],
+        ...                    "Z": [1, 9, 5, 4, 2]})
+
+        One of the more common patterns is dropping a column that
+        has more than a certain threshold.
+
+        >>> df.lambdas.drop_columns_with_rules(
+        ...     lambda s: s.pctg.nans > 0.75,
+        ...     lambda s: s.pctg.zeros > 0.5)
+           Z
+        0  1
+        1  9
+        2  5
+        3  4
+        4  2
+
+        Returns
+        -------
+        pandas.DataFrame
+            Dataframe with dropped columns
+        """
+        df = self._obj.copy()
+
+        cols_to_drop = []
+        for col_name in df:
+            for f in functions:
+                if f(df[col_name]):
+                    cols_to_drop.append(col_name)
+                    break
+
+        df = df.drop(columns=cols_to_drop)
+
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add(
+                    {("lambdas", "drop_columns_with_rules"): functions})
 
         return df
