@@ -1,3 +1,4 @@
+import warnings
 import pandas as pd
 import numpy as np
 from pandas.api.types import is_bool_dtype
@@ -70,26 +71,33 @@ class dataset:
     def to_X_y(self,
                target: str = None,
                nominal: str = "one-hot",
-               to_numeric: bool = False,
-               remove_missing: bool = False,
-               inplace: bool = False):
-        df = self._obj if inplace else self._obj.copy()
+               remove_missing: bool = False):
+        """
+        Change everything to a numeric type
+        """
+        df = self._obj.copy()
 
         if target and target not in df:
             raise KeyError(f"{target} is not found in the DataFrame")
 
-        # 1. Remove non-numerics
-        # User is responsible to change to category
+        # TODO check if column names are unique
+
+        # 1. Remove `object` and `datetime` types as we will not handle
+        # them. User is responsible to change to category.
+        num_cols_before = df.shape[-1]
         df = df.select_dtypes(exclude=["object", "datetime"])
+        num_cols_after = df.shape[-1]
+        if num_cols_after != num_cols_before:
+            warnings.warn("Found `object` and/or `datetime` categories. "
+                          "These categories are removed.")
 
         # 2. Remove Nans
         # Note: Categories that are label-encoded or one-hot encoded are -1 if
-        # they were NaNs but not dropped
+        # they are NaNs but not dropped
         if remove_missing:
             df = df.dropna(axis=0)
 
-        # 3. Deal with ordinal categories and boolean categories
-        # Keep track of nominals
+        # 3. Handle ordinal categories and boolean categories
         ordinal_mappings = {}
         nominal_categories = []
         ordinal_categories = []
@@ -108,10 +116,9 @@ class dataset:
             else:
                 numeric_categories.append(col)
 
-        # 4. Deal with nominal categories
+        # 4. Handle nominal categories
         nominal_mappings = {}
         if nominal == "one-hot":
-            # TODO obtain names of nominal categories after one-hot
             df = pd.get_dummies(df, columns=nominal_categories)
         elif nominal == "label":
             for col in nominal_categories:
@@ -121,25 +128,26 @@ class dataset:
                 df[col] = df[col].astype(CategoricalDtype(uniques))
                 nominal_mappings[col] = dictionarize(df[col].cat.categories)
                 df[col] = df[col].cat.codes
-        elif nominal == "keep" and to_numeric is False:
-            pass
-        elif nominal == "drop":
-            df = df.drop(columns=nominal_categories)
         else:
-            raise ValueError("`nominal` must be one of 'one-hot', 'drop' or "
-                             "'label'")
+            raise ValueError("`nominal` must be one of 'one-hot' or 'label'")
 
+        # For one-hot encoding, this is the `nominal_category` is the prefix.
+        # User is responsible to name columns to handle this
         metadata = {}
-        metadata["nominal_category"] = nominal_categories
-        metadata["ordinal_category"] = ordinal_categories
-        metadata["bool_category"] = bool_categories
-        metadata["numeric_category"] = numeric_categories
-        metadata["nominal_category_mappings"] = nominal_mappings
-        metadata["ordinal_category_mappings"] = ordinal_mappings
-        if nominal == "label":
+        metadata["nominal"] = nominal_categories
+        metadata["nominal_in_last_n_cols"] = None
+        metadata["nominal_mappings"] = nominal_mappings
+        metadata["ordinal"] = ordinal_categories
+        metadata["ordinal_mappings"] = ordinal_mappings
+        metadata["bool"] = bool_categories
+        metadata["numeric"] = numeric_categories
+
+        # Rearrange columns such that nominal categories are
+        # at the back for easy slicing access
+        if nominal in ["label", "keep"]:
             df = df[numeric_categories + ordinal_categories +
                     bool_categories + nominal_categories]
-            metadata["nominal_cat_in_last_x_columns"] = len(nominal_categories) if target is None else \
+            metadata["nominal_in_last_n_cols"] = len(nominal_categories) if target is None else \
                 len(nominal_categories) - (target in nominal_categories)
 
         if self._pipelines is not None:
@@ -147,8 +155,6 @@ class dataset:
                 pipeline.add({("dataset", "to_X_y"): {
                     "target": target,
                     "nominal": nominal,
-                    "to_numeric": to_numeric,
-                    "inplace": inplace,
                     "remove_missing": remove_missing
                 }})
 
