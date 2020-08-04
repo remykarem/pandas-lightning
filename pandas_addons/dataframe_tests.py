@@ -3,7 +3,10 @@ from itertools import combinations
 import scipy
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_categorical_dtype
 from scipy.stats import chi2_contingency
+
+
 
 
 @pd.api.extensions.register_dataframe_accessor("tests")
@@ -17,11 +20,23 @@ class tests:
         put this method elsewhere
         """
         df = self._obj
+
+        dtypes = []
+        for col in df:
+            if is_categorical_dtype(df[col]):
+                if df[col].dtype.ordered:
+                    dtype = "ordinal"
+                else:
+                    dtype = "nominal"
+            else:
+                dtype = df[col].dtype.name
+            dtypes.append(dtype)
         missing = [df[col].pctg.nans for col in df]
         zeros = [df[col].pctg.zeros for col in df]
         uniques = [df[col].pctg.uniques for col in df]
 
         info = pd.DataFrame({
+            "dtype": dtypes,
             "missing": missing,
             "zeros": zeros,
             "uniques": uniques
