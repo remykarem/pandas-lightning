@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from pandas.api.types import is_bool_dtype
 from pandas.api.types import is_categorical_dtype, CategoricalDtype
 from pandas import IntervalIndex
@@ -114,7 +115,10 @@ class dataset:
             df = pd.get_dummies(df, columns=nominal_categories)
         elif nominal == "label":
             for col in nominal_categories:
-                df[col] = df[col].astype(CategoricalDtype(df[col].unique()))
+                uniques = df[col].unique().tolist()
+                if np.nan in uniques:
+                    uniques.remove(np.nan)
+                df[col] = df[col].astype(CategoricalDtype(uniques))
                 nominal_mappings[col] = dictionarize(df[col].cat.categories)
                 df[col] = df[col].cat.codes
         elif nominal == "keep" and to_numeric is False:
