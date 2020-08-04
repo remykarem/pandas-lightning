@@ -403,7 +403,7 @@ class lambdas:
                 series = [getattr(df, col) for col in context_col]
             else:
                 # 1-to-1
-                series = [context_col]
+                series = [df[context_col]]
 
             df.loc[condition(*series), col_to_set] = np.nan
 
