@@ -18,6 +18,112 @@ class lambdas:
         self._pipelines = pipelines
         return self
 
+    def astype(self, inplace: bool = False, **dtypes):
+        """Convert dtypes of multiple columns using a dictionary
+
+        Parameters
+        ----------
+        dtypes : dict
+            Column name to data type mapping
+
+        Notes
+        -----
+        You can also specify `"index"` and `"datetime"` on a column.
+        Note that pandas does not have support for converting columns with NaNs
+        to integer type. We will convert it to float automatically and indicate
+        the user with a warning.
+        https://pandas.pydata.org/pandas-docs/stable/user_guide/gotchas.html
+
+        Example
+        -------
+        Suppose we have a dataframe
+
+        >>> import pandas as pd
+        >>> from pandas.api.types import CategoricalDtype
+        >>> import pandas_addons
+        >>> df = pd.DataFrame({"X": list("ABACBB"),
+        ...                    "Y": list("121092"),
+        ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
+        ... })
+        >>> df
+           X  Y     Z
+        0  A  1   hot
+        1  B  2  warm
+        2  A  1   hot
+        3  C  0  cold
+        4  B  9  cold
+        5  B  2   hot
+
+        Change the types of the columns by writing
+
+        >>> df = df.lambdas.astype({
+        ...     X="category",
+        ...     Y=int,
+        ...     Z=["cold", "warm", "hot"]  # this will be ordinal
+        ... })
+
+        which is equivalent to
+
+        >>> df["X"] = df["X"].astype("category")
+        >>> df["Y"] = df["Y"].astype(int)
+        >>> df["Z"] = df["Z"].astype(CategoricalDtype(
+        ...                 ["cold", "warm", "hot"], ordered=True))
+
+        Returns
+        -------
+        pandas.DataFrame
+            A dataframe whose columns have been converted accordingly
+        """
+        df = self._obj if inplace else self._obj.copy()
+
+        for col, dtype in dtypes.items():
+
+            # Check the value
+            if isinstance(dtype, tuple):
+                col_new = col
+                col_old, dtype = dtype
+            else:
+                col_new, col_old = col, col
+
+            # Check the dtype definition
+            if isinstance(dtype, type):
+                # TODO add numpy types
+                if dtype.__name__ not in ["int", "float", "bool", "str"]:
+                    raise ValueError("Wrong type")
+            elif isinstance(dtype, str):
+                if dtype not in ["datetime", "index", "category", "int", "float", "bool", "str", "object"]:
+                    raise ValueError("Wrong type")
+            elif isinstance(dtype, list):
+                dtype = CategoricalDtype(dtype, ordered=True)
+            elif callable(dtype):
+                sort_fn = dtype
+                uniques = df[col_old].unique().tolist()
+                uniques.sort(key=sort_fn)
+                dtype = CategoricalDtype(uniques, ordered=True)
+            elif not isinstance(dtype, CategoricalDtype):
+                raise ValueError("Wrong type")
+
+            # Handle pandas gotchas 😰
+            if (dtype == int or dtype == "int") and df[col_old].hasnans:
+                raise TypeError("Cannot convert non-finite values (NA or inf) to integer")
+            elif (dtype == bool or dtype == "bool") and df[col_old].hasnans:
+                raise TypeError(f"Casting {col_old} to bool converts NaNs to True. "
+                                "Cast to `float` instead.")
+
+            # Cast type
+            if dtype == "index":
+                df = df.set_index(col_old)
+            elif dtype == "datetime":
+                df[col_new] = pd.to_datetime(df[col_old])
+            else:
+                df[col_new] = df[col_old].astype(dtype)
+
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add({("lambdas", "astype"): dtypes})
+
+        return df
+
     def dapply(self, *functions):
         """Apply a sequence of functions on this dataframe.
 
@@ -287,112 +393,6 @@ class lambdas:
         if self._pipelines is not None:
             for pipeline in self._pipelines:
                 pipeline.add({("lambdas", "fillna"): d})
-
-        return df
-
-    def astype(self, inplace: bool = False, **dtypes):
-        """Convert dtypes of multiple columns using a dictionary
-
-        Parameters
-        ----------
-        dtypes : dict
-            Column name to data type mapping
-
-        Notes
-        -----
-        You can also specify `"index"` and `"datetime"` on a column.
-        Note that pandas does not have support for converting columns with NaNs
-        to integer type. We will convert it to float automatically and indicate
-        the user with a warning.
-        https://pandas.pydata.org/pandas-docs/stable/user_guide/gotchas.html
-
-        Example
-        -------
-        Suppose we have a dataframe
-
-        >>> import pandas as pd
-        >>> from pandas.api.types import CategoricalDtype
-        >>> import pandas_addons
-        >>> df = pd.DataFrame({"X": list("ABACBB"),
-        ...                    "Y": list("121092"),
-        ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
-        ... })
-        >>> df
-           X  Y     Z
-        0  A  1   hot
-        1  B  2  warm
-        2  A  1   hot
-        3  C  0  cold
-        4  B  9  cold
-        5  B  2   hot
-
-        Change the types of the columns by writing
-
-        >>> df = df.lambdas.astype({
-        ...     X="category",
-        ...     Y=int,
-        ...     Z=["cold", "warm", "hot"]  # this will be ordinal
-        ... })
-
-        which is equivalent to
-
-        >>> df["X"] = df["X"].astype("category")
-        >>> df["Y"] = df["Y"].astype(int)
-        >>> df["Z"] = df["Z"].astype(CategoricalDtype(
-        ...                 ["cold", "warm", "hot"], ordered=True))
-
-        Returns
-        -------
-        pandas.DataFrame
-            A dataframe whose columns have been converted accordingly
-        """
-        df = self._obj if inplace else self._obj.copy()
-
-        for col, dtype in dtypes.items():
-
-            # Check the value
-            if isinstance(dtype, tuple):
-                col_new = col
-                col_old, dtype = dtype
-            else:
-                col_new, col_old = col, col
-
-            # Check the dtype definition
-            if isinstance(dtype, type):
-                # TODO add numpy types
-                if dtype.__name__ not in ["int", "float", "bool", "str"]:
-                    raise ValueError("Wrong type")
-            elif isinstance(dtype, str):
-                if dtype not in ["datetime", "index", "category", "int", "float", "bool", "str", "object"]:
-                    raise ValueError("Wrong type")
-            elif isinstance(dtype, list):
-                dtype = CategoricalDtype(dtype, ordered=True)
-            elif callable(dtype):
-                sort_fn = dtype
-                uniques = df[col_old].unique().tolist()
-                uniques.sort(key=sort_fn)
-                dtype = CategoricalDtype(uniques, ordered=True)
-            elif not isinstance(dtype, CategoricalDtype):
-                raise ValueError("Wrong type")
-
-            # Handle pandas gotchas 😰
-            if (dtype == int or dtype == "int") and df[col_old].hasnans:
-                raise TypeError("Cannot convert non-finite values (NA or inf) to integer")
-            elif (dtype == bool or dtype == "bool") and df[col_old].hasnans:
-                raise TypeError(f"Casting {col_old} to bool converts NaNs to True. "
-                                "Cast to `float` instead.")
-
-            # Cast type
-            if dtype == "index":
-                df = df.set_index(col_old)
-            elif dtype == "datetime":
-                df[col_new] = pd.to_datetime(df[col_old])
-            else:
-                df[col_new] = df[col_old].astype(dtype)
-
-        if self._pipelines is not None:
-            for pipeline in self._pipelines:
-                pipeline.add({("lambdas", "astype"): dtypes})
 
         return df
 
