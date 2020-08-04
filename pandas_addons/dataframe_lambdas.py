@@ -198,70 +198,6 @@ class lambdas:
 
         return df
 
-    def map_conditional(self, mappings: dict, inplace: bool = False):
-        """Map values from multiple columns based on conditional
-        statements expressed as lambdas. Similar to `numpy.select`
-        and `numpy.where`.
-
-        Parameters
-        ----------
-        lambdas : dict
-            A nested dictionary where the key is the column names
-            and the value is a dictionary of (newvalue: conditional statement)
-            where the conditional statement is expressed as a lambda
-            statement
-        inplace : bool, optional
-            Whether to modify the series inplace, by default False
-
-        Example
-        -------
-        >>> df = pd.DataFrame({"X": [0, 5, 3, 3, 4, 1],
-        ...                    "Y": [1, 2, 1, 0, 9, 2],
-        ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
-        ... })
-        >>> df.lambdas.map_conditional({
-        ...     ("Z", ("X", "Y")): {
-        ...         "green": lambda x, y: x + y > 1,
-        ...         "orange": lambda x, y: x == 5,
-        ...         "black": None  # default
-        ...     }
-        ... })
-
-        Returns
-        -------
-        pandas.DataFrame
-            A transformed copy of the dataframe
-        """
-        df = self._obj if inplace else self._obj.copy()
-
-        for cols, mapping in mappings.items():
-            if len(cols) == 1 or isinstance(cols, str):
-                col_new, cols_old = cols, cols
-            elif len(cols) == 2:
-                col_new, cols_old = cols
-            else:
-                raise ValueError("Wrong key")
-
-            if not isinstance(mapping, dict):
-                raise ValueError("Must be dictionary")
-
-            choices, conditions_ = list(mapping.keys()), list(mapping.values())
-            if conditions_[-1] is None:
-                conditions_.pop()
-                default = choices.pop()
-            else:
-                default = None
-
-            series = [getattr(df, col_old) for col_old in cols_old]
-            conditions = [cond(*series) for cond in conditions_]
-            df[col_new] = np.select(conditions, choices, default=default)
-
-        if self._pipelines is not None:
-            for pipeline in self._pipelines:
-                pipeline.add({("lambdas", "map_conditional"): mappings})
-
-        return df
-
     def apply(self, inplace: bool = False, **lambdas):
         """Specify what functions to apply to every element
         in specified columns
@@ -457,6 +393,70 @@ class lambdas:
         if self._pipelines is not None:
             for pipeline in self._pipelines:
                 pipeline.add({("lambdas", "astype"): dtypes})
+
+        return df
+
+    def map_conditional(self, mappings: dict, inplace: bool = False):
+        """Map values from multiple columns based on conditional
+        statements expressed as lambdas. Similar to `numpy.select`
+        and `numpy.where`.
+
+        Parameters
+        ----------
+        lambdas : dict
+            A nested dictionary where the key is the column names
+            and the value is a dictionary of (newvalue: conditional statement)
+            where the conditional statement is expressed as a lambda
+            statement
+        inplace : bool, optional
+            Whether to modify the series inplace, by default False
+
+        Example
+        -------
+        >>> df = pd.DataFrame({"X": [0, 5, 3, 3, 4, 1],
+        ...                    "Y": [1, 2, 1, 0, 9, 2],
+        ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
+        ... })
+        >>> df.lambdas.map_conditional({
+        ...     ("Z", ("X", "Y")): {
+        ...         "green": lambda x, y: x + y > 1,
+        ...         "orange": lambda x, y: x == 5,
+        ...         "black": None  # default
+        ...     }
+        ... })
+
+        Returns
+        -------
+        pandas.DataFrame
+            A transformed copy of the dataframe
+        """
+        df = self._obj if inplace else self._obj.copy()
+
+        for cols, mapping in mappings.items():
+            if len(cols) == 1 or isinstance(cols, str):
+                col_new, cols_old = cols, cols
+            elif len(cols) == 2:
+                col_new, cols_old = cols
+            else:
+                raise ValueError("Wrong key")
+
+            if not isinstance(mapping, dict):
+                raise ValueError("Must be dictionary")
+
+            choices, conditions_ = list(mapping.keys()), list(mapping.values())
+            if conditions_[-1] is None:
+                conditions_.pop()
+                default = choices.pop()
+            else:
+                default = None
+
+            series = [getattr(df, col_old) for col_old in cols_old]
+            conditions = [cond(*series) for cond in conditions_]
+            df[col_new] = np.select(conditions, choices, default=default)
+
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add({("lambdas", "map_conditional"): mappings})
 
         return df
 
