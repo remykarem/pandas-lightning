@@ -32,7 +32,7 @@ class dataset:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("dataset","undersample"): {
+                pipeline.add({("dataset", "undersample"): {
                     "col": col,
                     "replace": replace,
                     "min_count": min_count,
@@ -58,7 +58,7 @@ class dataset:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("dataset","oversample"): {
+                pipeline.add({("dataset", "oversample"): {
                     "col": col,
                     "max_count": max_count,
                     "random_state": random_state
@@ -67,11 +67,11 @@ class dataset:
         return df_new
 
     def to_X_y(self,
-                    target: str = None,
-                    nominal: str = "one-hot",
-                    to_numpy: bool = False,
-                    remove_missing: bool = True,
-                    inplace: bool = False):
+               target: str = None,
+               nominal: str = "one-hot",
+               to_numeric: bool = False,
+               remove_missing: bool = False,
+               inplace: bool = False):
         df = self._obj if inplace else self._obj.copy()
 
         if target and target not in df:
@@ -110,16 +110,17 @@ class dataset:
         # 4. Deal with nominal categories
         nominal_mappings = {}
         if nominal == "one-hot":
+            # TODO obtain names of nominal categories after one-hot
             df = pd.get_dummies(df, columns=nominal_categories)
-        elif nominal == "drop":
-            df = df.drop(columns=nominal_categories)
         elif nominal == "label":
             for col in nominal_categories:
                 df[col] = df[col].astype(CategoricalDtype(df[col].unique()))
                 nominal_mappings[col] = dictionarize(df[col].cat.categories)
                 df[col] = df[col].cat.codes
-        elif nominal == "keep" and to_numpy is False:
+        elif nominal == "keep" and to_numeric is False:
             pass
+        elif nominal == "drop":
+            df = df.drop(columns=nominal_categories)
         else:
             raise ValueError("`nominal` must be one of 'one-hot', 'drop' or "
                              "'label'")
@@ -139,27 +140,20 @@ class dataset:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("dataset","to_X_y"): {
+                pipeline.add({("dataset", "to_X_y"): {
                     "target": target,
                     "nominal": nominal,
-                    "to_numpy": to_numpy,
+                    "to_numeric": to_numeric,
                     "inplace": inplace,
                     "remove_missing": remove_missing
                 }})
 
-        # 5. Whether to convert to numpy
-        if to_numpy:
-            if target:
-                y = df.pop(target)
-                return df.values, y.values, metadata
-            else:
-                return df.values, metadata
+        # 5. Separate target
+        if target:
+            y = df.pop(target)
+            return df, y, metadata
         else:
-            if target:
-                y = df.pop(target)
-                return df, y, metadata
-            else:
-                return df, metadata
+            return df, metadata
 
 
 def dictionarize(categories):
