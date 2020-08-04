@@ -386,14 +386,11 @@ class lambdas:
 
         return df
 
-    def setna(self, d: dict, inplace: bool = False):
+    def setna(self, inplace: bool = False, **d):
         df = self._obj if inplace else self._obj.copy()
 
         for col, condition in d.items():
-            if isinstance(col, str):
-                df.loc[condition(df[col]), col] = np.nan
-            else:
-                raise ValueError("Wrong key")
+            df.loc[condition(df[col]), col] = np.nan
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
