@@ -9,17 +9,15 @@ from pandas.api.types import CategoricalDtype
 @pd.api.extensions.register_dataframe_accessor("lambdas")
 class lambdas:
     def __init__(self, pandas_obj):
-        self._obj = None
-        self._pipelines = None
         self._validate_obj(pandas_obj)
+        self._obj = pandas_obj
+        self._pipelines = None
 
     def _validate_obj(self, pandas_obj):
         cols_with_space = [col for col in pandas_obj.columns if " " in col]
         if len(cols_with_space) > 0:
             warnings.warn("Dataframe consists of column names with spaces. "
                           "Consider cleaning these up.")
-
-        self._obj = pandas_obj.copy()
 
     def __call__(self, pipelines: list = None):
         # Warning: `self._pipelines` is mutable by design
@@ -85,7 +83,7 @@ class lambdas:
         pandas.DataFrame
             A dataframe whose columns have been converted accordingly
         """
-        df = self._obj
+        df = self._obj.copy()
 
         for col, dtype in dtypes.items():
 
@@ -219,7 +217,7 @@ class lambdas:
         ValueError
             [description]
         """
-        df = self._obj
+        df = self._obj.copy()
 
         for col, function in lambdas.items():
 
@@ -300,7 +298,7 @@ class lambdas:
         pandas.DataFrame
             Mutated dataframe
         """
-        df = self._obj
+        df = self._obj.copy()
 
         run_steps = reduce(lambda f, g: lambda x: g(f(x)),
                            functions,
@@ -343,7 +341,7 @@ class lambdas:
         pandas.DataFrame
             A dataframe whose columns have been converted accordingly
         """
-        df = self._obj
+        df = self._obj.copy()
 
         for col, function in lambdas.items():
 
@@ -379,7 +377,7 @@ class lambdas:
         ValueError
             If wrong type is specified
         """
-        df = self._obj
+        df = self._obj.copy()
 
         for col, condition in conditions.items():
 
@@ -422,7 +420,7 @@ class lambdas:
             ("Age", ("Sex", "Pclass")): lambda group: group.median()
         })
         """
-        df = self._obj
+        df = self._obj.copy()
 
         for cols, fill_value in d.items():
             if isinstance(cols, str):
@@ -498,7 +496,7 @@ class lambdas:
         pandas.DataFrame
             A transformed copy of the dataframe
         """
-        df = self._obj
+        df = self._obj.copy()
 
         default = None
 
@@ -541,7 +539,7 @@ class lambdas:
         return df
 
     def drop_if_exist(self, columns: list):
-        df = self._obj
+        df = self._obj.copy()
 
         columns_ = columns.copy()
         for i, col in enumerate(columns):
@@ -593,7 +591,7 @@ class lambdas:
         pandas.DataFrame
             Dataframe with dropped columns
         """
-        df = self._obj
+        df = self._obj.copy()
 
         cols_to_drop = []
         for col_name in df:
@@ -610,3 +608,14 @@ class lambdas:
                     {("lambdas", "drop_columns_with_rules"): functions})
 
         return df
+
+
+    # def merge(self, ):
+    #     df = self._obj
+
+    #     df.merge(df_users, on="user_id", how="left").merge(df_email, on="grass_date", how="left")
+
+    #     df.lambdas.merge({
+    #         ("left", "user_id"): df_users,
+    #         ("left", "grass_date"): df_email
+    #     })
