@@ -492,6 +492,8 @@ class lambdas:
             A dataframe whose columns have been converted accordingly
         """
 
+        # FIXME casting to bool results in NaNs -> True 😰
+
         df = self._obj if inplace else self._obj.copy()
 
         for cols, dtype in dtypes.items():
