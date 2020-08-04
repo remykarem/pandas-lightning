@@ -104,11 +104,11 @@ class lambdas:
 
         Then
 
-        >>> df = df.lambdas.dapply({
+        >>> df = df.lambdas.dapply(
         ...     drop_some_columns,
         ...     rename_columns,
         ...     reindex
-        ... })
+        ... )
 
         which is the same as
 
