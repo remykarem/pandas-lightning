@@ -1,8 +1,9 @@
 import warnings
 from functools import reduce
+
 import pandas as pd
-from pandas.api.types import CategoricalDtype
 import numpy as np
+from pandas.api.types import CategoricalDtype
 
 
 @pd.api.extensions.register_dataframe_accessor("lambdas")
