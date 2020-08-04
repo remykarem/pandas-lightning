@@ -366,15 +366,50 @@ class lambdas:
 
         return df
 
-    def setna(self, **d):
+    def setna(self, **conditions):
+        """You would do this on an existing column
+
+        Returns
+        -------
+        pandas.DataFrame
+            A copy of the dataframe
+
+        Raises
+        ------
+        ValueError
+            If wrong type is specified
+        """
         df = self._obj
 
-        for col, condition in d.items():
-            df.loc[condition(df[col]), col] = np.nan
+        for col, condition in conditions.items():
+
+            # Unpack dictionary value
+            if callable(condition):
+                # 1-to-1
+                col_to_set, context_col = col, col
+            elif isinstance(condition, tuple) and len(condition) == 1:
+                # 1-to-1
+                col_to_set, context_col = col, col
+                condition = condition[0]
+            elif isinstance(condition, tuple) and len(condition) == 2:
+                # many-to-1
+                col_to_set = col
+                context_col, condition = condition
+            else:
+                raise ValueError("Wrong type specified")
+
+            if isinstance(context_col, (list, tuple)):
+                # many-to-1
+                series = [getattr(df, col) for col in context_col]
+            else:
+                # 1-to-1
+                series = [context_col]
+
+            df.loc[condition(*series), col_to_set] = np.nan
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("lambdas", "setna"): d})
+                pipeline.add({("lambdas", "setna"): conditions})
 
         return df
 
