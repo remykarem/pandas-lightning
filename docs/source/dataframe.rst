@@ -49,10 +49,10 @@ drop_columns_with_rules
 DataFrame.dataset
 ------------------
 
-to_numerics
+to_X_y
 ***********
 
-.. automethod:: pandas_addons.dataframe_dataset.dataset.to_numerics
+.. automethod:: pandas_addons.dataframe_dataset.dataset.to_X_y
 
 
 
