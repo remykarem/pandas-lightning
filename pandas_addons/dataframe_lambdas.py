@@ -384,14 +384,7 @@ class lambdas:
         for col, condition in conditions.items():
 
             # Unpack dictionary value
-            if callable(condition):
-                # 1-to-1
-                col_to_set, context_col = col, col
-            elif isinstance(condition, tuple) and len(condition) == 1:
-                # 1-to-1
-                col_to_set, context_col = col, col
-                condition = condition[0]
-            elif isinstance(condition, tuple) and len(condition) == 2:
+            if isinstance(condition, tuple) and len(condition) == 2:
                 # many-to-1
                 col_to_set = col
                 context_col, condition = condition
