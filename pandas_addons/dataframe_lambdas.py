@@ -124,67 +124,6 @@ class lambdas:
 
         return df
 
-    def dapply(self, *functions):
-        """Apply a sequence of functions on this dataframe.
-
-        Parameters
-        ----------
-        functions : lambdas or functions
-            Each function must return a dataframe object
-
-        Example
-        -------
-        >>> import pandas as pd
-        >>> import pandas_addons
-        >>> df = pd.DataFrame({"X": list("ABACBB"),
-        ...                    "Y": list("121092"),
-        ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
-        ... })
-
-        Define some functions
-
-        >>> def drop_some_columns(data):
-        ...     ...
-        ...     return data
-        >>> def reindex(data):
-        ...     ...
-        ...     return data
-        >>> def rename_columns(data):
-        ...     ...
-        ...     return data
-
-        Then
-
-        >>> df = df.lambdas.dapply(
-        ...     drop_some_columns,
-        ...     rename_columns,
-        ...     reindex
-        ... )
-
-        which is the same as
-
-        >>> df = drop_some_columns(df)
-        >>> df = rename_columns(df)
-        >>> df = reindex(df)
-
-        Returns
-        -------
-        pandas.DataFrame
-            Mutated dataframe
-        """
-        df = self._obj.copy()
-        run_steps = reduce(lambda f, g: lambda x: g(f(x)),
-                           functions,
-                           lambda x: x)
-
-        df = run_steps(df)
-
-        if self._pipelines is not None:
-            for pipeline in self._pipelines:
-                pipeline.add({("lambdas", "dapply"): functions})
-
-        return df
-
     def sapply(self, inplace: bool = False, **lambdas):
         """Perform multiple lambda operations on series
 
@@ -301,6 +240,67 @@ class lambdas:
         if self._pipelines is not None:
             for pipeline in self._pipelines:
                 pipeline.add({("lambdas", "sapply"): lambdas})
+
+        return df
+
+    def dapply(self, *functions):
+        """Apply a sequence of functions on this dataframe.
+
+        Parameters
+        ----------
+        functions : lambdas or functions
+            Each function must return a dataframe object
+
+        Example
+        -------
+        >>> import pandas as pd
+        >>> import pandas_addons
+        >>> df = pd.DataFrame({"X": list("ABACBB"),
+        ...                    "Y": list("121092"),
+        ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
+        ... })
+
+        Define some functions
+
+        >>> def drop_some_columns(data):
+        ...     ...
+        ...     return data
+        >>> def reindex(data):
+        ...     ...
+        ...     return data
+        >>> def rename_columns(data):
+        ...     ...
+        ...     return data
+
+        Then
+
+        >>> df = df.lambdas.dapply(
+        ...     drop_some_columns,
+        ...     rename_columns,
+        ...     reindex
+        ... )
+
+        which is the same as
+
+        >>> df = drop_some_columns(df)
+        >>> df = rename_columns(df)
+        >>> df = reindex(df)
+
+        Returns
+        -------
+        pandas.DataFrame
+            Mutated dataframe
+        """
+        df = self._obj.copy()
+        run_steps = reduce(lambda f, g: lambda x: g(f(x)),
+                           functions,
+                           lambda x: x)
+
+        df = run_steps(df)
+
+        if self._pipelines is not None:
+            for pipeline in self._pipelines:
+                pipeline.add({("lambdas", "dapply"): functions})
 
         return df
 
