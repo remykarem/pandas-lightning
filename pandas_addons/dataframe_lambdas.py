@@ -339,7 +339,7 @@ class lambdas:
 
         return df
 
-    def apply(self, lambdas: dict, inplace: bool = False):
+    def apply(self, inplace: bool = False, **lambdas):
         """Specify what functions to apply to every element
         in specified columns
 
@@ -371,13 +371,19 @@ class lambdas:
         """
         df = self._obj if inplace else self._obj.copy()
 
-        for cols, function in lambdas.items():
-            if len(cols) == 1 or isinstance(cols, str):
-                col_new, col_old = cols, cols
-            elif len(cols) == 2:
-                col_new, col_old = cols
+        for col, function in lambdas.items():
+
+            if callable(function):
+                col_new, col_old = col, col
+            elif isinstance(function, tuple) and len(function) == 1:
+                col_new, col_old = col, col
+                function = function[0]
+            elif isinstance(function, tuple) and len(function) == 2:
+                col_new = col
+                col_old, function = function
             else:
-                raise ValueError("Wrong key")
+                raise ValueError("Values must be a callable or a tuple")
+
             df[col_new] = df[col_old].apply(function)
 
         if self._pipelines is not None:
