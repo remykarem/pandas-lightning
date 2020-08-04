@@ -8,15 +8,17 @@ import numpy as np
 @pd.api.extensions.register_dataframe_accessor("lambdas")
 class lambdas:
     def __init__(self, pandas_obj):
-        self._obj = pandas_obj
+        self._obj = None
         self._pipelines = None
-        self._validate_obj()
+        self._validate_obj(pandas_obj)
 
-    def _validate_obj(self):
-        cols_with_space = [col for col in self._obj.columns if " " in col]
+    def _validate_obj(self, pandas_obj):
+        cols_with_space = [col for col in pandas_obj.columns if " " in col]
         if len(cols_with_space) > 0:
             warnings.warn("Dataframe consists of column names with spaces. "
                           "Consider cleaning these up.")
+
+        self._obj = pandas_obj.copy()
 
     def __call__(self, pipelines: list = None):
         # Warning: `self._pipelines` is mutable by design
@@ -26,7 +28,7 @@ class lambdas:
         self._pipelines = pipelines
         return self
 
-    def astype(self, inplace: bool = False, **dtypes):
+    def astype(self, **dtypes):
         """Convert dtypes of multiple columns using a dictionary
 
         Parameters
@@ -82,7 +84,7 @@ class lambdas:
         pandas.DataFrame
             A dataframe whose columns have been converted accordingly
         """
-        df = self._obj if inplace else self._obj.copy()
+        df = self._obj
 
         for col, dtype in dtypes.items():
 
@@ -133,7 +135,7 @@ class lambdas:
 
         return df
 
-    def sapply(self, inplace: bool = False, **lambdas):
+    def sapply(self, **lambdas):
         """Perform multiple lambda operations on series
 
         Parameters
@@ -216,10 +218,7 @@ class lambdas:
         ValueError
             [description]
         """
-        if inplace:
-            df = self._obj
-        else:
-            df = self._obj.copy()
+        df = self._obj
 
         for col, function in lambdas.items():
 
@@ -300,11 +299,11 @@ class lambdas:
         pandas.DataFrame
             Mutated dataframe
         """
-        df = self._obj.copy()
+        df = self._obj
+
         run_steps = reduce(lambda f, g: lambda x: g(f(x)),
                            functions,
                            lambda x: x)
-
         df = run_steps(df)
 
         if self._pipelines is not None:
@@ -313,7 +312,7 @@ class lambdas:
 
         return df
 
-    def apply(self, inplace: bool = False, **lambdas):
+    def apply(self, **lambdas):
         """Specify what functions to apply to every element
         in specified columns
 
@@ -343,7 +342,7 @@ class lambdas:
         pandas.DataFrame
             A dataframe whose columns have been converted accordingly
         """
-        df = self._obj if inplace else self._obj.copy()
+        df = self._obj
 
         for col, function in lambdas.items():
 
@@ -366,8 +365,8 @@ class lambdas:
 
         return df
 
-    def setna(self, inplace: bool = False, **d):
-        df = self._obj if inplace else self._obj.copy()
+    def setna(self, **d):
+        df = self._obj
 
         for col, condition in d.items():
             df.loc[condition(df[col]), col] = np.nan
@@ -378,7 +377,7 @@ class lambdas:
 
         return df
 
-    def fillna(self, d: dict, inplace: bool = False):
+    def fillna(self, d: dict):
         """
         Example
         -------
@@ -387,7 +386,7 @@ class lambdas:
             ("Age", ("Sex", "Pclass")): lambda group: group.median()
         })
         """
-        df = self._obj if inplace else self._obj.copy()
+        df = self._obj
 
         for cols, fill_value in d.items():
             if isinstance(cols, str):
@@ -405,7 +404,7 @@ class lambdas:
 
         return df
 
-    def map_conditional(self, inplace: bool = False, **mappings):
+    def map_conditional(self, **mappings):
         """Map values from multiple columns based on conditional
         statements expressed as lambdas. Similar to `numpy.select`
         and `numpy.where`.
@@ -463,7 +462,7 @@ class lambdas:
         pandas.DataFrame
             A transformed copy of the dataframe
         """
-        df = self._obj if inplace else self._obj.copy()
+        df = self._obj
 
         default = None
 
@@ -505,15 +504,15 @@ class lambdas:
 
         return df
 
-    def drop_if_exist(self, columns: list, inplace=False):
-        df = self._obj if inplace else self._obj.copy()
+    def drop_if_exist(self, columns: list):
+        df = self._obj
 
         columns_ = columns.copy()
         for i, col in enumerate(columns):
             if col not in df:
                 columns_.pop(i)
 
-        df = df.drop(columns=columns_, inplace=inplace)
+        df = df.drop(columns=columns_)
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
@@ -558,7 +557,7 @@ class lambdas:
         pandas.DataFrame
             Dataframe with dropped columns
         """
-        df = self._obj.copy()
+        df = self._obj
 
         cols_to_drop = []
         for col_name in df:
