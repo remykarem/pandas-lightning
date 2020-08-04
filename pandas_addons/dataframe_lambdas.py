@@ -105,7 +105,8 @@ class lambdas:
 
             # Handle pandas gotchas 😰
             if (dtype == int or dtype == "int") and df[col_old].hasnans:
-                raise TypeError("Cannot convert non-finite values (NA or inf) to integer")
+                raise TypeError(
+                    "Cannot convert non-finite values (NA or inf) to integer")
             elif (dtype == bool or dtype == "bool") and df[col_old].hasnans:
                 raise TypeError(f"Casting {col_old} to bool converts NaNs to True. "
                                 "Cast to `float` instead.")
@@ -396,10 +397,16 @@ class lambdas:
 
         return df
 
-    def map_conditional(self, mappings: dict, inplace: bool = False):
+    def map_conditional(self, inplace: bool = False, **mappings):
         """Map values from multiple columns based on conditional
         statements expressed as lambdas. Similar to `numpy.select`
         and `numpy.where`.
+
+        You would use this for if-elif-else statements.
+        If your statement is only an if-else and it is short,
+        you would want to use `sapply` instead.
+
+        Similar to pandas.Series.map.
 
         Parameters
         ----------
@@ -417,13 +424,31 @@ class lambdas:
         ...                    "Y": [1, 2, 1, 0, 9, 2],
         ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
         ... })
-        >>> df.lambdas.map_conditional({
-        ...     ("Z", ("X", "Y")): {
+
+        Here is an example that maps the values across two series and creates
+        a new series `W`.
+
+        >>> df.lambdas.map_conditional(
+        ...     W=(["X", "Y"], {
         ...         "green": lambda x, y: x + y > 1,
         ...         "orange": lambda x, y: x == 5,
-        ...         "black": None  # default
-        ...     }
-        ... })
+        ...        }, "black")
+        ... )
+           X  Y     Z       W
+        0  0  1   hot   black
+        1  5  2  warm  orange
+        2  3  1   hot   green
+        3  3  0  cold   green
+        4  4  9  cold  orange
+        5  1  2   hot   black
+
+        Here is an example that changes the value of Z. Note that this is a
+        contrived example and you would want to use the pandas.Series.map API instead.
+
+        >>> df.lambdas.map_conditional(
+        ...     Z={"blue": lambda z: z == "cold",
+        ...        "amber": lambda z: z == "warm",
+        ...        "red": lambda z: z == "hot"})
 
         Returns
         -------
@@ -432,27 +457,38 @@ class lambdas:
         """
         df = self._obj if inplace else self._obj.copy()
 
-        for cols, mapping in mappings.items():
-            if len(cols) == 1 or isinstance(cols, str):
-                col_new, cols_old = cols, cols
-            elif len(cols) == 2:
-                col_new, cols_old = cols
-            else:
-                raise ValueError("Wrong key")
+        default = None
 
+        for col, definition in mappings.items():
+
+            # Unpack dictionary value
+            if isinstance(definition, dict):
+                col_new, col_old = col, col
+                mapping = definition
+            elif isinstance(definition, tuple) and len(definition) == 2:
+                col_new = col
+                col_old, mapping = definition
+            elif isinstance(definition, tuple) and len(definition) == 3:
+                col_new = col
+                col_old, mapping, default = definition
+            else:
+                raise ValueError
+
+            # Get the series
+            if isinstance(col_old, (list, tuple)):
+                series = [getattr(df, col) for col in col_old]
+            else:
+                series = [df[col_old]]
+
+            # Unpack mapping
             if not isinstance(mapping, dict):
                 raise ValueError("Must be dictionary")
 
-            choices, conditions_ = list(mapping.keys()), list(mapping.values())
-            if conditions_[-1] is None:
-                conditions_.pop()
-                default = choices.pop()
-            else:
-                default = None
-
-            series = [getattr(df, col_old) for col_old in cols_old]
-            conditions = [cond(*series) for cond in conditions_]
-            df[col_new] = np.select(conditions, choices, default=default)
+            # Use np.select
+            choicelist, conditions = list(mapping.keys()), list(mapping.values())
+            condlist = [cond(*series) for cond in conditions]
+            df[col_new] = np.select(condlist=condlist, choicelist=choicelist,
+                                    default=default)
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
