@@ -134,7 +134,7 @@ class lambdas:
 
         return df
 
-    def sapply(self, lambdas: dict, inplace: bool = False):
+    def sapply(self, inplace: bool = False, **lambdas):
         """Perform multiple lambda operations on series
 
         Parameters
@@ -153,18 +153,17 @@ class lambdas:
         ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
         ... })
         >>> df = df.lambdas.astype({
-        ...     "Y": int,
-        ...     "Z": ["cold", "warm", "hot"]})
+        ...     Y=int,
+        ...     Z=["cold", "warm", "hot"]})
 
         **Example 1**
 
             Rewriting to the same column
 
-            >>> df = df.lambdas.sapply({
-            ...     "X": lambda s: s + "rea",
-            ...     "Y": lambda s: s+100,
-            ...     "Z": lambda s: s.str.upper()
-            ... })
+            >>> df = df.lambdas.sapply(
+            ...     X=lambda s: s + "rea",
+            ...     Y=lambda s: s+100,
+            ...     Z=lambda s: s.str.upper())
 
             which is the same as
 
@@ -176,11 +175,11 @@ class lambdas:
 
             Rewriting to the another column
 
-            >>> df = df.lambdas.sapply({
-            ...     ("X_new", "X"): lambda s: s + "rea",
-            ...     ("Y_new", "Y"): lambda s: s+100,
-            ...     ("Z_new", "Z"): lambda s: s.str.upper()
-            ... })
+            >>> df = df.lambdas.sapply(
+            ...     X_new=("X", lambda s: s + "rea"),
+            ...     Y_new=("Y", lambda s: s+100),
+            ...     Z_new=("Z", lambda s: s.str.upper())
+            ... )
 
             which is the same as
 
@@ -190,33 +189,19 @@ class lambdas:
 
         **Example 3**
 
-            Rewriting to the multiple columns
+            Work with more than 1 column at a time
 
-            >>> df = df.lambdas.sapply({
-            ...     (("Z_upper", "Z_lower"), "Z"): lambda z: (z.str.upper(), z.str.lower())
-            ... })
-
-            which is the same as
-
-            >>> df["Z_upper"] = df["Z"].str.upper()
-            >>> df["Z_lower"] = df["Z"].str.lower()
-
-        **Example 4**
-
-            Work with 2 columns at a time
-
-            >>> df.lambdas.sapply({
-            ...     ("XY", ("X", "Y")):
-            ...     lambda x, y: x + (y+10).astype(str),
-            ...     ("YZ", ("Y", "Z")):
-            ...     lambda y, z: z.astype(str) + "-" + y.astype(str),
-            ... })
+            >>> df.lambdas.sapply(
+            ...     XY=(["X", "Y"],
+            ...         lambda x, y: x + (y+10).astype(str),
+            ...     YZ=(["Y", "Z"],
+            ...         lambda y, z: z.astype(str) + "-" + y.astype(str),
+            ... )
 
             which is the same as
 
             >>> df["XY"] = df["X"] + df["Y"].astype(str)
             >>> df["YZ"] = df["Y"].astype(str) + "-" + df["Z"].astype(str)
-
 
         Returns
         -------
@@ -232,41 +217,35 @@ class lambdas:
         ValueError
             [description]
         """
-        if not isinstance(lambdas, dict):
-            raise ValueError("Must be dict")
         if inplace:
             df = self._obj
         else:
             df = self._obj.copy()
 
-        for cols, function in lambdas.items():
-            if len(cols) == 1 or isinstance(cols, str):
-                # `("col"): ...`
-                # `"col": ...`
-                cols_new, cols_old = cols, cols
-            elif len(cols) == 2:
-                # `("col_b", ("col_a1","col_a2")): ...`
-                # `("col_b", ["col_a1","col_a2"]): ...`
-                # `("col_b", "col_a"): ...`
-                cols_new, cols_old = cols
-            else:
-                raise ValueError("Wrong key")
+        for col, function in lambdas.items():
 
-            # breakpoint()
-
-            if isinstance(cols_old, str) and isinstance(cols_new, str):
+            # Unpack dictionary value
+            if callable(function):
                 # 1-to-1
-                df[cols_new] = function(df[cols_old])
-            elif isinstance(cols_old, (tuple, list)) and isinstance(cols_new, str):
+                col_new, col_old = col, col
+            elif isinstance(function, tuple) and len(function) == 1:
+                # 1-to-1
+                col_new, col_old = col, col
+                function = function[0]
+            elif isinstance(function, tuple) and len(function) == 2:
                 # many-to-1
-                series = [getattr(df, col_old) for col_old in cols_old]
-                df[cols_new] = function(*series)
-            elif isinstance(cols_old, str) and isinstance(cols_new, (tuple, list)):
-                multiple_series = function(df[cols_old])
-                for col_new, series in zip(cols_new, multiple_series):
-                    df[col_new] = series
+                col_new = col
+                col_old, function = function
             else:
                 raise ValueError("Wrong type specified")
+
+            if isinstance(col_old, (list, tuple)):
+                # many-to-1
+                series = [getattr(df, col) for col in col_old]
+                df[col_new] = function(*series)
+            else:
+                # 1-to-1
+                df[col_new] = function(df[col_old])
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
@@ -302,7 +281,6 @@ class lambdas:
         ...         "black": None  # default
         ...     }
         ... })
-
 
         Returns
         -------
