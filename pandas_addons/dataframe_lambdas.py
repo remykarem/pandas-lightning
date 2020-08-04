@@ -133,36 +133,6 @@ class lambdas:
 
         return df
 
-    def groupby(self, lambdas: dict):
-        if not isinstance(lambdas, dict):
-            raise ValueError("Must be dict")
-        df = self._obj.copy()
-
-        for cols, function in lambdas.items():
-            if len(cols) != 3 or isinstance(cols, str):
-                raise ValueError("Wrong key")
-            if not (callable(function) or isinstance(function, str)):
-                raise ValueError("Value must be callable or str")
-
-            col_new, group, context_col = cols
-
-            if not isinstance(col_new, str):
-                raise TypeError("Key must be string")
-            if not isinstance(group, (tuple, str)):
-                raise TypeError("Context column must be string or tuple")
-            if not isinstance(context_col, str):
-                raise TypeError("Context column must be string")
-
-            new = df.set.groupby(group).agg({
-                context_col: function
-            })
-
-        if self._pipelines is not None:
-            for pipeline in self._pipelines:
-                pipeline.add({("lambdas","groupby"): lambdas})
-
-        return new
-
     def sapply(self, lambdas: dict, inplace: bool = False):
         """Perform multiple lambda operations on series
 
