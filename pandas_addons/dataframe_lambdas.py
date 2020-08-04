@@ -1,3 +1,4 @@
+import warnings
 from functools import reduce
 import pandas as pd
 from pandas.api.types import CategoricalDtype
@@ -9,6 +10,13 @@ class lambdas:
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
         self._pipelines = None
+        self._validate_obj()
+
+    def _validate_obj(self):
+        cols_with_space = [col for col in self._obj.columns if " " in col]
+        if len(cols_with_space) > 0:
+            warnings.warn("Dataframe consists of column names with spaces. "
+                          "Consider cleaning these up.")
 
     def __call__(self, pipelines: list = None):
         # Warning: `self._pipelines` is mutable by design
@@ -485,7 +493,8 @@ class lambdas:
                 raise ValueError("Must be dictionary")
 
             # Use np.select
-            choicelist, conditions = list(mapping.keys()), list(mapping.values())
+            choicelist, conditions = list(
+                mapping.keys()), list(mapping.values())
             condlist = [cond(*series) for cond in conditions]
             df[col_new] = np.select(condlist=condlist, choicelist=choicelist,
                                     default=default)
