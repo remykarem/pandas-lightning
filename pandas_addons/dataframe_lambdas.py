@@ -68,7 +68,8 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("lambdas","drop_columns_with_rules"): functions})
+                pipeline.add(
+                    {("lambdas", "drop_columns_with_rules"): functions})
 
         return df
 
@@ -129,7 +130,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("lambdas","dapply"): functions})
+                pipeline.add({("lambdas", "dapply"): functions})
 
         return df
 
@@ -269,7 +270,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("lambdas","sapply"): lambdas})
+                pipeline.add({("lambdas", "sapply"): lambdas})
 
         return df
 
@@ -334,7 +335,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("lambdas","map_conditional"): mappings})
+                pipeline.add({("lambdas", "map_conditional"): mappings})
 
         return df
 
@@ -381,7 +382,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("lambdas","apply"): lambdas})
+                pipeline.add({("lambdas", "apply"): lambdas})
 
         return df
 
@@ -396,7 +397,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("lambdas","setna"): d})
+                pipeline.add({("lambdas", "setna"): d})
 
         return df
 
@@ -423,11 +424,11 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("lambdas","fillna"): d})
+                pipeline.add({("lambdas", "fillna"): d})
 
         return df
 
-    def astype(self, dtypes: dict, inplace: bool = False):
+    def astype(self, inplace: bool = False, **dtypes):
         """Convert dtypes of multiple columns using a dictionary
 
         Parameters
@@ -463,51 +464,40 @@ class lambdas:
         4  B  9  cold
         5  B  2   hot
 
-        You can perform the following
+        Change the types of the columns by writing
+
+        >>> df = df.lambdas.astype({
+        ...     X="category",
+        ...     Y=int,
+        ...     Z=["cold", "warm", "hot"]  # this will be ordinal
+        ... })
+
+        which is equivalent to
 
         >>> df["X"] = df["X"].astype("category")
         >>> df["Y"] = df["Y"].astype(int)
         >>> df["Z"] = df["Z"].astype(CategoricalDtype(
         ...                 ["cold", "warm", "hot"], ordered=True))
 
-        with
-
-        >>> df = df.lambdas.astype({
-        ...     "X": "category",
-        ...     "Y": int,
-        ...     "Z": ["cold", "warm", "hot"]  # this will be ordinal
-        ... })
-
-        which is the same as
-
-        >>> df = df.lambdas.astype({
-        ...     "X": "category",
-        ...     "Y": int,
-        ...     "Z": CategoricalDtype(["cold", "warm", "hot"], ordered=True)
-        ... })
-
         Returns
         -------
         pandas.DataFrame
             A dataframe whose columns have been converted accordingly
         """
-
-        # FIXME casting to bool results in NaNs -> True 😰
-
         df = self._obj if inplace else self._obj.copy()
 
-        for cols, dtype in dtypes.items():
-
-            # Check the key
-            if isinstance(cols, str) or len(cols) == 1:
-                col_new, col_old = cols, cols
-            elif len(cols) == 2:
-                col_new, col_old = cols
-            else:
-                raise ValueError("Wrong key")
+        for col, dtype in dtypes.items():
 
             # Check the value
+            if isinstance(dtype, tuple):
+                col_new = col
+                col_old, dtype = dtype
+            else:
+                col_new, col_old = col, col
+
+            # Check the dtype definition
             if isinstance(dtype, type):
+                # TODO add numpy types
                 if dtype.__name__ not in ["int", "float", "bool", "str"]:
                     raise ValueError("Wrong type")
             elif isinstance(dtype, str):
@@ -523,11 +513,14 @@ class lambdas:
             elif not isinstance(dtype, CategoricalDtype):
                 raise ValueError("Wrong type")
 
-            # Handle pandas gotcha
+            # Handle pandas gotchas 😰
             if (dtype == int or dtype == "int") and df[col_old].hasnans:
-                raise TypeError(f"Cast {col_old} to `float` instead.")
+                raise TypeError("Cannot convert non-finite values (NA or inf) to integer")
+            elif (dtype == bool or dtype == "bool") and df[col_old].hasnans:
+                raise TypeError(f"Casting {col_old} to bool converts NaNs to True. "
+                                "Cast to `float` instead.")
 
-            # Set
+            # Cast type
             if dtype == "index":
                 df = df.set_index(col_old)
             elif dtype == "datetime":
@@ -537,7 +530,7 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("lambdas","astype"): dtypes})
+                pipeline.add({("lambdas", "astype"): dtypes})
 
         return df
 
@@ -553,6 +546,6 @@ class lambdas:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("lambdas","drop_if_exist"): columns})
+                pipeline.add({("lambdas", "drop_if_exist"): columns})
 
         return df
