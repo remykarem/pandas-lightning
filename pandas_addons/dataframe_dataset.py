@@ -55,7 +55,7 @@ class dataset:
         dataframes = [df]
         for _, group in df.groupby(col):
             dataframes.append(group.sample(
-                max_count-len(group), replace=True, random_state=random_state))
+                abs(max_count-len(group)), replace=True, random_state=random_state))
         df_new = pd.concat(dataframes)
 
         if self._pipelines is not None:
@@ -135,8 +135,8 @@ class dataset:
         # User is responsible to name columns to handle this
         metadata = {}
         metadata["nominal"] = nominal_categories
-        metadata["nominal_in_last_n_cols"] = None
         metadata["nominal_mappings"] = nominal_mappings
+        metadata["nominal_in_last_n_cols"] = None
         metadata["ordinal"] = ordinal_categories
         metadata["ordinal_mappings"] = ordinal_mappings
         metadata["bool"] = bool_categories
