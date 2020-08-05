@@ -125,6 +125,9 @@ class lambdas:
                 df = df.set_index(col_old)
             elif dtype == "datetime":
                 df[col_new] = pd.to_datetime(df[col_old])
+            elif dtype.startswith("timedelta|"):
+                _, unit = dtype.split("|")
+                df[col_new] = pd.to_timedelta(df[col_old], unit=unit)
             else:
                 df[col_new] = df[col_old].astype(dtype)
 
@@ -411,7 +414,7 @@ class lambdas:
 
         return df
 
-    def fillna(self, d: dict):
+    def fillna(self, **d):
         """
         Example
         -------
@@ -422,15 +425,30 @@ class lambdas:
         """
         df = self._obj.copy()
 
-        for cols, fill_value in d.items():
-            if isinstance(cols, str):
-                df[cols] = df[cols].fillna(fill_value)
-            elif isinstance(cols, tuple) and len(cols) == 2:
-                col, group = cols
-                df[col] = df.groupby(list(group))[col].apply(
-                    lambda x: x.fillna(fill_value(x)))
+        for col, fill_value in d.items():
+
+            # Unpack dictionary value
+            if isinstance(fill_value, (int, float, str)):
+                col_new, col_old = col, col
+            elif callable(fill_value):
+                col_new, col_old = col, col
+            elif isinstance(fill_value, tuple) and len(fill_value) == 2:
+                col_new = col
+                col_old, fill_value = fill_value
             else:
-                raise ValueError("Wrong key")
+                raise ValueError
+
+            # Get fill value
+            if callable(fill_value):
+                # Get the series
+                if isinstance(col_old, (list, tuple)):
+                    series = [getattr(df, col) for col in col_old]
+                else:
+                    series = [df[col_old]]
+                fill_value = fill_value(*series)
+
+            # Fill na with fill value
+            df[col_new] = df[col].fillna(fill_value)
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
