@@ -125,7 +125,7 @@ class lambdas:
                 df = df.set_index(col_old)
             elif dtype == "datetime":
                 df[col_new] = pd.to_datetime(df[col_old])
-            elif dtype.startswith("timedelta|"):
+            elif isinstance(dtype, str) and dtype.startswith("timedelta|"):
                 _, unit = dtype.split("|")
                 df[col_new] = pd.to_timedelta(df[col_old], unit=unit)
             else:
