@@ -1,4 +1,4 @@
-# pandas-lightning (WIP)
+# pandas-lightning
 
 pandas-lightning is an API designed to abstract common
 patterns and idioms in pandas. You can expect the following:
