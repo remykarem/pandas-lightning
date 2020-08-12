@@ -1,3 +1,4 @@
+import re
 import warnings
 from functools import reduce
 
@@ -66,7 +67,8 @@ class lambdas:
         Change the types of the columns by writing
 
         >>> df = df.lambdas.astype({
-        ...     X="category",
+        ...     X="category",  # this will be nominal
+        ...     # X={"cold", "warm", "hot"}
         ...     Y=int,
         ...     Z=["cold", "warm", "hot"]  # this will be ordinal
         ... })
@@ -99,34 +101,52 @@ class lambdas:
                 # TODO add numpy types
                 if dtype.__name__ not in ["int", "float", "bool", "str"]:
                     raise ValueError("Wrong type")
+            elif isinstance(dtype, str) and dtype.startswith("timedelta"):
+                pass
             elif isinstance(dtype, str):
-                if dtype not in ["datetime", "index", "category", "int", "float", "bool", "str", "object"]:
+                if dtype not in ["datetime", "index", "category", "int", "float", "bool", "str", "object", "string"]:
                     raise ValueError("Wrong type")
             elif isinstance(dtype, list):
                 dtype = CategoricalDtype(dtype, ordered=True)
+            elif isinstance(dtype, set):
+                dtype = CategoricalDtype(dtype, ordered=False)
             elif callable(dtype):
                 sort_fn = dtype
                 uniques = df[col_old].unique().tolist()
                 uniques.sort(key=sort_fn)
                 dtype = CategoricalDtype(uniques, ordered=True)
-            elif not isinstance(dtype, CategoricalDtype):
+            else:
                 raise ValueError("Wrong type")
+
+            # TODO strings are problematic across versions 😰
 
             # Handle pandas gotchas 😰
             if (dtype == int or dtype == "int") and df[col_old].hasnans:
                 raise TypeError(
                     "Cannot convert non-finite values (NA or inf) to integer")
             elif (dtype == bool or dtype == "bool") and df[col_old].hasnans:
-                raise TypeError(f"Casting {col_old} to bool converts NaNs to True. "
-                                "Cast to `float` instead.")
+                raise TypeError("Casting to bool converts NaNs to True. "
+                                f"There are NaNs in {col_old}. Cast to `float` instead.")
 
             # Cast type
             if dtype == "index":
-                df = df.set_index(col_old)
+                # df = df.set_index(col_old)
+                df.set_index(col_old, inplace=True)
             elif dtype == "datetime":
                 df[col_new] = pd.to_datetime(df[col_old])
-            elif isinstance(dtype, str) and dtype.startswith("timedelta|"):
-                _, unit = dtype.split("|")
+            elif isinstance(dtype, str) and dtype.startswith("timedelta"):
+                # * 'W'
+                # * 'D' / 'days' / 'day'
+                # * 'hours' / 'hour' / 'hr' / 'h'
+                # * 'm' / 'minute' / 'min' / 'minutes' / 'T'
+                # * 'S' / 'seconds' / 'sec' / 'second'
+                # * 'ms' / 'milliseconds' / 'millisecond' / 'milli' / 'millis' / 'L'
+                # * 'us' / 'microseconds' / 'microsecond' / 'micro' / 'micros' / 'U'
+                # * 'ns' / 'nanoseconds' / 'nano' / 'nanos' / 'nanosecond' / 'N'
+                regex_grouped = re.search(r"\[(.*)\]", dtype)
+                if regex_grouped is None:
+                    raise ValueError("datetime should be in the format `timedelta[...]`")
+                unit = regex_grouped.group(1)
                 df[col_new] = pd.to_timedelta(df[col_old], unit=unit)
             else:
                 df[col_new] = df[col_old].astype(dtype)
@@ -557,7 +577,7 @@ class lambdas:
         return df
 
     def drop_if_exist(self, columns: list):
-        df = self._obj.copy()
+        df = self._obj
 
         columns_ = columns.copy()
         for i, col in enumerate(columns):
@@ -626,7 +646,6 @@ class lambdas:
                     {("lambdas", "drop_columns_with_rules"): functions})
 
         return df
-
 
     # def merge(self, ):
     #     df = self._obj
