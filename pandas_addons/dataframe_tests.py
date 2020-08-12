@@ -7,8 +7,6 @@ from pandas.api.types import is_categorical_dtype
 from scipy.stats import chi2_contingency
 
 
-
-
 @pd.api.extensions.register_dataframe_accessor("tests")
 class tests:
     def __init__(self, pandas_obj):
