@@ -1,6 +1,6 @@
-# pandas-addons (WIP)
+# pandas-lightning (WIP)
 
-pandas-addons is an API designed to abstract common
+pandas-lightning is an API designed to abstract common
 patterns and idioms in pandas. You can expect the following:
 
 - Reduce repeated code
@@ -12,17 +12,17 @@ patterns and idioms in pandas. You can expect the following:
 ## Install
 
 ```bash
-pip install git+https://github.com/remykarem/pandas-addons#egg=pandas-addons
+pip install git+https://github.com/remykarem/pandas-lightning#egg=pandas-lightning
 ```
 
 ## Import
 
 ```python
 >>> import pandas as pd
->>> import pandas_addons
+>>> import pandas_lightning
 ```
 
 Dataframe accessors like :code:`.lambdas` and series accessors like :code:`scaler`
 will be available to your DataFrame and Series objects.
 
-Read more here: https://pandas-addons.readthedocs.io/
+Read more here: https://pandas-lightning.readthedocs.io/

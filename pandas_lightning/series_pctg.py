@@ -19,7 +19,7 @@ class pctg:
         Example
         -------
         >>> import pandas as pd
-        >>> import pandas_addons
+        >>> import pandas_lightning
         >>> sr = pd.Series([1, 2, 0, 8.3, 0])
         >>> sr.pctg.zeros
         0.4
@@ -39,7 +39,7 @@ class pctg:
         -------
         >>> import pandas as pd
         >>> import numpy as np
-        >>> import pandas_addons
+        >>> import pandas_lightning
         >>> sr = pd.Series([1, np.nan, np.nan, 8.3, np.nan])
         >>> sr.pctg.nans
         0.6
@@ -66,7 +66,7 @@ class pctg:
         Example
         -------
         >>> import pandas as pd
-        >>> import pandas_addons
+        >>> import pandas_lightning
         >>> sr = pd.Series(["hey", "I", "just", "met", "you"])
         >>> sr.pctg.uniques
         1.0

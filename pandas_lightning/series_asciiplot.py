@@ -42,7 +42,7 @@ class asciiplot:
         Examples
         --------
         >>> import pandas as pd
-        >>> import pandas_addons
+        >>> import pandas_lightning
         >>> sr = pd.Series(["red", "blue", "red", "red", "orange", "blue"])
         >>> sr.ascii.hist()
                red ##############################

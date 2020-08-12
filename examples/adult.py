@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import pandas_addons
+import pandas_lightning
 
 WORKING_CLASS = {
     "No income": ['Never-worked', 'Without-pay', 'Self-emp-not-inc'],

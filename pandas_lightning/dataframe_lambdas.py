@@ -50,7 +50,7 @@ class lambdas:
 
         >>> import pandas as pd
         >>> from pandas.api.types import CategoricalDtype
-        >>> import pandas_addons
+        >>> import pandas_lightning
         >>> df = pd.DataFrame({"X": list("ABACBB"),
         ...                    "Y": list("121092"),
         ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
@@ -170,7 +170,7 @@ class lambdas:
         Examples
         --------
         >>> import pandas as pd
-        >>> import pandas_addons
+        >>> import pandas_lightning
         >>> df = pd.DataFrame({"X": list("ABACBB"),
         ...                    "Y": list("121092"),
         ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
@@ -284,7 +284,7 @@ class lambdas:
         Example
         -------
         >>> import pandas as pd
-        >>> import pandas_addons
+        >>> import pandas_lightning
         >>> df = pd.DataFrame({"X": list("ABACBB"),
         ...                    "Y": list("121092"),
         ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
@@ -352,7 +352,7 @@ class lambdas:
         Example
         -------
         >>> import pandas as pd
-        >>> import pandas_addons
+        >>> import pandas_lightning
         >>> df = pd.DataFrame({"X": list("ABACBB"),
         ...                    "Y": list("121092"),
         ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
@@ -605,7 +605,7 @@ class lambdas:
         Examples
         --------
         >>> import pandas as pd
-        >>> import pandas_addons
+        >>> import pandas_lightning
         >>> import numpy as np
         >>> df = pd.DataFrame({"X": [np.nan, np.nan, np.nan, np.nan, "hey"],
         ...                    "Y": [0, np.nan, 0, 0, 1],

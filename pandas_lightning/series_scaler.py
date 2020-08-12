@@ -30,7 +30,7 @@ class scaler:
         --------
 
         >>> import pandas as pd
-        >>> import pandas_addons
+        >>> import pandas_lightning
         >>> sr = pd.Series([1,2,3,4,5])
         >>> sr.scaler.standardize()
         0   -1.264911
@@ -58,7 +58,7 @@ class scaler:
         Example
         -------
         >>> import pandas as pd
-        >>> import pandas_addons
+        >>> import pandas_lightning
         >>> sr = pd.Series([1,2,3,4,5])
         >>> sr.scaler.minmax()
         0    0.00
@@ -94,7 +94,7 @@ class scaler:
         Example
         -------
         >>> import pandas as pd
-        >>> import pandas_addons
+        >>> import pandas_lightning
         >>> sr = pd.Series([1,2,3,4,5])
         >>> sr.scaler.log1p()
         0    0.693147
@@ -122,7 +122,7 @@ class scaler:
         Example
         -------
         >>> import pandas as pd
-        >>> import pandas_addons
+        >>> import pandas_lightning
         >>> sr = pd.Series([1,2,3,4,5])
         >>> sr.scaler.expm1()
         0      1.718282

@@ -30,7 +30,7 @@ class map_categorical_binning:
         Example
         -------
         >>> import pandas as pd
-        >>> import pandas_addons
+        >>> import pandas_lightning
         >>> sr = pd.Series(["apple", "spinach", "cashew", "pear", "kailan",
         ...                 "macadamia", "orange"])
         >>> sr

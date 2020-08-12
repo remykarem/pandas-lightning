@@ -39,7 +39,7 @@ class map_numerical_binning:
         Examples
         --------
         >>> import pandas as pd
-        >>> import pandas_addons
+        >>> import pandas_lightning
         >>> sr = pd.Series([23, 94, 44, 95, 29, 8, 17, 42, 29, 48,
         ...                 96, 95, 17, 97, 9, 85, 62, 71, 37, 10,
         ...                 41, 88, 18, 56, 85, 22, 97, 27, 69, 19,

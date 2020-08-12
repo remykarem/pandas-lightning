@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'pandas-addons'
+project = 'pandas-lightning'
 copyright = '2020, Raimi bin Karim'
 author = 'Raimi bin Karim'
 

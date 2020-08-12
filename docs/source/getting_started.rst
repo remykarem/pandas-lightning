@@ -1,4 +1,4 @@
-.. pandas-addons documentation master file, created by
+.. pandas-lightning documentation master file, created by
    sphinx-quickstart on Thu Jul 23 23:45:28 2020.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
@@ -11,13 +11,13 @@ Install
 
 .. code-block:: bash
 
-   pip install git+https://github.com/remykarem/pandas-addons#egg=pandas-addons
+   pip install git+https://github.com/remykarem/pandas-lightning#egg=pandas-lightning
 
 Import
 ------
 
 >>> import pandas as pd
->>> import pandas_addons
+>>> import pandas_lightning
 
 Dataframe accessors like :code:`.lambdas` and series accessors like :code:`scaler`
 will be available to your DataFrame and Series objects.

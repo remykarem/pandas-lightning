@@ -1,12 +1,12 @@
-.. pandas-addons documentation master file, created by
+.. pandas-lightning documentation master file, created by
    sphinx-quickstart on Thu Jul 23 23:45:28 2020.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to pandas-addons's documentation!
+Welcome to pandas-lightning's documentation!
 =========================================
 
-pandas-addons is an API designed for data preprocessing based on common
+pandas-lightning is an API designed for data preprocessing based on common
 patterns and idioms in pandas. You can expect the following:
 
 - Reduce repeated code

@@ -1,4 +1,4 @@
-pandas_addons
+pandas_lightning
 =============
 
 .. toctree::
