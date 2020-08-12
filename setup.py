@@ -9,7 +9,7 @@ setuptools.setup(
     version=__version__,
     author="Raimi bin Karim",
     author_email="raimi.bkarim@gmail.com",
-    description="Pandas Lightning",
+    description="pandas lightning",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/remykarem/pandas-lightning",
