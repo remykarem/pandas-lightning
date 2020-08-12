@@ -1,6 +1,6 @@
 .DS_Store
 .vscode
-.ipnyb_checkpoints
+.ipynb_checkpoints/*
 __pycache__
 docs/build
 *.pkl
