@@ -438,10 +438,10 @@ class lambdas:
         """
         Example
         -------
-        df.lambdas.fillna({
-            "Sex": lambda sex: sex.median(),
-            ("Age", ("Sex", "Pclass")): lambda group: group.median()
-        })
+        >>> df.lambdas.fillna(
+        ...     Sex=lambda sex: sex.median(),
+        ...     Age=(["Sex", "Pclass"], lambda group: group.median())
+        ... )
         """
         df = self._obj.copy()
 
