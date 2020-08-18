@@ -31,13 +31,13 @@ df = pd.read_csv("/Users/raimibinkarim/Downloads/adult.csv")
 df = df.optimize.convert_categories()
 df = df.rename(columns={col: col.replace(".", "_") for col in df})
 df = df.replace("?", np.nan)
-df = df.lambdas.astype({
-    "education_num": "category"
-})
-df = df.lambdas.sapply({
-    "income": lambda s: s == ">50K",
-    "fnlwght": lambda s: s.scaler.standardize(),
-})
+df = df.lambdas.astype(
+    education_num="category"
+)
+df = df.lambdas.sapply(
+    income=lambda s: s == ">50K",
+    fnlwght=lambda s: s.scaler.standardize(),
+)
 df = df.lambdas.map_categorical_binning(ordered=True, binnings={
     "workclass": WORKING_CLASS
 })
