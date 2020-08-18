@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to pandas-lightning's documentation!
-=========================================
+============================================
 
 pandas-lightning is an API designed for data preprocessing based on common
 patterns and idioms in pandas. You can expect the following:
