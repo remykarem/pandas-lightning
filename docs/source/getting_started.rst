@@ -39,17 +39,16 @@ What used to be
 >>> df["A"] = abs(df["A"])
 >>> df["B"] = df["B"] * 10
 >>> df["C_squared"] = squared(df["C"])
->>> df["C_squared"] = df["C_squared"].scaler.standardize()
 >>> df["AB"] = df["A"] + df["B"]
 
 can be rewritten as
 
->>> df = df.lambdas.sapply({
-...     "A": abs,
-...     "B": lambda b: b * 10,
-...     ("C_squared", "C"): squared,
-...     "C_squared": lambda s: s.scaler.standardize(),
-...     ("AB", ["A", "B"]): lambda a, b: a+b })
+>>> df = df.lambdas.sapply(
+...     A=abs,
+...     B=lambda b: b * 10,
+...     C_squared=("C", squared),
+...     AB=(["A", "B"], lambda a, b: a+b)
+... )
 
 **df.lambdas.astype**
 
@@ -62,11 +61,12 @@ What used to be
 
 can be rewritten as
 
->>> df = df.lambdas.astype({
-...      "A": "category",
-...      "B": int,
-...      "C_abs": str,
-...      "D": "datetime"})
+>>> df = df.lambdas.astype(
+...      A="category",
+...      B=int,
+...      C_abs=str,
+...      D="datetime"
+... )
 
 See the full set of dataframe accessors :ref:`here <dataframe:DataFrame accessors>`.
 
