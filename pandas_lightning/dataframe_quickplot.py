@@ -82,6 +82,13 @@ class quickplot:
 
     @property
     def options(self):
+        """
+        Call this method to see which graphs you can plot
+
+        Usage
+        -----
+        >>> df.quickplot(numerical=["age"], categorical=["year"]).options
+        """
         if self.config == (1, 0, 0):
             print("countplot, distplot, kdeplot, boxplot, violinplot, stripplot, qqplot")
         elif self.config == (0, 1, 0):
