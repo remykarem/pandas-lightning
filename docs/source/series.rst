@@ -3,6 +3,31 @@ Series accessors
 
 
 
+Series.datetime
+---------------
+
+Series.datetime.__add__
+***********************
+
+.. automethod:: pandas_lightning.series_scaler.datetime.__add__
+
+Series.datetime.__radd__
+************************
+
+.. automethod:: pandas_lightning.series_scaler.datetime.__radd__
+
+Series.datetime.__sub__
+***********************
+
+.. automethod:: pandas_lightning.series_scaler.datetime.__sub__
+
+Series.datetime.__rsub__
+************************
+
+.. automethod:: pandas_lightning.series_scaler.datetime.__rsub__
+
+
+
 Series.scaler
 -------------
 
@@ -48,6 +73,16 @@ Series.pctg.uniques
 *******************
 
 .. autoattribute:: pandas_lightning.series_pctg.pctg.uniques
+
+
+
+Series.tests
+------------
+
+Series.tests.is_normal
+**********************
+
+.. autoattribute:: pandas_lightning.series_pctg.tests.is_normal
 
 
 
