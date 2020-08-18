@@ -9,22 +9,22 @@ Series.datetime
 Series.datetime.__add__
 ***********************
 
-.. automethod:: pandas_lightning.series_scaler.datetime.__add__
+.. automethod:: pandas_lightning.series_datetime.datetime.__add__
 
 Series.datetime.__radd__
 ************************
 
-.. automethod:: pandas_lightning.series_scaler.datetime.__radd__
+.. automethod:: pandas_lightning.series_datetime.datetime.__radd__
 
 Series.datetime.__sub__
 ***********************
 
-.. automethod:: pandas_lightning.series_scaler.datetime.__sub__
+.. automethod:: pandas_lightning.series_datetime.datetime.__sub__
 
 Series.datetime.__rsub__
 ************************
 
-.. automethod:: pandas_lightning.series_scaler.datetime.__rsub__
+.. automethod:: pandas_lightning.series_datetime.datetime.__rsub__
 
 
 
@@ -82,17 +82,17 @@ Series.tests
 Series.tests.is_normal
 **********************
 
-.. autoattribute:: pandas_lightning.series_pctg.tests.is_normal
+.. autoattribute:: pandas_lightning.series_tests.tests.is_normal
 
 
 
-Series.ascii
-------------
+Series.asciiplot
+----------------
 
-Series.ascii.hist
-*****************
+Series.asciiplot.hist
+*********************
 
-.. automethod:: pandas_lightning.series_ascii.ascii.hist
+.. automethod:: pandas_lightning.series_asciiplot.asciiplot.hist
 
 
 

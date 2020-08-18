@@ -24,11 +24,6 @@ apply
 
 .. automethod:: pandas_lightning.dataframe_lambdas.lambdas.apply
 
-setna
-*****
-
-.. automethod:: pandas_lightning.dataframe_lambdas.lambdas.setna
-
 fillna
 ******
 
@@ -62,77 +57,77 @@ DataFrame.quickplot
 options
 *******
 
-.. automethod:: pandas_lightning.dataframe_dataset.quickplot.options
+.. automethod:: pandas_lightning.dataframe_quickplot.quickplot.options
 
 barplot
 *******
 
-.. automethod:: pandas_lightning.dataframe_dataset.quickplot.barplot
+.. automethod:: pandas_lightning.dataframe_quickplot.quickplot.barplot
 
 heatmap
 *******
 
-.. automethod:: pandas_lightning.dataframe_dataset.quickplot.heatmap
+.. automethod:: pandas_lightning.dataframe_quickplot.quickplot.heatmap
 
 kdeplot
 *******
 
-.. automethod:: pandas_lightning.dataframe_dataset.quickplot.kdeplot
+.. automethod:: pandas_lightning.dataframe_quickplot.quickplot.kdeplot
 
 distplot
 ********
 
-.. automethod:: pandas_lightning.dataframe_dataset.quickplot.distplot
+.. automethod:: pandas_lightning.dataframe_quickplot.quickplot.distplot
 
 countplot
 *********
 
-.. automethod:: pandas_lightning.dataframe_dataset.quickplot.countplot
+.. automethod:: pandas_lightning.dataframe_quickplot.quickplot.countplot
 
 scatterplot
 ***********
 
-.. automethod:: pandas_lightning.dataframe_dataset.quickplot.scatterplot
+.. automethod:: pandas_lightning.dataframe_quickplot.quickplot.scatterplot
 
 lineplot
 ********
 
-.. automethod:: pandas_lightning.dataframe_dataset.quickplot.lineplot
+.. automethod:: pandas_lightning.dataframe_quickplot.quickplot.lineplot
 
 hexbinplot
 **********
 
-.. automethod:: pandas_lightning.dataframe_dataset.quickplot.hexbinplot
+.. automethod:: pandas_lightning.dataframe_quickplot.quickplot.hexbinplot
 
 boxplot
 *******
 
-.. automethod:: pandas_lightning.dataframe_dataset.quickplot.boxplot
+.. automethod:: pandas_lightning.dataframe_quickplot.quickplot.boxplot
 
 violinplot
 **********
 
-.. automethod:: pandas_lightning.dataframe_dataset.quickplot.violinplot
+.. automethod:: pandas_lightning.dataframe_quickplot.quickplot.violinplot
 
 stripplot
 *********
 
-.. automethod:: pandas_lightning.dataframe_dataset.quickplot.stripplot
+.. automethod:: pandas_lightning.dataframe_quickplot.quickplot.stripplot
 
 qqplot
 ******
 
-.. automethod:: pandas_lightning.dataframe_dataset.quickplot.qqplot
+.. automethod:: pandas_lightning.dataframe_quickplot.quickplot.qqplot
 
 catplot
 *******
 
-.. automethod:: pandas_lightning.dataframe_dataset.quickplot.catplot
+.. automethod:: pandas_lightning.dataframe_quickplot.quickplot.catplot
 
 ridgeplot
 *********
 
-.. automethod:: pandas_lightning.dataframe_dataset.quickplot.ridgeplot
+.. automethod:: pandas_lightning.dataframe_quickplot.quickplot.ridgeplot
 
 
 DataFrame.tests
@@ -141,22 +136,22 @@ DataFrame.tests
 info
 ****
 
-.. automethod:: pandas_lightning.dataframe_dataset.tests.info
+.. automethod:: pandas_lightning.dataframe_tests.tests.info
 
 categorical
 ***********
 
-.. automethod:: pandas_lightning.dataframe_dataset.tests.categorical
+.. automethod:: pandas_lightning.dataframe_tests.tests.categorical
 
 numerical
 *********
 
-.. automethod:: pandas_lightning.dataframe_dataset.tests.numerical
+.. automethod:: pandas_lightning.dataframe_tests.tests.numerical
 
 get_cramersv
 ************
 
-.. automethod:: pandas_lightning.dataframe_dataset.tests.get_cramersv
+.. automethod:: pandas_lightning.dataframe_tests.tests.get_cramersv
 
 
 
