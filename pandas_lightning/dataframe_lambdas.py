@@ -51,9 +51,10 @@ class lambdas:
         >>> import pandas as pd
         >>> from pandas.api.types import CategoricalDtype
         >>> import pandas_lightning
-        >>> df = pd.DataFrame({"X": list("ABACBB"),
-        ...                    "Y": list("121092"),
-        ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
+        >>> df = pd.DataFrame({
+        ...     "X": list("ABACBB"),
+        ...     "Y": list("121092"),
+        ...     "Z": ["hot","warm","hot","cold","cold","hot"]
         ... })
         >>> df
            X  Y     Z
@@ -66,12 +67,11 @@ class lambdas:
 
         Change the types of the columns by writing
 
-        >>> df = df.lambdas.astype({
+        >>> df = df.lambdas.astype(
         ...     X="category",  # this will be nominal
-        ...     # X={"cold", "warm", "hot"}
         ...     Y=int,
         ...     Z=["cold", "warm", "hot"]  # this will be ordinal
-        ... })
+        ... )
 
         which is equivalent to
 
@@ -175,9 +175,9 @@ class lambdas:
         ...                    "Y": list("121092"),
         ...                    "Z": ["hot","warm","hot","cold","cold","hot"]
         ... })
-        >>> df = df.lambdas.astype({
+        >>> df = df.lambdas.astype(
         ...     Y=int,
-        ...     Z=["cold", "warm", "hot"]})
+        ...     Z=["cold", "warm", "hot"])
 
         **Example 1**
 
