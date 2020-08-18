@@ -646,13 +646,3 @@ class lambdas:
                     {("lambdas", "drop_columns_with_rules"): functions})
 
         return df
-
-    # def merge(self, ):
-    #     df = self._obj
-
-    #     df.merge(df_users, on="user_id", how="left").merge(df_email, on="grass_date", how="left")
-
-    #     df.lambdas.merge({
-    #         ("left", "user_id"): df_users,
-    #         ("left", "grass_date"): df_email
-    #     })
