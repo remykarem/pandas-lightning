@@ -25,6 +25,10 @@ class quickplot:
                  numerical: Union[str, list] = None,
                  categorical: Union[str, list] = None):
         """
+        Usage
+        -----
+        >>> df.quickplot(numerical=["age"], categorical=["year"]).options
+
         1: numerical
         1: categorical
         2: numerical + numerical
@@ -35,7 +39,6 @@ class quickplot:
         3: numerical + numerical + categorical
         3: categorical + categorical + categorical
 
-        ---
         4: numerical + categorical + categorical + categorical
         """
 
