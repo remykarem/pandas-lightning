@@ -6,7 +6,7 @@ from scipy.stats import shapiro
 
 
 @pd.api.extensions.register_series_accessor("tests")
-class scaler:
+class tests:
     def __init__(self, pandas_obj):
         # self._validate_obj(pandas_obj)
         self._obj = pandas_obj
