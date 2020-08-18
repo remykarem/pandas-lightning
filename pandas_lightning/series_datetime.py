@@ -4,8 +4,8 @@ import numpy as np
 from pandas.errors import EmptyDataError
 
 
-@pd.api.extensions.register_series_accessor("dtpp")
-class vectorised:
+@pd.api.extensions.register_series_accessor("datetime")
+class datetime:
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
 
