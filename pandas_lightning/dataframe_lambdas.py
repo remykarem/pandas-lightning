@@ -145,7 +145,8 @@ class lambdas:
                 # * 'ns' / 'nanoseconds' / 'nano' / 'nanos' / 'nanosecond' / 'N'
                 regex_grouped = re.search(r"\[(.*)\]", dtype)
                 if regex_grouped is None:
-                    raise ValueError("datetime should be in the format `timedelta[...]`")
+                    raise ValueError(
+                        "datetime should be in the format `timedelta[...]`")
                 unit = regex_grouped.group(1)
                 df[col_new] = pd.to_timedelta(df[col_old], unit=unit)
             else:
@@ -646,3 +647,14 @@ class lambdas:
                     {("lambdas", "drop_columns_with_rules"): functions})
 
         return df
+
+    def drop_rows_if_na(self, min_pctg=0.5):
+        """Drop any row if there is at least `min_pctg` nans.
+
+        Parameters
+        ----------
+        pctg : int
+            Min. pctg of nans to drop
+        """
+        to_keep = self._obj.isnull().sum(axis=1) < min_pctg
+        return self._obj.loc[to_keep]
