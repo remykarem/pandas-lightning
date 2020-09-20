@@ -26,12 +26,12 @@ Reading
 Changing types
 **************
 
->>> df = df.lambdas.astype({
-...     "PassengerId": "index",
-...     "Name": str,
-...     "Sex": "category",
-...     "Embarked": "category",
-...     "Pclass": [3, 2, 1]})
+>>> df = df.lambdas.astype(
+...     PassengerId="index",
+...     Name=str,
+...     Sex="category",
+...     Embarked="category",
+...     Pclass=[3, 2, 1])
 
 This is the same as
 
@@ -44,11 +44,11 @@ This is the same as
 Creating new features
 *********************
 
->>> df = df.lambdas.sapply({
-...   "Cabin": lambda s: s.str[0],
-...   ("HasCabinCode", "Cabin"): lambda s: ~s.isna(),
-...   ("HasDep", ("SibSp", "Parch")): lambda s, t: (s+t) > 0,
-...   ("HasLetters", "Ticket"): lambda s: s.str.startswith(tuple(string.ascii_letters)) })
+>>> df = df.lambdas.sapply(
+...   Cabin=lambda s: s.str[0],
+...   HasCabinCode=("Cabin", lambda s: ~s.isna()),
+...   HasDep=(["SibSp", "Parch"], lambda s, t: (s+t) > 0),
+...   HasLetters=("Ticket", lambda s: s.str.startswith(tuple(string.ascii_letters)))
 
 which is the same as
 
@@ -56,33 +56,3 @@ which is the same as
 >>> df["HasCabinCode"] = ~df["Cabin"].isna()
 >>> df["HasDep"] = df["SibSp"] + df["Parch"] > 0
 >>> df["HasLetters"] = df["Ticket"].str.startswith(tuple(string.ascii_letters))
-
-Binning
-*******
-
-For numerical values,
-
->>> df = df.lambdas.map_numerical_binning({
-...    "Age": range(0, 100, 10),
-...    "Fare": ("quartile", 4)
-... }, ordered=True)
-
-which is the same as
-
->>> df["Age"] = pd.cut(df["Age"], range(0, 100, 10))
->>> df["Fare"] = pd.qcut(df["Fare"], 4)
-
-For categorical values,
-
->>> df = df.lambdas.map_categorical_binning({
-...    "Age": range(0, 100, 10),
-...    "Fare": ("quartile", 4)
-... }, ordered=True)
-
-which is the same as
-
->>> df["Age"] = pd.cut(df["Age"], range(0, 100, 10))
->>> df["Fare"] = pd.qcut(df["Fare"], 4)
-
-Plotting
-********
