@@ -1,8 +1,8 @@
 import setuptools
 from pandas_lightning import __version__
 
-with open("README.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
+with open("README.md", "r", encoding="utf-8") as f:
+    long_description = f.read()
 
 setuptools.setup(
     name="pandas-lightning",
@@ -21,7 +21,7 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=[
-        "pandas==1.0.3",
+        "pandas>=1.0.3",
         "scipy==1.4.1",
         "seaborn==0.10.0"
     ]
