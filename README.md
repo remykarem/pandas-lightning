@@ -27,7 +27,7 @@ will be available to your DataFrame and Series objects.
 
 Some features include:
 
-* [Change features](#change-types)
+* [Change types](#change-types)
 * [Create new features](#create-new-features)
 * [Apply a sequence of functions to DataFrame](#apply-a-sequence-of-functions)
 * [Drop columns with rules](#drop-columns-with-rules)
