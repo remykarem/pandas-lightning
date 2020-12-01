@@ -31,7 +31,7 @@ Some features include:
 * [Create new features](#create-new-features)
 * [Apply a sequence of functions to DataFrame](#apply-a-sequence-of-functions)
 * [Drop columns with rules](#drop-columns-with-rules)
-* [Categorical binning](#categorial-binning)
+* [Categorical binning](#categorical-binning)
 
 ### Change types
 
