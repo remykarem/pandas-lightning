@@ -164,4 +164,9 @@ dtype: category
 Categories (3, object): [fruits, vegetables, nuts]
 ```
 
+## Roadmap
+
+- [ ] Hashing
+- [ ] Pipelining
+
 Read more here: https://pandas-lightning.readthedocs.io/
