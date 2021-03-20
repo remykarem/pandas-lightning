@@ -36,7 +36,7 @@ class tests:
             uniques = [df[col].pctg.uniques for col in df]
         else:
             missing = [df[col].isna().sum() for col in df]
-            zeros = (df[col] == 0).sum() for col in df]
+            zeros = [(df[col] == 0).sum() for col in df]
             uniques = [df[col].nunique() for col in df]
 
         info = pd.DataFrame({
