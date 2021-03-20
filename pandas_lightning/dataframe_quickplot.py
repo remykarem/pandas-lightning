@@ -108,20 +108,20 @@ class quickplot:
         else:
             raise ValueError
 
-    def barplot(self):
+    def barplot(self, **kwargs):
         if self.config == (1, 1, 0):
             sns.barplot(x=self.categorical_[
-                        0], y=self.numerical_[0], data=self._obj)
+                        0], y=self.numerical_[0], data=self._obj, **kwargs)
 
-    def heatmap(self):
+    def heatmap(self, **kwargs):
         if self.config == (0, 1, 1):
             sns.heatmap(pd.crosstab(self._obj[self.categorical_[0]],
                                     self._obj[self.categorical_[1]]),
-                        cmap="Blues")
+                        cmap="Blues", **kwargs)
 
-    def kdeplot(self):
+    def kdeplot(self, **kwargs):
         if self.config == (1, 0, 0):
-            sns.kdeplot(self._obj[self.numerical_[0]].dropna())
+            sns.kdeplot(self._obj[self.numerical_[0]].dropna(), **kwargs)
         elif self.config == (1, 1, 0):
             categorical = self._obj[self.categorical_[0]]
             if is_bool_dtype(categorical):
@@ -134,13 +134,13 @@ class quickplot:
 
             for category in categories:
                 sns.kdeplot(
-                    self._obj.loc[categorical == category, self.numerical_[0]].dropna(), shade=True)
+                    self._obj.loc[categorical == category, self.numerical_[0]].dropna(), shade=True, **kwargs)
             plt.legend(categories)
         elif self.config == (2, 0, 0):
             sns.jointplot(x=self.numerical_[1], y=self.numerical_[0], data=self._obj,
-                          kind="kde")
+                          kind="kde", **kwargs)
 
-    def distplot(self):
+    def distplot(self, **kwargs):
         if self.config == (1, 0, 0):
             sns.distplot(self._obj[self.numerical_[0]].dropna())
         elif self.config == (1, 1, 0):
@@ -155,48 +155,48 @@ class quickplot:
 
             for category in categories:
                 sns.distplot(
-                    self._obj.loc[categorical == category, self.numerical_[0]].dropna())
+                    self._obj.loc[categorical == category, self.numerical_[0]].dropna(), **kwargs)
             plt.legend(categories)
 
-    def countplot(self):
+    def countplot(self, **kwargs):
         if self.config == (1, 0, 0):
             if is_float_dtype(self._obj[self.numerical_[0]]):
                 warnings.warn("Count plots are suited for discrete types.")
             if self._obj[self.numerical_[0]].nunique() > 20:
                 warnings.warn("There more than 20 uniques. "
                               "This might cause visual clutter.")
-            sns.countplot(x=self.numerical_[0], data=self._obj)
+            sns.countplot(x=self.numerical_[0], data=self._obj, **kwargs)
         elif self.config == (0, 1, 0):
             categorical = self._obj[self.categorical_[0]]
             if is_bool_dtype(categorical):
                 categorical = categorical.astype("category")
             sns.countplot(y=self._obj[self.categorical_[
-                          0]], order=categorical.cat.categories.tolist())
+                          0]], order=categorical.cat.categories.tolist(), **kwargs)
         elif self.config == (0, 1, 1):
             sns.countplot(x=self.categorical_[
-                          0], hue=self.categorical_[1], data=self._obj)
+                          0], hue=self.categorical_[1], data=self._obj, **kwargs)
 
-    def scatterplot(self):
+    def scatterplot(self, **kwargs):
         if self.config == (2, 0, 0):
             sns.jointplot(x=self.numerical_[0], y=self.numerical_[
-                          1], data=self._obj)
+                          1], data=self._obj, **kwargs)
 
-    def lineplot(self):
+    def lineplot(self, **kwargs):
         if self.config == (2, 0, 0):
             sns.relplot(x=self.numerical_[1], y=self.numerical_[
-                        0], ci=None, kind="line", data=self._obj)
+                        0], ci=None, kind="line", data=self._obj, **kwargs)
         elif self.config == (2, 1, 0):
             categorical = self._obj[self.categorical_[0]]
             if is_bool_dtype(categorical):
                 categorical = categorical.astype("category")
             sns.relplot(x=self.numerical_[1], y=self.numerical_[0], hue=self.categorical_[0],
                         hue_order=categorical.cat.categories.tolist(),
-                        ci=None, kind="line", data=self._obj)
+                        ci=None, kind="line", data=self._obj, **kwargs)
 
-    def hexbinplot(self):
+    def hexbinplot(self, **kwargs):
         if self.config == (2, 0, 0):
             sns.jointplot(x=self.numerical_[0], y=self.numerical_[1], data=self._obj,
-                          kind="hexbin")
+                          kind="hexbin", **kwargs)
 
     def boxplot(self, **kwargs):
         if self.config == (1, 0, 0):
@@ -208,33 +208,33 @@ class quickplot:
             sns.boxplot(x=self.categorical_[0], y=self.numerical_[0], hue=self.categorical_[1],
                         data=self._obj, **kwargs)
 
-    def violinplot(self):
+    def violinplot(self, **kwargs):
         if self.config == (1, 0, 0):
-            sns.violinplot(self.numerical_[0], data=self._obj)
+            sns.violinplot(self.numerical_[0], data=self._obj, **kwargs)
         elif self.config == (1, 1, 0):
             sns.violinplot(x=self.categorical_[
-                           0], y=self.numerical_[0], data=self._obj)
+                           0], y=self.numerical_[0], data=self._obj, **kwargs)
         elif self.config == (1, 1, 1):
             sns.violinplot(x=self.categorical_[0], y=self.numerical_[0], hue=self.categorical_[1],
-                           data=self._obj, split=True)
+                           data=self._obj, split=True, **kwargs)
 
-    def stripplot(self):
+    def stripplot(self, **kwargs):
         if self.config == (1, 0, 0):
-            sns.stripplot(self.numerical_[0], data=self._obj)
+            sns.stripplot(self.numerical_[0], data=self._obj, **kwargs)
         elif self.config == (1, 1, 0):
             sns.stripplot(x=self.categorical_[
-                          0], y=self.numerical_[0], data=self._obj)
+                          0], y=self.numerical_[0], data=self._obj, **kwargs)
         elif self.config == (1, 1, 1):
             sns.stripplot(x=self.categorical_[0], y=self.numerical_[0], hue=self.categorical_[1],
-                          data=self._obj, jitter=0.1)
+                          data=self._obj, jitter=0.1, **kwargs)
 
-    def qqplot(self):
+    def qqplot(self, **kwargs):
         if self.config == (1, 0, 0):
-            stats.probplot(self._obj[self.numerical_[0]], plot=sns.mpl.pyplot)
+            stats.probplot(self._obj[self.numerical_[0]], plot=sns.mpl.pyplot, **kwargs)
         else:
             raise ValueError
 
-    def catplot(self):
+    def catplot(self, **kwargs):
         kwargs = dict(zip(["x", "hue", "col"], self.categorical_))
         if self.config == (0, 1, 2):
             sns.catplot(**kwargs, kind="count", data=self._obj)
