@@ -12,7 +12,7 @@ class tests:
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
 
-    def info(self, mode="df"):
+    def info(self, pctg=True, mode="df"):
         """
         TODO
         put this method elsewhere
@@ -29,9 +29,15 @@ class tests:
             else:
                 dtype = df[col].dtype.name
             dtypes.append(dtype)
-        missing = [df[col].pctg.nans for col in df]
-        zeros = [df[col].pctg.zeros for col in df]
-        uniques = [df[col].pctg.uniques for col in df]
+            
+        if pctg:
+            missing = [df[col].pctg.nans for col in df]
+            zeros = [df[col].pctg.zeros for col in df]
+            uniques = [df[col].pctg.uniques for col in df]
+        else:
+            missing = [df[col].isna().sum() for col in df]
+            zeros = ([df[col] == 0).sum() for col in df]
+            uniques = [df[col].nunique() for col in df]
 
         info = pd.DataFrame({
             "dtype": dtypes,
