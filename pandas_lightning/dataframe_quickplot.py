@@ -49,9 +49,9 @@ class quickplot:
         if numerical is not None:
             if isinstance(numerical, str):
                 numerical = [numerical]
-            for col in numerical:
-                if not is_numeric_dtype(self._obj[col]):
-                    raise ValueError
+            # for col in numerical:
+                # if not is_numeric_dtype(self._obj[col]):
+                #    raise ValueError
 
         if categorical is not None:
             if isinstance(categorical, str):
