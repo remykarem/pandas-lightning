@@ -13,7 +13,7 @@ class lambdas:
         self._validate_obj(pandas_obj)
         self._obj = pandas_obj
         self._pipelines = None
-        self.inplace = None
+        self.inplace = False
 
     def _validate_obj(self, pandas_obj):
         cols_with_space = [col for col in pandas_obj.columns if " " in col]
