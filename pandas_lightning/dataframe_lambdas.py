@@ -23,7 +23,7 @@ class lambdas:
 
     def __call__(self, inplace=False, pipelines: list = None):
         # Warning: `self._pipelines` is mutable by design
-        if not isinstance(pipelines, list):
+        if pipelines and not isinstance(pipelines, list):
             pipelines = [pipelines]
 
         self.inplace = inplace
