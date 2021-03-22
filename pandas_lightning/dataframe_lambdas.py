@@ -13,6 +13,7 @@ class lambdas:
         self._validate_obj(pandas_obj)
         self._obj = pandas_obj
         self._pipelines = None
+        self.inplace = None
 
     def _validate_obj(self, pandas_obj):
         cols_with_space = [col for col in pandas_obj.columns if " " in col]
@@ -20,11 +21,12 @@ class lambdas:
             warnings.warn("Dataframe consists of column names with spaces. "
                           "Consider cleaning these up.")
 
-    def __call__(self, pipelines: list = None):
+    def __call__(self, inplace=False, pipelines: list = None):
         # Warning: `self._pipelines` is mutable by design
         if not isinstance(pipelines, list):
             pipelines = [pipelines]
 
+        self.inplace = inplace
         self._pipelines = pipelines
         return self
 
@@ -85,7 +87,7 @@ class lambdas:
         pandas.DataFrame
             A dataframe whose columns have been converted accordingly
         """
-        df = self._obj.copy()
+        df = self._obj if self.inplace else self._obj.copy()
 
         for col, dtype in dtypes.items():
 
@@ -241,7 +243,7 @@ class lambdas:
         ValueError
             [description]
         """
-        df = self._obj.copy()
+        df = self._obj if self.inplace else self._obj.copy()
 
         for col, function in lambdas.items():
 
@@ -322,7 +324,7 @@ class lambdas:
         pandas.DataFrame
             Mutated dataframe
         """
-        df = self._obj.copy()
+        df = self._obj if self.inplace else self._obj.copy()
 
         run_steps = reduce(lambda f, g: lambda x: g(f(x)),
                            functions,
@@ -365,7 +367,7 @@ class lambdas:
         pandas.DataFrame
             A dataframe whose columns have been converted accordingly
         """
-        df = self._obj.copy()
+        df = self._obj if self.inplace else self._obj.copy()
 
         for col, function in lambdas.items():
 
@@ -401,7 +403,7 @@ class lambdas:
         ValueError
             If wrong type is specified
         """
-        df = self._obj.copy()
+        df = self._obj if self.inplace else self._obj.copy()
 
         for col, condition in conditions.items():
 
@@ -444,7 +446,7 @@ class lambdas:
         ...     Age=(["Sex", "Pclass"], lambda group: group.median())
         ... )
         """
-        df = self._obj.copy()
+        df = self._obj if self.inplace else self._obj.copy()
 
         for col, fill_value in d.items():
 
@@ -535,7 +537,7 @@ class lambdas:
         pandas.DataFrame
             A transformed copy of the dataframe
         """
-        df = self._obj.copy()
+        df = self._obj if self.inplace else self._obj.copy()
 
         default = None
 
@@ -630,7 +632,7 @@ class lambdas:
         pandas.DataFrame
             Dataframe with dropped columns
         """
-        df = self._obj.copy()
+        df = self._obj if self.inplace else self._obj.copy()
 
         cols_to_drop = []
         for col_name in df:
