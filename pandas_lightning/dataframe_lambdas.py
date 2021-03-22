@@ -9,6 +9,10 @@ from pandas.api.types import CategoricalDtype
 
 @pd.api.extensions.register_dataframe_accessor("lambdas")
 class lambdas:
+
+    astype_caches = {}
+    sapply_caches = {}
+
     def __init__(self, pandas_obj):
         self._validate_obj(pandas_obj)
         self._obj = pandas_obj
@@ -121,10 +125,10 @@ class lambdas:
             # TODO strings are problematic across versions 😰
 
             # Handle pandas gotchas 😰
-            if (dtype == int or dtype == "int") and df[col_old].hasnans:
+            if dtype in (int, "int") and df[col_old].hasnans:
                 raise TypeError(
                     "Cannot convert non-finite values (NA or inf) to integer")
-            elif (dtype == bool or dtype == "bool") and df[col_old].hasnans:
+            elif dtype in (bool, "bool") and df[col_old].hasnans:
                 raise TypeError("Casting to bool converts NaNs to True. "
                                 f"There are NaNs in {col_old}. Cast to `float` instead.")
 
@@ -133,7 +137,14 @@ class lambdas:
                 # df = df.set_index(col_old)
                 df.set_index(col_old, inplace=True)
             elif dtype == "datetime":
-                df[col_new] = pd.to_datetime(df[col_old])
+                series = pd.to_datetime(df[col_old])
+                key = (col_old, dtype, tuple(pd.util.hash_pandas_object(df[col_old])))
+                if key in lambdas.astype_caches:
+                    print("cache hit!")
+                    df[col_new] = lambdas.astype_caches[key]
+                else:
+                    lambdas.astype_caches[key] = series.copy()
+                    df[col_new] = series
             elif isinstance(dtype, str) and dtype.startswith("timedelta"):
                 # * 'W'
                 # * 'D' / 'days' / 'day'
@@ -148,9 +159,23 @@ class lambdas:
                     raise ValueError(
                         "datetime should be in the format `timedelta[...]`")
                 unit = regex_grouped.group(1)
-                df[col_new] = pd.to_timedelta(df[col_old], unit=unit)
+                series = pd.to_timedelta(df[col_old], unit=unit)
+                key = (col_old, dtype, tuple(pd.util.hash_pandas_object(df[col_old])))
+                if key in lambdas.astype_caches:
+                    print("cache hit!")
+                    df[col_new] = lambdas.astype_caches[key]
+                else:
+                    lambdas.astype_caches[key] = series.copy()
+                    df[col_new] = series
             else:
-                df[col_new] = df[col_old].astype(dtype)
+                series = df[col_old].astype(dtype)
+                key = (col_old, dtype, tuple(pd.util.hash_pandas_object(df[col_old])))
+                if key in lambdas.astype_caches:
+                    print("cache hit!")
+                    df[col_new] = lambdas.astype_caches[key]
+                else:
+                    lambdas.astype_caches[key] = series.copy()
+                    df[col_new] = series
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
@@ -158,12 +183,12 @@ class lambdas:
 
         return df
 
-    def sapply(self, **lambdas):
+    def sapply(self, **transforms):
         """Perform multiple lambda operations on series
 
         Parameters
         ----------
-        lambdas : dict
+        transforms : dict
             A dictionary of column name to lambda mapping
         inplace : bool, optional
             Whether to modify the series inplace, by default False
@@ -235,7 +260,7 @@ class lambdas:
         Raises
         ------
         ValueError
-            If lambdas is not a dict
+            If transforms is not a dict
         ValueError
             [description]
         ValueError
@@ -243,7 +268,7 @@ class lambdas:
         """
         df = self._obj.copy()
 
-        for col, function in lambdas.items():
+        for col, function in transforms.items():
 
             # Unpack dictionary value
             if callable(function):
@@ -266,7 +291,15 @@ class lambdas:
                 df[col_new] = function(*series)
             else:
                 # 1-to-1
-                df[col_new] = function(df[col_old])
+                series = function(df[col_old])
+
+                key = (col_old, function.__code__.co_code, tuple(pd.util.hash_pandas_object(df[col_old])))
+                if key in lambdas.sapply_caches:
+                    print("cache hit!")
+                    df[col_new] = lambdas.sapply_caches[key]
+                else:
+                    lambdas.sapply_caches[key] = series.copy()
+                    df[col_new] = series
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
