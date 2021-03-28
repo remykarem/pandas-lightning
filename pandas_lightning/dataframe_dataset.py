@@ -128,8 +128,10 @@ class dataset:
                 df[col] = df[col].astype(CategoricalDtype(uniques))
                 nominal_mappings[col] = dictionarize(df[col].cat.categories)
                 df[col] = df[col].cat.codes
+        elif nominal == "drop":
+            df = df.drop(columns=nominal_categories)
         else:
-            raise ValueError("`nominal` must be one of 'one-hot' or 'label'")
+            raise ValueError("`nominal` must be one of 'one-hot', 'label', or 'drop'")
 
         # For one-hot encoding, this is the `nominal_category` is the prefix.
         # User is responsible to name columns to handle this
