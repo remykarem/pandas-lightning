@@ -130,8 +130,11 @@ class dataset:
                 df[col] = df[col].cat.codes
         elif nominal == "drop":
             df = df.drop(columns=nominal_categories, inplace=True)
+        elif nominal == "keep":
+            pass
         else:
-            raise ValueError("`nominal` must be one of 'one-hot', 'label', or 'drop'")
+            raise ValueError(
+                "`nominal` must be one of 'one-hot', 'label', 'keep' or 'drop'")
 
         # For one-hot encoding, this is the `nominal_category` is the prefix.
         # User is responsible to name columns to handle this
@@ -155,7 +158,7 @@ class dataset:
                     bool_categories + nominal_categories]
             last_n = len(nominal_categories) if target is None else \
                 len(nominal_categories) - (target in nominal_categories)
-            metadata["nominal"]["col_indices"] = list(range(len(df.columns)))[-last_n:]
+            metadata["nominal"]["col_indices"] = list(range(len(df.columns)-(target in nominal_categories)))[-last_n:]
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
