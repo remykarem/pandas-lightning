@@ -94,16 +94,18 @@ class quickplot:
         elif self.config == (0, 1, 0):
             print("countplot")
         elif self.config == (0, 1, 1):
-            print("countplot, heatmap")
+            print("countplot, heatmap, pairplot")
         elif self.config == (1, 1, 0):
-            print("distplot, kdeplot, barplot, boxplot, violinplot, stripplot, ridgeplot")
+            print("distplot, kdeplot, barplot, boxplot, violinplot, stripplot, ridgeplot, pairplot")
         elif self.config == (2, 0, 0):
-            print("lineplot, scatterplot, hexbinplot, kdeplot")
+            print("lineplot, scatterplot, hexbinplot, kdeplot, pairplot")
         elif self.config == (2, 1, 0):
-            print("lineplot")
+            print("lineplot, pairplot")
         elif self.config == (1, 1, 1):
-            print("boxplot, violinplot, stripplot")
+            print("boxplot, violinplot, stripplot, pairplot")
         elif self.config == (0, 1, 2):
+            print("catplot, pairplot")
+        elif self.config == (1, 1, 2):
             print("catplot")
         else:
             raise ValueError
@@ -235,9 +237,12 @@ class quickplot:
             raise ValueError
 
     def catplot(self, **kwargs):
-        kwargs = dict(zip(["x", "hue", "col"], self.categorical_))
         if self.config == (0, 1, 2):
-            sns.catplot(**kwargs, kind="count", data=self._obj)
+            kwargs = dict(zip(["x", "hue", "col"], self.categorical_))
+            sns.catplot(kind="count", data=self._obj, **kwargs)
+        elif self.config == (1, 1, 2):
+            kwargs = dict(zip(["x", "hue", "col"], self.categorical_))
+            sns.catplot(y=self.numerical_[0], kind="box", data=self._obj, **kwargs)
         else:
             raise ValueError
 
@@ -247,6 +252,13 @@ class quickplot:
                        y=self.categorical_[0], data=self._obj)
         else:
             raise ValueError
+
+    def pairplot(self, **kwargs):
+        if self.config:
+            columns = self.numerical_ + self.categorical_
+            sns.pairplot(self._obj[columns], **kwargs)
+        else:
+            sns.pairplot(self._obj, **kwargs)
 
 
 def _ridgeplot(x, y, data):
