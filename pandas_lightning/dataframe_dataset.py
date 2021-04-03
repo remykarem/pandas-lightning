@@ -136,11 +136,15 @@ class dataset:
         # For one-hot encoding, this is the `nominal_category` is the prefix.
         # User is responsible to name columns to handle this
         metadata = {}
-        metadata["nominal"] = nominal_categories
-        metadata["nominal_mappings"] = nominal_mappings
-        metadata["nominal_in_last_n_cols"] = None
-        metadata["ordinal"] = ordinal_categories
-        metadata["ordinal_mappings"] = ordinal_mappings
+        metadata["nominal"] = {
+            "col_names": nominal_categories,
+            "col_indices": None,
+            "mappings": nominal_mappings
+        }
+        metadata["ordinal"] = {
+            "col_names": ordinal_categories,
+            "mappings": ordinal_mappings
+        }
         metadata["bool"] = bool_categories
         metadata["numeric"] = numeric_categories
 
@@ -149,8 +153,9 @@ class dataset:
         if nominal in ["label", "keep"]:
             df = df[numeric_categories + ordinal_categories +
                     bool_categories + nominal_categories]
-            metadata["nominal_in_last_n_cols"] = len(nominal_categories) if target is None else \
+            last_n = len(nominal_categories) if target is None else \
                 len(nominal_categories) - (target in nominal_categories)
+            metadata["nominal"]["col_indices"] = list(range(len(df.columns)))[-last_n:]
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
