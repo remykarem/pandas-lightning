@@ -95,7 +95,7 @@ class dataset:
         # Note: Categories that are label-encoded or one-hot encoded are -1 if
         # they are NaNs but not dropped
         if remove_missing:
-            df = df.dropna(axis=0)
+            df = df.dropna(axis=0, inplace=True)
 
         # 3. Handle ordinal categories and boolean categories
         ordinal_mappings = {}
@@ -129,7 +129,7 @@ class dataset:
                 nominal_mappings[col] = dictionarize(df[col].cat.categories)
                 df[col] = df[col].cat.codes
         elif nominal == "drop":
-            df = df.drop(columns=nominal_categories)
+            df = df.drop(columns=nominal_categories, inplace=True)
         else:
             raise ValueError("`nominal` must be one of 'one-hot', 'label', or 'drop'")
 
