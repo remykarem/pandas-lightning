@@ -158,7 +158,7 @@ class dataset:
                     bool_categories + nominal_categories]
             last_n = len(nominal_categories) if target is None else \
                 len(nominal_categories) - (target in nominal_categories)
-            metadata["nominal"]["col_indices"] = list(range(len(df.columns)-(target in nominal_categories)))[-last_n:]
+            metadata["nominal"]["col_indices"] = list(range(len(df.columns)-int(bool(target))))[-last_n:]
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
