@@ -69,11 +69,24 @@ class dataset:
         return df_new
 
     def to_X_y(self,
-               target: str = None,
-               nominal: str = "one-hot",
-               remove_missing: bool = False):
-        """
-        Change everything to a numeric type
+               *,
+               target: str,
+               nominal: str,
+               remove_missing: bool) -> pd.DataFrame:
+        """Change everything to a numeric type
+
+        Args:
+            target (str): Column name of target variable (for regression or classification)
+            nominal (str): Strategy to deal with nominal columns. One of 'one-hot',
+                'label', 'keep' or 'drop'
+            remove_missing (bool): Strategy to deal with missing values (removal)
+
+        Raises:
+            KeyError: [description]
+            ValueError: [description]
+
+        Returns:
+            pd.DataFrame: A dataframe fit for modelling
         """
         df = self._obj.copy()
 
