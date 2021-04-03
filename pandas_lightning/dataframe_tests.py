@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from pandas.api.types import is_categorical_dtype
 from scipy.stats import chi2_contingency
+import seaborn as sns
 
 
 @pd.api.extensions.register_dataframe_accessor("tests")
@@ -47,7 +48,7 @@ class tests:
         }, index=df.columns)
 
         if mode == "df":
-            return info
+            return info.sort_values(by="dtype")
         elif mode == "heatmap":
             sns.heatmap(info)
         else:
