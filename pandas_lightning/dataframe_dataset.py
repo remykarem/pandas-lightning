@@ -154,11 +154,12 @@ class dataset:
         # For one-hot encoding, this is the `nominal_category` is the prefix.
         # User is responsible to name columns to handle this
         metadata = {}
-        metadata["nominal"] = {
-            "col_names": nominal_categories,
-            "col_indices": None,
-            "mappings": nominal_mappings
-        }
+        if nominal != "drop":
+            metadata["nominal"] = {
+                "col_names": nominal_categories,
+                "col_indices": None,
+                "mappings": nominal_mappings
+            }
         metadata["ordinal"] = {
             "col_names": ordinal_categories,
             "mappings": ordinal_mappings
