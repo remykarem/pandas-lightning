@@ -114,6 +114,7 @@ class dataset:
         # 3. Handle ordinal categories and boolean categories
         ordinal_mappings = {}
         nominal_categories = []
+        nominal_categories_high_cardinality = []
         ordinal_categories = []
         bool_categories = []
         numeric_categories = []
@@ -125,14 +126,19 @@ class dataset:
             elif is_nominal(df[col]):
                 if len(df[col].cat.categories) <= nominal_max_cardinality:
                     nominal_categories.append(col)
+                else:
+                    nominal_categories_high_cardinality.append(col)
             elif is_bool_dtype(df[col]):
                 df[col] = df[col].astype(int)
                 bool_categories.append(col)
             else:
                 numeric_categories.append(col)
 
+
         # 4. Handle nominal categories
         nominal_mappings = {}
+        df.drop(columns=nominal_categories_high_cardinality, inplace=True)
+        
         if nominal == "one-hot":
             df = pd.get_dummies(df, columns=nominal_categories)
         elif nominal == "label":
