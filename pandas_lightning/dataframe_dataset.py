@@ -122,8 +122,9 @@ class dataset:
                 ordinal_mappings[col] = dictionarize(df[col].cat.categories)
                 df[col] = df[col].cat.codes
                 ordinal_categories.append(col)
-            elif is_nominal(df[col]) and len(df[col].cat.categories) > nominal_max_cardinality:
-                nominal_categories.append(col)
+            elif is_nominal(df[col]):
+                if len(df[col].cat.categories) <= nominal_max_cardinality:
+                    nominal_categories.append(col)
             elif is_bool_dtype(df[col]):
                 df[col] = df[col].astype(int)
                 bool_categories.append(col)
