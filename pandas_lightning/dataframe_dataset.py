@@ -72,14 +72,15 @@ class dataset:
                *,
                target: str,
                nominal: str,
-               remove_missing: bool) -> pd.DataFrame:
+               nominal_max_cardinality: int,
+               nans: str) -> pd.DataFrame:
         """Change everything to a numeric type
 
         Args:
             target (str): Column name of target variable (for regression or classification)
             nominal (str): Strategy to deal with nominal columns. One of 'one-hot',
                 'label', 'keep' or 'drop'
-            remove_missing (bool): Strategy to deal with missing values (removal)
+            nans (str): Strategy to deal with missing values. One of 'remove' or 'keep'.
 
         Raises:
             KeyError: [description]
@@ -107,7 +108,7 @@ class dataset:
         # 2. Remove Nans
         # Note: Categories that are label-encoded or one-hot encoded are -1 if
         # they are NaNs but not dropped
-        if remove_missing:
+        if nans == "remove":
             df.dropna(axis=0, inplace=True)
 
         # 3. Handle ordinal categories and boolean categories
@@ -117,11 +118,11 @@ class dataset:
         bool_categories = []
         numeric_categories = []
         for col in df:
-            if is_categorical_dtype(df[col]) and df[col].dtype.ordered:
+            if is_ordinal(df[col]):
                 ordinal_mappings[col] = dictionarize(df[col].cat.categories)
                 df[col] = df[col].cat.codes
                 ordinal_categories.append(col)
-            elif is_categorical_dtype(df[col]) and not df[col].dtype.ordered:
+            elif is_nominal(df[col]) and len(df[col].cat.categories) > nominal_max_cardinality:
                 nominal_categories.append(col)
             elif is_bool_dtype(df[col]):
                 df[col] = df[col].astype(int)
@@ -161,8 +162,12 @@ class dataset:
             "col_names": ordinal_categories,
             "mappings": ordinal_mappings
         }
-        metadata["bool"] = bool_categories
-        metadata["numeric"] = numeric_categories
+        metadata["bool"] = {
+            "col_names": bool_categories
+        }
+        metadata["numeric"] = {
+            "col_names": numeric_categories
+        }
 
         # Rearrange columns such that nominal categories are
         # at the back for easy slicing access
@@ -171,14 +176,15 @@ class dataset:
                     bool_categories + nominal_categories]
             last_n = len(nominal_categories) if target is None else \
                 len(nominal_categories) - (target in nominal_categories)
-            metadata["nominal"]["col_indices"] = list(range(len(df.columns)-int(bool(target))))[-last_n:]
+            metadata["nominal"]["col_indices"] = list(
+                range(len(df.columns)-int(bool(target))))[-last_n:]
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
                 pipeline.add({("dataset", "to_X_y"): {
                     "target": target,
                     "nominal": nominal,
-                    "remove_missing": remove_missing
+                    "nans": nans
                 }})
 
         # 5. Separate target
@@ -195,3 +201,11 @@ def dictionarize(categories):
                 for i, cat in enumerate(categories)}
     else:
         return dict(enumerate(categories))
+
+
+def is_ordinal(series: pd.Series) -> bool:
+    return is_categorical_dtype(series) and series.dtype.ordered
+
+
+def is_nominal(series: pd.Series) -> bool:
+    return is_categorical_dtype(series) and not series.dtype.ordered
