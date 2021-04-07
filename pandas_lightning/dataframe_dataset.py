@@ -143,6 +143,9 @@ class dataset:
             df = pd.get_dummies(df, columns=nominal_categories)
         elif nominal == "label":
             for col in nominal_categories:
+                # nominal mappings are for string categories
+                if df[col].cat.categories.dtype == "int":
+                    continue
                 uniques = df[col].unique().tolist()
                 if np.nan in uniques:
                     uniques.remove(np.nan)
@@ -192,7 +195,9 @@ class dataset:
                 pipeline.add({("dataset", "to_X_y"): {
                     "target": target,
                     "nominal": nominal,
-                    "nans": nans
+                    "nans": nans,
+                    "nominal_max_cardinality": nominal_max_cardinality,
+                    "metadata": metadata
                 }})
 
         # 5. Separate target
