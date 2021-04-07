@@ -223,7 +223,7 @@ class dataset:
             for col_name in metadata["bool"]["col_names"]:
                 data[col_name] = data[col_name].astype(int)
 
-            return data
+            return data, metadata
 
 
         if self._pipelines is not None:
