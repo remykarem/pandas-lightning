@@ -184,7 +184,7 @@ class dataset:
             "col_names": numeric_categories
         }
         metadata["removed"] = {
-            "col_names": nominal_categories_high_cardinality
+            "col_names": removed_categories
         }
 
         # Rearrange columns such that nominal categories are
