@@ -96,9 +96,12 @@ class dataset:
 
         # TODO check if column names are unique
 
+        removed_categories = []
+
         # 1. Remove `object` and `datetime` types as we will not handle
         # them. User is responsible to change to category.
         num_cols_before = df.shape[-1]
+        removed_categories.extend(df.select_dtypes(include=["object", "datetime"]).columns.tolist())
         df = df.select_dtypes(exclude=["object", "datetime"])
         num_cols_after = df.shape[-1]
         if num_cols_after != num_cols_before:
@@ -134,10 +137,10 @@ class dataset:
             else:
                 numeric_categories.append(col)
 
-
         # 4. Handle nominal categories
         nominal_mappings = {}
         df.drop(columns=nominal_categories_high_cardinality, inplace=True)
+        removed_categories.extend(nominal_categories_high_cardinality)
         
         if nominal == "one-hot":
             df = pd.get_dummies(df, columns=nominal_categories)
@@ -154,6 +157,7 @@ class dataset:
                 df[col] = df[col].cat.codes
         elif nominal == "drop":
             df.drop(columns=nominal_categories, inplace=True)
+            removed_categories.extend(nominal_categories)
         elif nominal == "keep":
             pass
         else:
@@ -178,6 +182,9 @@ class dataset:
         }
         metadata["numeric"] = {
             "col_names": numeric_categories
+        }
+        metadata["removed"] = {
+            "col_names": nominal_categories_high_cardinality
         }
 
         # Rearrange columns such that nominal categories are
