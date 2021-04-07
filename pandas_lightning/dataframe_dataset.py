@@ -171,11 +171,12 @@ class dataset:
             metadata["nominal"] = {
                 "col_names": nominal_categories,
                 "col_indices": None,
-                "mappings": nominal_mappings
+                "one-hot": nominal == "one-hot",
+                "label_mappings": nominal_mappings
             }
         metadata["ordinal"] = {
             "col_names": ordinal_categories,
-            "mappings": ordinal_mappings
+            "label_mappings": ordinal_mappings
         }
         metadata["bool"] = {
             "col_names": bool_categories
