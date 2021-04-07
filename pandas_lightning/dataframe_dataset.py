@@ -198,6 +198,8 @@ class dataset:
             metadata["nominal"]["col_indices"] = list(
                 range(len(df.columns)-int(bool(target))))[-last_n:]
 
+        final_col_names = df.columns.tolist()
+
 
         def transform(data):
 
@@ -223,12 +225,16 @@ class dataset:
             for col_name in metadata["bool"]["col_names"]:
                 data[col_name] = data[col_name].astype(int)
 
-            return data, metadata
+            return data
+
+        def reorder(data):
+            return data[final_col_names]
 
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
                 pipeline.add(transform)
+                pipeline.add(reorder)
 
         # 5. Separate target
         if target:
