@@ -218,7 +218,7 @@ class dataset:
                     if col_name not in metadata["nominal"]["label_mappings"]:
                         continue
                     d = {v:k for k,v in metadata["nominal"]["label_mappings"][col_name].items()}
-                    data[col_name] = data[col_name].cat.rename_categories(d)
+                    data[col_name] = data[col_name].cat.rename_categories(d).cat.codes
                     
             # Bool
             for col_name in metadata["bool"]["col_names"]:
