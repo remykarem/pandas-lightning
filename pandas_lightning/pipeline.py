@@ -1,4 +1,6 @@
+
 import copy
+from typing import Union, Callable
 from .dataframe_lambdas import lambdas
 from .dataframe_dataset import dataset
 
@@ -14,14 +16,20 @@ class Pipeline:
         obj = self.run(pandas_obj)
         return obj
 
-    def __repr__(self):
-        return str([list(m.keys())[0] for m in self._pipeline])
+    # def __repr__(self):
+    #     return str([list(m.keys())[0] for m in self._pipeline])
 
-    def add(self, obj):
+    def add(self, obj: Union[dict, Callable]):
         self._pipeline.append(obj)
 
     def run(self, pandas_obj):
+        pandas_obj = pandas_obj.copy()
+
         for pipe_item in self._pipeline:
+
+            if callable(pipe_item):
+                pandas_obj = pipe_item(pandas_obj)
+                continue
 
             accessor_str, fn_str = list(pipe_item.keys())[0]
             accessor_obj = eval(accessor_str)

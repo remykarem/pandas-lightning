@@ -1,6 +1,6 @@
 import re
 import warnings
-from functools import reduce
+from functools import reduce, partial
 
 import pandas as pd
 import numpy as np
@@ -245,36 +245,43 @@ class lambdas:
         """
         df = self._obj if self.inplace else self._obj.copy()
 
-        for col, function in lambdas.items():
+        def __sapply(data):
+            
+            for col, function in lambdas.items():
 
-            # Unpack dictionary value
-            if callable(function):
-                # 1-to-1
-                col_new, col_old = col, col
-            elif isinstance(function, tuple) and len(function) == 1:
-                # 1-to-1
-                col_new, col_old = col, col
-                function = function[0]
-            elif isinstance(function, tuple) and len(function) == 2:
-                # many-to-1
-                col_new = col
-                col_old, function = function
-            else:
-                raise ValueError("Wrong type specified")
+                # Unpack dictionary value
+                if callable(function):
+                    # 1-to-1
+                    col_new, col_old = col, col
+                elif isinstance(function, tuple) and len(function) == 1:
+                    # 1-to-1
+                    col_new, col_old = col, col
+                    function = function[0]
+                elif isinstance(function, tuple) and len(function) == 2:
+                    # many-to-1
+                    col_new = col
+                    col_old, function = function
+                else:
+                    raise ValueError("Wrong type specified")
 
-            if isinstance(col_old, (list, tuple)):
-                # many-to-1
-                series = [getattr(df, col) for col in col_old]
-                df[col_new] = function(*series)
-            else:
-                # 1-to-1
-                df[col_new] = function(df[col_old])
+                if isinstance(col_old, (list, tuple)):
+                    # many-to-1
+                    series = [getattr(data, col) for col in col_old]
+                    data[col_new] = function(*series)
+                else:
+                    # 1-to-1
+                    data[col_new] = function(data[col_old])
+
+            return data
+
+        df = __sapply(df)
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("lambdas", "sapply"): lambdas})
+                pipeline.add(__sapply)
 
         return df
+
 
     def dapply(self, *functions):
         """Apply a sequence of functions on this dataframe.
@@ -660,3 +667,4 @@ class lambdas:
         """
         to_keep = self._obj.isnull().sum(axis=1) < min_pctg
         return self._obj.loc[to_keep]
+

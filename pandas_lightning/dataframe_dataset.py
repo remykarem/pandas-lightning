@@ -198,15 +198,37 @@ class dataset:
             metadata["nominal"]["col_indices"] = list(
                 range(len(df.columns)-int(bool(target))))[-last_n:]
 
+
+        def transform(data):
+
+            # Drop
+            data = data.drop(columns=metadata["removed"]["col_names"])
+
+            # Ordinal
+            for col_name in metadata["ordinal"]["col_names"]:
+                d = {v:k for k,v in metadata["ordinal"]["label_mappings"][col_name].items()}
+                data[col_name] = data[col_name].cat.rename_categories(d)
+                
+            # Nominal
+            if metadata["nominal"]["one-hot"]:
+                data = pd.get_dummies(data, columns=metadata["nominal"]["col_names"])
+            else:
+                for col_name in metadata["nominal"]["col_names"]:
+                    if col_name not in metadata["nominal"]["label_mappings"]:
+                        continue
+                    d = {v:k for k,v in metadata["nominal"]["label_mappings"][col_name].items()}
+                    data[col_name] = data[col_name].cat.rename_categories(d)
+                    
+            # Bool
+            for col_name in metadata["bool"]["col_names"]:
+                data[col_name] = data[col_name].astype(int)
+
+            return data
+
+
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add({("dataset", "to_X_y"): {
-                    "target": target,
-                    "nominal": nominal,
-                    "nans": nans,
-                    "nominal_max_cardinality": nominal_max_cardinality,
-                    "metadata": metadata
-                }})
+                pipeline.add(transform)
 
         # 5. Separate target
         if target:
