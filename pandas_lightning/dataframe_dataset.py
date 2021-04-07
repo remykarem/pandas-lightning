@@ -228,7 +228,10 @@ class dataset:
             return data
 
         def reorder(data):
-            return data[final_col_names]
+            cols = final_col_names.copy()
+            if target in cols:
+                cols.remove(target)
+            return data[cols]
 
 
         if self._pipelines is not None:
