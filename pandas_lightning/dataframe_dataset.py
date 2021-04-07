@@ -208,8 +208,7 @@ class dataset:
 
             # Ordinal
             for col_name in metadata["ordinal"]["col_names"]:
-                d = {v:k for k,v in metadata["ordinal"]["label_mappings"][col_name].items()}
-                data[col_name] = data[col_name].cat.rename_categories(d)
+                data[col_name] = data[col_name].cat.codes
                 
             # Nominal
             if metadata["nominal"]["one-hot"]:
