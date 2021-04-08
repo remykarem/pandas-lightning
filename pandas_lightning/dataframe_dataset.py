@@ -235,7 +235,7 @@ class dataset:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.extend([transform, reorder])
+                pipeline.add(transform, reorder)
 
         # 5. Separate target
         if target:

@@ -19,8 +19,8 @@ class Pipeline:
     # def __repr__(self):
     #     return str([list(m.keys())[0] for m in self._pipeline])
 
-    def add(self, obj: Union[dict, Callable]):
-        self._pipeline.append(obj)
+    def add(self, *objs: Union[dict, Callable]):
+        self._pipeline.extend(objs)
 
     def run(self, pandas_obj):
         pandas_obj = pandas_obj.copy()
