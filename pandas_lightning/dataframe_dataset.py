@@ -1,7 +1,7 @@
 import warnings
 import pandas as pd
 import numpy as np
-from pandas.api.types import is_bool_dtype
+from pandas.api.types import is_bool_dtype, is_integer_dtype
 from pandas.api.types import is_categorical_dtype, CategoricalDtype
 from pandas import IntervalIndex
 
@@ -147,7 +147,7 @@ class dataset:
         elif nominal == "label":
             for col in nominal_categories:
                 # nominal mappings are for string categories
-                if df[col].cat.categories.dtype == "int":
+                if is_integer_dtype(df[col].cat.categories.dtype):
                     continue
                 uniques = df[col].unique().tolist()
                 if np.nan in uniques:
@@ -218,7 +218,7 @@ class dataset:
                     if col_name not in metadata["nominal"]["label_mappings"]:
                         continue
                     d = {v:k for k,v in metadata["nominal"]["label_mappings"][col_name].items()}
-                    data[col_name] = data[col_name].cat.rename_categories(d).cat.codes
+                    data[col_name] = data[col_name].cat.rename_categories(d).astype(int)
                     
             # Bool
             for col_name in metadata["bool"]["col_names"]:
@@ -235,8 +235,7 @@ class dataset:
 
         if self._pipelines is not None:
             for pipeline in self._pipelines:
-                pipeline.add(transform)
-                pipeline.add(reorder)
+                pipeline.extend([transform, reorder])
 
         # 5. Separate target
         if target:
