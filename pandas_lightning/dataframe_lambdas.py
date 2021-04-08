@@ -1,5 +1,6 @@
 import re
 import warnings
+from typing import Union
 from functools import reduce, partial
 
 import pandas as pd
@@ -30,7 +31,7 @@ class lambdas:
         self._pipelines = pipelines
         return self
 
-    def astype(self, **dtypes):
+    def astype(self, **dtypes: Union[type, str]):
         """Convert dtypes of multiple columns using a dictionary
 
         Parameters
@@ -100,13 +101,16 @@ class lambdas:
 
             # Check the dtype definition
             if isinstance(dtype, type):
-                # TODO add numpy types
-                if dtype.__name__ not in ["int", "float", "bool", "str"]:
+                if dtype not in [int, float, bool, str,
+                                 np.int8, np.int16, np.int32, np.int64,
+                                 np.uint8, np.uint16, np.uint32, np.uint64]:
                     raise ValueError("Wrong type")
             elif isinstance(dtype, str) and dtype.startswith("timedelta"):
                 pass
             elif isinstance(dtype, str):
-                if dtype not in ["datetime", "index", "category", "int", "float", "bool", "str", "object", "string"]:
+                if dtype not in ["datetime", "index", "category", "int", "float", "bool", "str", "object", "string",
+                                 "int8", "int16", "int32", "int64",
+                                 "uint8", "uint16", "uint32", "uint64"]:
                     raise ValueError("Wrong type")
             elif isinstance(dtype, list):
                 dtype = CategoricalDtype(dtype, ordered=True)
@@ -246,7 +250,7 @@ class lambdas:
         df = self._obj if self.inplace else self._obj.copy()
 
         def __sapply(data):
-            
+
             for col, function in lambdas.items():
 
                 # Unpack dictionary value
@@ -281,7 +285,6 @@ class lambdas:
                 pipeline.add(__sapply)
 
         return df
-
 
     def dapply(self, *functions):
         """Apply a sequence of functions on this dataframe.
@@ -667,4 +670,3 @@ class lambdas:
         """
         to_keep = self._obj.isnull().sum(axis=1) < min_pctg
         return self._obj.loc[to_keep]
-
