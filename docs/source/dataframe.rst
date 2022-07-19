@@ -1,28 +1,28 @@
 DataFrame accessors
 ===================
 
-DataFrame.lambdas
+Basic manipulation
 ------------------
 
-astype
-******
+Type casting
+************
 
-.. automethod:: pandas_lightning.dataframe_cast
+.. automethod:: pandas_lightning.dataframe_cast.cast.__call__
 
-select
-******
+Column transformations
+**********************
 
-.. automethod:: pandas_lightning.dataframe_transform_columns
+.. automethod:: pandas_lightning.dataframe_transform_columns.transform_columns.__call__
 
-dapply
-******
+drop_if_exist
+*************
 
-.. automethod:: pandas_lightning.dataframe_lambdas.lambdas.dapply
+.. automethod:: pandas_lightning.dataframe_lambdas.lambdas.drop_if_exist
 
-apply
-*****
+drop_columns_with_rules
+***********************
 
-.. automethod:: pandas_lightning.dataframe_lambdas.lambdas.apply
+.. automethod:: pandas_lightning.dataframe_lambdas.lambdas.drop_columns_with_rules
 
 fillna
 ******
@@ -39,20 +39,10 @@ map_conditional
 
 .. automethod:: pandas_lightning.dataframe_lambdas.lambdas.map_conditional
 
-drop_if_exist
-*************
-
-.. automethod:: pandas_lightning.dataframe_lambdas.lambdas.drop_if_exist
-
-drop_columns_with_rules
-***********************
-
-.. automethod:: pandas_lightning.dataframe_lambdas.lambdas.drop_columns_with_rules
 
 
-
-DataFrame.quickplot
--------------------
+Charts
+------
 
 options
 *******
@@ -130,33 +120,38 @@ ridgeplot
 .. automethod:: pandas_lightning.dataframe_quickplot.quickplot.ridgeplot
 
 
-DataFrame.tests
----------------
+Tests
+-----
 
-info
-****
+Basic info
+**********
 
 .. automethod:: pandas_lightning.dataframe_tests.tests.info
 
-categorical
-***********
+Tests for categorical data
+**************************
 
 .. automethod:: pandas_lightning.dataframe_tests.tests.categorical
 
-numerical
-*********
+Tests for numerical data
+************************
 
 .. automethod:: pandas_lightning.dataframe_tests.tests.numerical
 
-get_cramersv
-************
+Cramers V test
+**************
 
 .. automethod:: pandas_lightning.dataframe_tests.tests.get_cramersv
 
 
 
-DataFrame.dataset
-------------------
+Preparing for modelling
+-----------------------
+
+to_X_y
+******
+
+.. automethod:: pandas_lightning.dataframe_to_X_y.to_X_y.__call__
 
 undersample
 ***********
