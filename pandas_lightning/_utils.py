@@ -1,4 +1,4 @@
-from random import sample, choices
+from random import choices
 import numpy as np
 import pandas as pd
 

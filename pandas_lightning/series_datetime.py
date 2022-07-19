@@ -1,7 +1,4 @@
 import pandas as pd
-import numpy as np
-# from pandas.api.types import is_datetime64_dtype
-from pandas.errors import EmptyDataError
 
 
 @pd.api.extensions.register_series_accessor("datetime")

@@ -1,7 +1,6 @@
 import re
 import warnings
 from typing import Union
-from functools import reduce, partial
 
 import pandas as pd
 import numpy as np
@@ -13,7 +12,6 @@ class lambdas:
     def __init__(self, pandas_obj):
         self._validate_obj(pandas_obj)
         self._obj = pandas_obj
-        self._pipelines = None
         self.inplace = False
 
     def _validate_obj(self, pandas_obj):
@@ -21,15 +19,6 @@ class lambdas:
         if len(cols_with_space) > 0:
             warnings.warn("Dataframe consists of column names with spaces. "
                           "Consider cleaning these up.")
-
-    def __call__(self, inplace=False, pipelines: list = None):
-        # Warning: `self._pipelines` is mutable by design
-        if pipelines and not isinstance(pipelines, list):
-            pipelines = [pipelines]
-
-        self.inplace = inplace
-        self._pipelines = pipelines
-        return self
 
     def astype(self, **dtypes: Union[type, str]):
         """Convert dtypes of multiple columns using a dictionary
@@ -158,10 +147,6 @@ class lambdas:
             else:
                 df[col_new] = df[col_old].astype(dtype)
 
-        if self._pipelines is not None:
-            for pipeline in self._pipelines:
-                pipeline.add({("lambdas", "astype"): dtypes})
-
         return df
 
     def sapply(self, **lambdas):
@@ -280,10 +265,6 @@ class lambdas:
 
         df = __sapply(df)
 
-        if self._pipelines is not None:
-            for pipeline in self._pipelines:
-                pipeline.add(__sapply)
-
         return df
 
     def setna(self, **conditions):
@@ -327,10 +308,6 @@ class lambdas:
 
             df.loc[condition(*series), col_to_set] = np.nan
 
-        if self._pipelines is not None:
-            for pipeline in self._pipelines:
-                pipeline.add({("lambdas", "setna"): conditions})
-
         return df
 
     def fillna(self, **d):
@@ -368,10 +345,6 @@ class lambdas:
 
             # Fill na with fill value
             df[col_new] = df[col].fillna(fill_value)
-
-        if self._pipelines is not None:
-            for pipeline in self._pipelines:
-                pipeline.add({("lambdas", "fillna"): d})
 
         return df
 
@@ -469,10 +442,6 @@ class lambdas:
             df[col_new] = np.select(condlist=condlist, choicelist=choicelist,
                                     default=default)
 
-        if self._pipelines is not None:
-            for pipeline in self._pipelines:
-                pipeline.add({("lambdas", "map_conditional"): mappings})
-
         return df
 
     def drop_if_exist(self, columns: list):
@@ -484,10 +453,6 @@ class lambdas:
                 columns_.pop(i)
 
         df = df.drop(columns=columns_)
-
-        if self._pipelines is not None:
-            for pipeline in self._pipelines:
-                pipeline.add({("lambdas", "drop_if_exist"): columns})
 
         return df
 
@@ -538,11 +503,6 @@ class lambdas:
                     break
 
         df = df.drop(columns=cols_to_drop)
-
-        if self._pipelines is not None:
-            for pipeline in self._pipelines:
-                pipeline.add(
-                    {("lambdas", "drop_columns_with_rules"): functions})
 
         return df
 

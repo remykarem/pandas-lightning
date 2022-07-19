@@ -1,5 +1,5 @@
 from typing import Union
-from pandas.api.types import is_numeric_dtype, is_categorical_dtype, is_bool_dtype, is_float_dtype
+from pandas.api.types import is_categorical_dtype, is_bool_dtype, is_float_dtype
 import seaborn as sns
 from scipy import stats
 import matplotlib.pyplot as plt

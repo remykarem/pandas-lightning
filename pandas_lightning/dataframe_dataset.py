@@ -10,15 +10,6 @@ from pandas import IntervalIndex
 class dataset:
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
-        self._pipelines = None
-
-    def __call__(self, pipelines: list = None):
-        # Warning: `self._pipelines` is mutable by design
-        if pipelines and not isinstance(pipelines, list):
-            pipelines = [pipelines]
-
-        self._pipelines = pipelines
-        return self
 
     def undersample(self, col, replace=False, min_count=None, random_state=None):
         df = self._obj.copy()
@@ -31,15 +22,6 @@ class dataset:
             dataframes.append(group.sample(
                 min_count, replace=replace, random_state=random_state))
         df_new = pd.concat(dataframes)
-
-        if self._pipelines is not None:
-            for pipeline in self._pipelines:
-                pipeline.add({("dataset", "undersample"): {
-                    "col": col,
-                    "replace": replace,
-                    "min_count": min_count,
-                    "random_state": random_state
-                }})
 
         return df_new
 
@@ -57,14 +39,6 @@ class dataset:
             dataframes.append(group.sample(
                 abs(max_count-len(group)), replace=True, random_state=random_state))
         df_new = pd.concat(dataframes)
-
-        if self._pipelines is not None:
-            for pipeline in self._pipelines:
-                pipeline.add({("dataset", "oversample"): {
-                    "col": col,
-                    "max_count": max_count,
-                    "random_state": random_state
-                }})
 
         return df_new
 
@@ -199,43 +173,6 @@ class dataset:
                 range(len(df.columns)-int(bool(target))))[-last_n:]
 
         final_col_names = df.columns.tolist()
-
-
-        def transform(data):
-
-            # Drop
-            data = data.drop(columns=metadata["removed"]["col_names"])
-
-            # Ordinal
-            for col_name in metadata["ordinal"]["col_names"]:
-                data[col_name] = data[col_name].cat.codes
-                
-            # Nominal
-            if metadata["nominal"]["one-hot"]:
-                data = pd.get_dummies(data, columns=metadata["nominal"]["col_names"])
-            else:
-                for col_name in metadata["nominal"]["col_names"]:
-                    if col_name not in metadata["nominal"]["label_mappings"]:
-                        continue
-                    d = {v:k for k,v in metadata["nominal"]["label_mappings"][col_name].items()}
-                    data[col_name] = data[col_name].cat.rename_categories(d).astype(int)
-                    
-            # Bool
-            for col_name in metadata["bool"]["col_names"]:
-                data[col_name] = data[col_name].astype(int)
-
-            return data
-
-        def reorder(data):
-            cols = final_col_names.copy()
-            if target in cols:
-                cols.remove(target)
-            return data[cols]
-
-
-        if self._pipelines is not None:
-            for pipeline in self._pipelines:
-                pipeline.add(transform, reorder)
 
         # 5. Separate target
         if target:
