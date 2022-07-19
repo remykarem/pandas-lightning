@@ -70,7 +70,7 @@ Previously:
 Now:
 
 ```python
->>> df = df.lambdas.sapply(
+>>> df = df.transform_columns(
 ...   Cabin=lambda s: s.str[0],
 ...   HasCabinCode=("Cabin", lambda s: ~s.isna()),
 ...   HasDep=(["SibSp", "Parch"], lambda s, t: (s+t) > 0),

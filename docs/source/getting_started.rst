@@ -28,7 +28,7 @@ will be available to your DataFrame and Series objects.
 Use df.lambdas
 --------------
 
-**df.lambdas.sapply**
+**df.transform_columns**
 
 >>> df = pd.util.testing.makeMissingDataframe()
 >>> def squared(x):
@@ -43,7 +43,7 @@ What used to be
 
 can be rewritten as
 
->>> df = df.lambdas.sapply(
+>>> df = df.transform_columns(
 ...     A=abs,
 ...     B=lambda b: b * 10,
 ...     C_squared=("C", squared),

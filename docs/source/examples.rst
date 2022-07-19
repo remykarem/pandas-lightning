@@ -45,7 +45,7 @@ This is the same as
 Creating new features
 *********************
 
->>> df = df.lambdas.sapply(
+>>> df = df.transform_columns(
 ...   Cabin=lambda s: s.str[0],
 ...   HasCabinCode=("Cabin", lambda s: ~s.isna()),
 ...   HasDep=(["SibSp", "Parch"], lambda s, t: (s+t) > 0),

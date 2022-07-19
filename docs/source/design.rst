@@ -16,7 +16,7 @@ Our lambdas API:
 - binning for numerical values
 - binning for categorical values
 - applying
-- sapplying
+- transforming multiple columns
 - dapplying
 - dropping columns with rules
 

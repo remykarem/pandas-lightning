@@ -34,7 +34,7 @@ df = df.replace("?", np.nan)
 df = df.cast(
     education_num="category"
 )
-df = df.lambdas.sapply(
+df = df.transform_columns(
     income=lambda s: s == ">50K",
     fnlwght=lambda s: s.scaler.standardize(),
 )

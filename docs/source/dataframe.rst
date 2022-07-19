@@ -9,10 +9,10 @@ astype
 
 .. automethod:: pandas_lightning.dataframe_cast
 
-sapply
+select
 ******
 
-.. automethod:: pandas_lightning.dataframe_lambdas.lambdas.sapply
+.. automethod:: pandas_lightning.dataframe_transform_columns
 
 dapply
 ******
