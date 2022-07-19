@@ -158,11 +158,6 @@ get_cramersv
 DataFrame.dataset
 ------------------
 
-to_X_y
-******
-
-.. automethod:: pandas_lightning.dataframe_dataset.dataset.to_X_y
-
 undersample
 ***********
 
