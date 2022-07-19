@@ -7,7 +7,7 @@ DataFrame.lambdas
 astype
 ******
 
-.. automethod:: pandas_lightning.dataframe_lambdas.lambdas.astype
+.. automethod:: pandas_lightning.dataframe_cast
 
 sapply
 ******

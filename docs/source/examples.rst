@@ -26,12 +26,13 @@ Reading
 Changing types
 **************
 
->>> df = df.lambdas.astype(
+>>> df = df.cast(
 ...     PassengerId="index",
 ...     Name=str,
 ...     Sex="category",
 ...     Embarked="category",
-...     Pclass=[3, 2, 1])
+...     Pclass=[3, 2, 1],
+... )
 
 This is the same as
 
@@ -48,7 +49,8 @@ Creating new features
 ...   Cabin=lambda s: s.str[0],
 ...   HasCabinCode=("Cabin", lambda s: ~s.isna()),
 ...   HasDep=(["SibSp", "Parch"], lambda s, t: (s+t) > 0),
-...   HasLetters=("Ticket", lambda s: s.str.startswith(tuple(string.ascii_letters)))
+...   HasLetters=("Ticket", lambda s: s.str.startswith(tuple(string.ascii_letters)),
+... )
 
 which is the same as
 

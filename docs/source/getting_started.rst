@@ -47,10 +47,10 @@ can be rewritten as
 ...     A=abs,
 ...     B=lambda b: b * 10,
 ...     C_squared=("C", squared),
-...     AB=(["A", "B"], lambda a, b: a+b)
+...     AB=(["A", "B"], lambda a, b: a+b),
 ... )
 
-**df.lambdas.astype**
+**df.cast**
 
 What used to be
 
@@ -61,11 +61,11 @@ What used to be
 
 can be rewritten as
 
->>> df = df.lambdas.astype(
+>>> df = df.cast(
 ...      A="category",
 ...      B=int,
 ...      C_abs=str,
-...      D="datetime"
+...      D="datetime",
 ... )
 
 See the full set of dataframe accessors :ref:`here <dataframe:DataFrame accessors>`.

@@ -17,7 +17,7 @@ def df2() -> DataFrame:
 
 def test_int_type(df: DataFrame, df2: DataFrame) -> None:
     df["Survived"] = df["Survived"].astype(int)
-    df2 = df2.lambdas.astype(
+    df2 = df2.cast(
         Survived=int
     )
     assert df.equals(df2)
@@ -30,7 +30,7 @@ def test_int_string(df: DataFrame, df2: DataFrame) -> None:
 
     for dtype in dtypes:
         df["Survived"] = df["Survived"].astype(dtype)
-        df2 = df2.lambdas.astype(
+        df2 = df2.cast(
             Survived=dtype
         )
         assert df.equals(df2)
@@ -43,7 +43,7 @@ def test_int_nptype(df: DataFrame, df2: DataFrame) -> None:
 
     for dtype in dtypes:
         df["Survived"] = df["Survived"].astype(dtype)
-        df2 = df2.lambdas.astype(
+        df2 = df2.cast(
             Survived=dtype
         )
         assert df.equals(df2)

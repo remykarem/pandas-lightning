@@ -31,7 +31,7 @@ df = pd.read_csv("/Users/raimibinkarim/Downloads/adult.csv")
 df = df.optimize.convert_categories()
 df = df.rename(columns={col: col.replace(".", "_") for col in df})
 df = df.replace("?", np.nan)
-df = df.lambdas.astype(
+df = df.cast(
     education_num="category"
 )
 df = df.lambdas.sapply(

@@ -48,7 +48,7 @@ Previously:
 Now:
 
 ```python
->>> df = df.lambdas.astype(
+>>> df = df.cast(
 ...     PassengerId="index",
 ...     Name=str,
 ...     Sex="category",
