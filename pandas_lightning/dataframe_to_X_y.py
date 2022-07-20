@@ -11,7 +11,7 @@ class to_X_y:
     def __init__(self, pandas_obj):
         self._obj = pandas_obj
 
-    def to_X_y(self,
+    def __call__(self,
                *,
                target: str,
                nominal: str,
@@ -31,6 +31,7 @@ class to_X_y:
 
         Returns:
             pd.DataFrame: A dataframe fit for modelling
+            :param nominal_max_cardinality: 
         """
         df = self._obj.copy()
 
