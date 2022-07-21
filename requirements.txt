@@ -4,3 +4,4 @@ scipy
 seaborn
 sphinx
 sphinx-rtd-theme
+pytz

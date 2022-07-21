@@ -1,10 +1,19 @@
 import re
+import pytz
 import warnings
 from typing import Union
 
 import pandas as pd
 import numpy as np
-from pandas.api.types import CategoricalDtype
+from pandas.api.types import CategoricalDtype, is_integer_dtype, is_object_dtype
+
+DATETIME_UNITS = ["Y", "M", "D", "h", "m", "s", "ms", "us", "ns"]
+EPOCH_UNIT_BY_NUM_DIGITS = {
+    10: "s",
+    13: "ms",
+    16: "us",
+    19: "ns",
+}
 
 
 @pd.api.extensions.register_dataframe_accessor("cast")
@@ -98,9 +107,10 @@ class cast:
             elif isinstance(dtype, str) and dtype.startswith("timedelta"):
                 pass
             elif isinstance(dtype, str):
-                if dtype not in ["datetime", "index", "category", "int", "float", "bool", "str", "object", "string",
+                if dtype not in ["index", "category", "int", "float", "bool", "str", "object", "string",
                                  "int8", "int16", "int32", "int64",
-                                 "uint8", "uint16", "uint32", "uint64"]:
+                                 "uint8", "uint16", "uint32", "uint64"] and \
+                        not dtype.startswith("datetime64["):
                     raise ValueError("Wrong type")
             elif isinstance(dtype, list):
                 dtype = CategoricalDtype(dtype, ordered=True)
@@ -128,8 +138,8 @@ class cast:
             if dtype == "index":
                 # df = df.set_index(col_old)
                 df.set_index(col_old, inplace=True)
-            elif dtype == "datetime":
-                df[col_new] = pd.to_datetime(df[col_old])
+            elif dtype.startswith("datetime64"):
+                df[col_new] = cast_series_as_datetime(series=df[col_old], datetime_target=dtype)
             elif isinstance(dtype, str) and dtype.startswith("timedelta"):
                 # * 'W'
                 # * 'D' / 'days' / 'day'
@@ -149,3 +159,51 @@ class cast:
                 df[col_new] = df[col_old].astype(dtype)
 
         return df
+
+
+def parse_datetime_target(datetime_target: str) -> tuple:
+    match = re.match(r"datetime64\[(\w+)(, ([^,]+))?(, ([^,]+))?\]", datetime_target)
+
+    assert match, "Wrong format. Datetime target must be in the format " \
+                  "'datetime64[<unit>, <timezone>, <format>]'"
+
+    unit, _, timezone, _, fmt = match.groups()
+
+    assert unit in DATETIME_UNITS, f"Invalid unit {unit} found. " \
+                                   f"Available datetime units are {DATETIME_UNITS}"
+
+    if timezone == "?":
+        timezone = None
+    if timezone:
+        assert timezone in pytz.all_timezones, \
+            f"Timezone {timezone} is invalid. See pytz.all_timezones for list " \
+            "of available timezones"
+
+    return unit, timezone, fmt
+
+
+def cast_series_as_datetime(series: pd.Series, datetime_target: str) -> pd.Series:
+    unit, timezone, fmt = parse_datetime_target(datetime_target)
+
+    if is_integer_dtype(series):
+        # This is epoch
+        lengths = series.astype(str).str.len()
+
+        assert len(lengths.unique()) == 1, \
+            "This series has more than 1 Unix epoch precision."
+        assert lengths[0] in EPOCH_UNIT_BY_NUM_DIGITS, \
+            "Format of Unix epoch timestamp is incorrect. The no. of digits is one of " \
+            f"{list(EPOCH_UNIT_BY_NUM_DIGITS)}"
+
+        s = series.astype(f"datetime64[{EPOCH_UNIT_BY_NUM_DIGITS[lengths[0]]}]")
+
+    elif is_object_dtype(series):
+        s = pd.to_datetime(series, utc=False, format=fmt)
+
+    else:
+        s = series
+
+    if timezone:
+        return s.astype(f"datetime64[{unit}]").dt.tz_localize(timezone)
+    else:
+        return s.astype(f"datetime64[{unit}]")
