@@ -138,7 +138,7 @@ class cast:
             if dtype == "index":
                 # df = df.set_index(col_old)
                 df.set_index(col_old, inplace=True)
-            elif dtype.startswith("datetime64"):
+            elif isinstance(dtype, str) and dtype.startswith("datetime64"):
                 df[col_new] = cast_series_as_datetime(series=df[col_old], datetime_target=dtype)
             elif isinstance(dtype, str) and dtype.startswith("timedelta"):
                 # * 'W'
