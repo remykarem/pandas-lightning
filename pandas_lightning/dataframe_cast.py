@@ -5,7 +5,7 @@ from typing import Union
 
 import pandas as pd
 import numpy as np
-from pandas.api.types import CategoricalDtype, is_integer_dtype, is_object_dtype
+from pandas.api.types import CategoricalDtype, is_object_dtype, is_numeric_dtype
 
 DATETIME_UNITS = ["Y", "M", "D", "h", "m", "s", "ms", "us", "ns"]
 EPOCH_UNIT_BY_NUM_DIGITS = {
@@ -185,9 +185,9 @@ def parse_datetime_target(datetime_target: str) -> tuple:
 def cast_series_as_datetime(series: pd.Series, datetime_target: str) -> pd.Series:
     unit, timezone, fmt = parse_datetime_target(datetime_target)
 
-    if is_integer_dtype(series):
+    if is_numeric_dtype(series):
         # This is epoch
-        lengths = series.astype(str).str.len()
+        lengths = series.astype(int).astype(str).str.len()
 
         assert len(lengths.unique()) == 1, \
             "This series has more than 1 Unix epoch precision."
