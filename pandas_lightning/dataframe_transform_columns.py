@@ -1,6 +1,9 @@
 import warnings
+from typing import Union
 
 import pandas as pd
+
+TARGET_COL_NAME_SEPARATOR = "__"
 
 
 @pd.api.extensions.register_dataframe_accessor("transform_columns")
@@ -123,13 +126,39 @@ class transform_columns:
                 if isinstance(col_old, (list, tuple)):
                     # many-to-1
                     series = [getattr(data, col) for col in col_old]
-                    data[col_new] = function(*series)
+                    new_data = function(*series)
                 else:
                     # 1-to-1
-                    data[col_new] = function(data[col_old])
+                    new_data = function(data[col_old])
+
+                # ?-to-many
+                new_col_names = parse_col_name_for_dunders(col_new)
+                assert len(new_col_names) == get_num_of_columns(new_data), \
+                    f"No. of new columns created ({get_num_of_columns(new_data)}) does " \
+                    f"not match the {len(new_col_names)} target column names " \
+                    f"{new_col_names}. Note that multiple target column names " \
+                    f"are specified by '{TARGET_COL_NAME_SEPARATOR}'."
+
+                if len(new_col_names) == 1:
+                    data[new_col_names[0]] = new_data
+                else:
+                    data[new_col_names] = new_data
 
             return data
 
         df = __sapply(df)
 
         return df
+
+
+def parse_col_name_for_dunders(col_name: str) -> list:
+    return col_name.split(TARGET_COL_NAME_SEPARATOR)
+
+
+def get_num_of_columns(obj: Union[pd.Series, pd.DataFrame, list]) -> int:
+    if isinstance(obj, pd.Series):
+        return 1
+    elif isinstance(obj, list):
+        return len(obj[0])
+    else:
+        return obj.shape[-1]
