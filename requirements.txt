@@ -1,7 +1,8 @@
-pandas>=0.21.0
+pandas
 numpy
 scipy
 seaborn
 sphinx
 sphinx-rtd-theme
 pytz
+matplotlib
