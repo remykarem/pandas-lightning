@@ -6,8 +6,8 @@ import pandas as pd
 TARGET_COL_NAME_SEPARATOR = "__"
 
 
-@pd.api.extensions.register_dataframe_accessor("transform_columns")
-class transform_columns:
+@pd.api.extensions.register_dataframe_accessor("add_columns")
+class add_columns:
     def __init__(self, pandas_obj):
         self._validate_obj(pandas_obj)
         self._obj = pandas_obj
@@ -45,7 +45,7 @@ class transform_columns:
 
             Rewriting to the same column
 
-            >>> df = df.transform_columns(
+            >>> df = df.add_columns(
             ...     X=lambda s: s + "rea",
             ...     Y=lambda s: s+100,
             ...     Z=lambda s: s.str.upper())
@@ -60,7 +60,7 @@ class transform_columns:
 
             Rewriting to the another column
 
-            >>> df = df.transform_columns(
+            >>> df = df.add_columns(
             ...     X_new=("X", lambda s: s + "rea"),
             ...     Y_new=("Y", lambda s: s+100),
             ...     Z_new=("Z", lambda s: s.str.upper())
@@ -76,7 +76,7 @@ class transform_columns:
 
             Work with more than 1 column at a time
 
-            >>> df.transform_columns(
+            >>> df.add_columns(
             ...     XY=(["X", "Y"],
             ...         lambda x, y: x + (y+10).astype(str),
             ...     YZ=(["Y", "Z"],

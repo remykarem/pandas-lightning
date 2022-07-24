@@ -12,7 +12,7 @@ Type casting
 Column transformations
 **********************
 
-.. automethod:: pandas_lightning.dataframe_transform_columns.transform_columns.__call__
+.. automethod:: pandas_lightning.dataframe_add_columns.add_columns.__call__
 
 drop_if_exist
 *************
